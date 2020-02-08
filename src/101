@@ -64,6 +64,7 @@
   (meta  #\%)
   (less  #\<)
   (num   #\$)
+  (pole  #\')
   (more  #\>)
   (klass #\!)
   (skip  #\?)
@@ -247,36 +248,38 @@
 ;---------.---------.---------.---------.--------.---------.----------
 ; rows
 
-(defstruct row cells poles)
+(defstruct row tbl cells poles)
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; columns
 
 (defstruct col (w 1) (pos 0) (txt ""))
-(defstruct cols all klass goals names indep nums syms meta)
+(defstruct cols all klass goals names poles indep nums syms meta)
+
+(defmethod klass ((c cols)) (?  klass pos))
 
 (defmethod create ((c cols) arr)
-  (with-slots (indep klass all names goals meta nums syms) c
+  (with-slots (indep klass all names poles goals meta nums syms) c
     (do-array (x pos arr)
       (labels 
-        ((goalp()  (has x (?? ch klass) (?? ch less) (?? ch more)))
-         (nump()   (has x (?? ch num)   (?? ch less) (?? ch more)))
-         (klassp() (has x (?? ch klass)))
-         (metap()  (has x (?? ch meta)))
-         (lessp()  (has x (?? ch less)))
-         (skipp()  (has x (?? ch skip))))
-        (unless (skipp)
-          (push x names)
-          (if (klassp) (setq klass pos))
-          (let* ((w     (if (lessp) -1 1))
-                 (todo  (if (nump) #'make-num #'make-sym))
-                 (col   (funcall todo :pos pos :txt x :w w)))
-            (push col all)
-            (push col (if (nump) nums  syms))
-            (if (metap)
-              (push col meta)
-              (push col (if (goalp) goals indep)))))))
-    (reverse all)))
+        ((goalp() (has x (?? ch klass) (?? ch less) (?? ch more)))
+         (nump()  (has x (?? ch num)   (?? ch less) (?? ch more)))
+         (meta()  (has x (?? ch meta)  (?? ch pole))))
+        (unless (has x (?? ch skip)))
+        (push x names)
+        (let* ((w     (if (has x (?? ch less)) -1 1))
+               (todo  (if (nump) #'make-num #'make-sym))
+               (col   (funcall todo :pos pos :txt x :w w)))
+          (push col all)
+          (push col (if (nump) nums  syms))
+          (if (has x (?? ch klass)) (setf klass col))
+          (if (has x (?? ch pole))  (push col poles))
+          (if (meta)
+            (push col meta)
+            (push col (if (goalp) goals indep))))))
+    (reverse all)
+    (reverse names)
+    ))
 
 (defmethod update ((cs cols) arr)
   (dolist (col (? cs all) arr)
@@ -287,12 +290,18 @@
 ; data
 
 (defstruct data  rows (cols (make-cols)) (npoles 0))
+(defmethod new ((d data)) (not (? d cols names)))
+
+(defmethod clone ((d1 data))
+  (let ((d2 (make-data)))
+    (create (? d2 cols) (coerce 'list (d1 cols names)))
+    d2))
 
 (defmethod update ((d data) arr)
-  (if (? d cols names) 
+  (if (new d)
+    (create (? d cols) arr)
     (let ((arr (update (? d cols) arr)))
-      (push (make-row :cells arr) (data-rows d)))
-    (create (? d cols) arr)))
+      (push (make-row :cells arr) (data-rows d)))))
 
 (defmethod readd ((d data) &optional f)
    (do-read (x f d)
@@ -312,10 +321,12 @@
     (terpri str)))
 
 ;---------.---------.---------.---------.--------.---------.----------
-(defun nb ()
+(defun nb (&optional f)
   (let ((d (make-data)))
-   (do-read (x)
-     (update d (coerce (s->words x) 'vector)))))
+   (do-read (x f d)
+    (let ((row (coerce (s->words x) 'vector)))
+      (update d row)
+      ))))
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; top-level
