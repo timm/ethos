@@ -18,8 +18,9 @@
   #+sbcl sb-ext:*posix-argv*)
 
 (defun the-slots (it)
-  #+clisp (class-slots (class-of it))
-  #+sbcl (sb-mop:class-slots (class-of it)))
+  (mapcar #'slot-definition-name 
+          #+clisp (class-slots (class-of it))
+          #+sbcl (sb-mop:class-slots (class-of it))))
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; macros
@@ -73,6 +74,7 @@
   (trim  0.95))
 
 (defstruct nb!
+  (wait 5)
   (m 2)
   (k 1))
 
@@ -80,12 +82,6 @@
   (nb   (make-nb!))
   (lsh  (make-lsh!))
   (ch   (make-ch!)))
-
-(defun cli2options (thing)
-  (dolist (x (cli) thing)
-     (aif (find (format nil ":~a" x) (the-slots things))
-       (setf (slot-value thing x) 
-             (read-from-string (nth (+ 1 a ) lst))))))
 
 (defvar *O* (make-control))
 
@@ -122,12 +118,12 @@
                      (push a tmp)))
           (reverse (end-of-word)))))))
 
-(defmethod xpect ((s1 (or sym num)) (s2 (or sym num)))
-  (let ((n (+ (? s1 n) (? s2 n))))
-     (+ (* (/ (? s1 n) n) 
-           (var s1))
-        (* (/ (? s2 n) n) 
-           (var s2)))))
+(defun xpect (x y)
+  (let ((n (+ (? x n) (? y n))))
+     (+ (* (/ (? x n) n) 
+           (var x))
+        (* (/ (? y n) n) 
+           (var y)))))
 
 
 ;---------.---------.---------.---------.--------.---------.----------
@@ -194,12 +190,6 @@
 (defmethod var ((s num) x) (num-sd x))
 (defmethod mid ((s num) x) (num-mu x))
 (defmethod prep ((s num) x) (if (numberp x) x (read-from-string x)))
-(defmethod xpect ((s1 num) (s2 num))
-  (let ((n (+ (? s1 n) (? s2 n))))
-     (+ (* (/ (? s1 n) n) 
-           (? s1 sd))
-        (* (/ (? s2 n) n) 
-           (? s2 sd)))))
 
 (defmethod update ((nu num) (x string))
   (update nu (prep nu x)))
@@ -246,9 +236,9 @@
 
 (defmethod like ((n num) x prior all)
   (declare (ignore prior all))
-  (let* ((var (expt (? n sd) 2))
+  (let* ((e     2.71828)
+         (var   (expt (? n sd) 2))
          (demon (sqrt (* 2 pi var)))
-         (e     2.71828)
          (num   (expt e (/ (- (expt (- x (? n mu)) 2))
                            (+ 0.000001 (* 2 var))))))
     (/ num (+ denom 0.000001))))
@@ -322,17 +312,31 @@
     (terpri str)))
 
 ;---------.---------.---------.---------.--------.---------.----------
+(defun nb ()
+  (let ((d (make-data)))
+   (do-read (x)
+     (update d (coerce (s->words x) 'vector)))))
+
+;---------.---------.---------.---------.--------.---------.----------
 ; top-level
+(defun cli2options (thing &optional (argv (cli)))
+    (dolist (slot (the-slots thing) thing)
+      (af (position slot argv 
+             :test #'(lambda (a b)
+                       (equalp b (format nil ":~a" slot))))
+          (setf (slot-value thing slot) 
+                (read-from-string (nth (+ 1 a ) argv))))))
+
 (defun weather1 ()
   (let ((d (make-data)))
     (readd d "../data/weather.csv")
     (format t "~&~a" d)))
 
-(defun main ()
-  (let* ((argv (cli))
-         (com  (first argv)))
-    (cond ((equalp com "table")
-           (weather1))
-          (t nil))))
+(defun main (&optional (argv (cli)))
+  (if argv
+    (let* ((x (first argv)))
+      (cond ((equalp x "table") (weather1))
+            ((equalp x "nb" )   (cli2options (? *O* nb))
+                                (nb))))))
 
 (main)
