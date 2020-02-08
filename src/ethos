@@ -3,7 +3,7 @@
 
 "
 
-# asdas
+# An experiment in ethics
 
 "
 
@@ -12,14 +12,6 @@
 (defun stop ()
   #+sbcl (sb-ext:exit)
   #+:clisp (ext:exit))
-
-"
-
-# asda 
-
-asda
-
-"
 
 (defun cli ()
   #+clisp ext:*args*
