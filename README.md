@@ -1,4 +1,4 @@
-<img src="etc/img/duo.jpg" align=right>
+<img src="etc/img/duo.jpg" width=300 align=right>
 
 # DUO: Data Miners Using/Used-by Optimizers
 
