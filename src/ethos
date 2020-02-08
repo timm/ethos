@@ -72,7 +72,12 @@
   (poles 10)
   (trim  0.95))
 
+(defstruct nb!
+  (m 2)
+  (k 1))
+
 (defstruct control 
+  (nb   (make-nb!))
   (lsh  (make-lsh!))
   (ch   (make-ch!)))
 
@@ -117,6 +122,20 @@
                      (push a tmp)))
           (reverse (end-of-word)))))))
 
+(defmethod xpect ((s1 (or sym num)) (s2 (or sym num)))
+  (let ((n (+ (? s1 n) (? s2 n))))
+     (+ (* (/ (? s1 n) n) 
+           (var s1))
+        (* (/ (? s2 n) n) 
+           (var s2)))))
+
+
+;---------.---------.---------.---------.--------.---------.----------
+(defun adds (make lst)
+  (let ((x (funcall make)))
+    (dolist (one lst x)
+      (update x one))))
+
 ;---------.---------.---------.---------.--------.---------.----------
 ; symbols
 (defstruct sym
@@ -157,6 +176,13 @@
       1
       (if (eql s1 s2) 0 1))))
 
+(defmethod like ((s sym) x prior all)
+  (/ (+ (* (?? nb m)
+           prior)
+        (gethash x (? s counts)  0))
+     (+ (?? nb m)
+        all)))
+
 ;---------.---------.---------.---------.--------.---------.----------
 ; numbers
 (defstruct num 
@@ -168,6 +194,12 @@
 (defmethod var ((s num) x) (num-sd x))
 (defmethod mid ((s num) x) (num-mu x))
 (defmethod prep ((s num) x) (if (numberp x) x (read-from-string x)))
+(defmethod xpect ((s1 num) (s2 num))
+  (let ((n (+ (? s1 n) (? s2 n))))
+     (+ (* (/ (? s1 n) n) 
+           (? s1 sd))
+        (* (/ (? s2 n) n) 
+           (? s2 sd)))))
 
 (defmethod update ((nu num) (x string))
   (update nu (prep nu x)))
@@ -212,12 +244,26 @@
                          n2 (norm nu n2))))
     (abs (- n1 n2))))
 
+(defmethod like ((n num) x prior all)
+  (declare (ignore prior all))
+  (let* ((var (expt (? n sd) 2))
+         (demon (sqrt (* 2 pi var)))
+         (e     2.71828)
+         (num   (expt e (/ (- (expt (- x (? n mu)) 2))
+                           (+ 0.000001 (* 2 var))))))
+    (/ num (+ denom 0.000001))))
+
+
 ;---------.---------.---------.---------.--------.---------.----------
-; tables of data
+; rows
+
+(defstruct row cells poles)
+
+;---------.---------.---------.---------.--------.---------.----------
+; columns
+
 (defstruct col (w 1) (pos 0) (txt ""))
 (defstruct cols all klass goals names indep nums syms meta)
-(defstruct row cells poles)
-(defstruct data  rows (cols (make-cols)) (npoles 0))
 
 (defmethod create ((c cols) arr)
   (with-slots (indep klass all names goals meta nums syms) c
@@ -247,6 +293,11 @@
     (setf (aref arr (? col pos))
           (update col (aref arr (? col pos))))))
 
+;---------.---------.---------.---------.--------.---------.----------
+; data
+
+(defstruct data  rows (cols (make-cols)) (npoles 0))
+
 (defmethod update ((d data) arr)
   (if (? d cols names) 
     (let ((arr (update (? d cols) arr)))
@@ -270,10 +321,18 @@
         (format str ",0")))
     (terpri str)))
 
+;---------.---------.---------.---------.--------.---------.----------
+; top-level
+(defun weather1 ()
+  (let ((d (make-data)))
+    (readd d "../data/weather.csv")
+    (format t "~&~a" d)))
 
-; a comment
-(let ((d (make-data)))
-   (readd d "../data/weather.csv")
-   (format t "~&~a" d))
+(defun main ()
+  (let* ((argv (cli))
+         (com  (first argv)))
+    (cond ((equalp com "table")
+           (weather1))
+          (t nil))))
 
-;(let ((c (make-cols))) (create c ' #(:name $age >aaa)) (print c)) 
+(main)
