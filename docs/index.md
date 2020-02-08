@@ -9,19 +9,19 @@ title: ethos
 
 
 
-```lisp
+````lisp
 (defun stop ()
   #+sbcl (sb-ext:exit)
   #+:clisp (ext:exit))
 
-````
+`````
 
 # asda 
 
 asda
 
 
-```lisp
+````lisp
 (defun cli ()
   #+clisp ext:*args*
   #+sbcl sb-ext:*posix-argv*)

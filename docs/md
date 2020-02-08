@@ -8,13 +8,13 @@ BEGIN { print "----"
 /^.!.usr.bin.env/    { next }
 /^. vim: /           { next }
 sub(/^;.*/,"")       { print; next }     
-/^"/ && !str && lsp  { print "````"; str=1; lsp=0; next }
+/^"/ && !str && lsp  { print "`````"; str=1; lsp=0; next }
 /^"/ && !str && !lsp {               str=1; lsp=0; next }
 /^"/ && str          { str=0 ; next }
-/^\(/ && !lsp        { str=0; lsp=1; print "```lisp"; print; next }
+/^\(/ && !lsp        { str=0; lsp=1; print "````lisp"; print; next }
 /^\(/ &&  lsp        { str=0; lsp=1;                  print; next }
                      { print} 
-END                  { if (code) print "```" }
+END                  { if (code) print "````" }
 ' -v title=ethos > index.md
 
 git  add index.md
