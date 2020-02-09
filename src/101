@@ -1,4 +1,5 @@
-#!/usr/bin/env clisp -q
+;#!/usr/bin/env clisp -q
+; -*- lisp -*-
 ; vim: filetype=lisp: ts=2 sw=2 sts=2  et :
 
 "
@@ -6,6 +7,8 @@
 # An experiment in ethics
 
 "
+(print 10)
+
 ;---------.---------.---------.---------.--------.---------.----------
 (defstruct ch!
   (meta  #\%)
@@ -44,9 +47,13 @@
   #+sbcl sb-ext:*posix-argv*)
 
 (defun the-slots (it)
-  (mapcar #'slot-definition-name 
-          #+clisp (class-slots (class-of it))
-          #+sbcl (sb-mop:class-slots (class-of it))))
+  #+sbcl
+  (mapcar #'sb-mop:slot-definition-name 
+          (sb-mop:class-slots (class-of it)))
+  #+clisp
+  (mapcar #'slot-definition-name
+          (class-slots (class-of it))))
+  
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; macros
@@ -195,6 +202,7 @@
      (+ (?? nb m)
         all)))
 
+(print 100)
 ;---------.---------.---------.---------.--------.---------.----------
 ; numbers
 (defstruct num 
@@ -296,6 +304,7 @@
     (setf names (reverse names))
     ))
 
+(print 300)
 (defmethod update ((cs cols) arr)
   (dolist (col (? cs all) arr)
     (setf (aref arr (? col pos))
@@ -311,8 +320,8 @@
 
 (defmethod clone ((d1 data))
   (let* ((d2   (make-data))
-         (cols (l->a (? d1 cols names))))
-    (create (? d2 cols) cols)
+         (names (? d1 cols names)))
+    (create (? d2 cols) (l->a names))
     d2))
 
 (defmethod update ((d data) arr)
@@ -400,6 +409,8 @@
 			(round (* 100 pd)) (round (* 100 f)) 
       (round (* 100 g)) (round (* 100 acc)))))
 
+(print 400)
+
 ;---------.---------.---------.---------.--------.---------.----------
 ; nb
 (defstruct nb 
@@ -407,7 +418,7 @@
   (total (make-data)) 
   (parts (make-hash-table :test #'equal)))
 
-(defmethod create ((n nb) f))
+(defmethod create ((n nb) f)
   (do-read (x f n)
     (update n (l->a (s->words x)))))
 
@@ -421,7 +432,7 @@
              (klass (or (gethash key parts)
                         (clone total))))
           (update klass arr)
-          (setf (gethash key parts) klass)))
+          (setf (gethash key parts) klass)))))
 
 (defmethod classify ((n nb) arr)
   (with-slots (total pairs abcds) n
@@ -429,6 +440,7 @@
            (predicted (likeliest n arr)))
       (update2 abcds actual predicted)))) 
 
+(print 440)
 ;---------.---------.---------.---------.--------.---------.----------
 ; top-level
 (defun cli2options (thing &optional (argv (cli)))
@@ -452,4 +464,6 @@
     (cond ((equalp x "table") (weather1))
           ((equalp x "nb" )   (cli2options (? *O* nb))
                               (nb)))))
+
+(print 1)
 (if (cli) (main (cli)))
