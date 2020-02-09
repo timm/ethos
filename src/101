@@ -1,5 +1,5 @@
-;#!/usr/bin/env clisp -q
-; -*- lisp -*-
+;#!/usr/local/bin/clisp -q
+; -*- mode: Lisp; fill-column: 75; comment-column: 50; -*-
 ; vim: filetype=lisp: ts=2 sw=2 sts=2  et :
 
 "
@@ -7,7 +7,14 @@
 # An experiment in ethics
 
 "
-(print 10)
+
+;(locally
+ ;   (declare #+sbcl(sb-ext:muffle-conditions
+  ;                  sb-exit:implicit-generic-function-warning
+   ;                 sb-kernel:redefinition-warning))
+;  (h;andler-bind
+ ;     (#+sbcl (sb-kernel:redefinition-warning
+     ;        #'muffle-warning))))
 
 ;---------.---------.---------.---------.--------.---------.----------
 (defstruct ch!
@@ -110,12 +117,15 @@
 (defun l->a (lst) (coerce lst 'array))
 (defun a->l (a)   (coerce a   'list))
 
-(defun l->s (lst &optional (sep ","))
-  (with-output-to-string (str) (l->str lst sep str)))
 
 (defun l->str (lst sep  str)
   (format str "~a" (car lst))
   (dolist (x (cdr lst)) (format str "~a ~a" sep x)))
+
+
+(defun l->s (lst &optional (sep ","))
+  (with-output-to-string (str) (l->str lst sep str)))
+
 
 (defun has (x &rest lst) 
   (dolist (y lst)
@@ -150,12 +160,6 @@
 
 
 ;---------.---------.---------.---------.--------.---------.----------
-(defun adds (make lst)
-  (let ((x (funcall make)))
-    (dolist (one lst x)
-      (update x one))))
-
-;---------.---------.---------.---------.--------.---------.----------
 ; symbols
 (defstruct sym
   (counts (make-hash-table :test #'equalp))
@@ -164,9 +168,6 @@
   (most 0)
   mode)
 
-(defmethod var ((s sym) x) (ent x))
-(defmethod mid ((s sym) x) (sym-mode x))
-(defmethod prep ((s sym) x) x)
 
 (defmethod update ((s sym) x)
   (with-slots (most mode counts  n) s
@@ -186,6 +187,7 @@
 (defmethod ent ((s sym) &aux (e 0))
   (with-slots (counts n) s
     (do-hash (k v counts e)
+      (length k)
       (let ((p (/ v n)))
         (decf e (* p (log p 2)))))))
 
@@ -195,12 +197,17 @@
       1
       (if (eql s1 s2) 0 1))))
 
-(defmethod like ((s sym) x prior all)
+(defmethod luke ((s sym) x prior all)
   (/ (+ (* (?? nb m)
            prior)
         (gethash x (? s counts)  0))
      (+ (?? nb m)
         all)))
+
+
+(defmethod var ((s sym) x) (ent x))
+(defmethod mid ((s sym) x) (sym-mode x))
+(defmethod prep ((s sym) x) x)
 
 (print 100)
 ;---------.---------.---------.---------.--------.---------.----------
@@ -410,6 +417,12 @@
       (round (* 100 g)) (round (* 100 acc)))))
 
 (print 400)
+
+;---------.---------.---------.---------.--------.---------.----------
+(defun adds (make lst)
+  (let ((x (funcall make)))
+    (dolist (one lst x)
+      (update x one))))
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; nb
