@@ -6,59 +6,6 @@
 # An experiment in ethics
 
 "
-
-;---------.---------.---------.---------.--------.---------.----------
-; hash defines
-(defun stop ()
-  #+sbcl (sb-ext:exit)
-  #+:clisp (ext:exit))
-
-(defun cli ()
-  #+clisp ext:*args*
-  #+sbcl sb-ext:*posix-argv*)
-
-(defun the-slots (it)
-  (mapcar #'slot-definition-name 
-          #+clisp (class-slots (class-of it))
-          #+sbcl (sb-mop:class-slots (class-of it))))
-
-;---------.---------.---------.---------.--------.---------.----------
-; macros
-(defmacro af (test then &optional else)
-  `(let ((a ,test)) (if a ,then ,else)))
-
-(defmacro while (test &body body)
-  `(do () ((not ,test)) ,@body))
-
-(defmacro whale (test &body body )
-  `(let (a)
-     (while (setf a ,test) ,@body)))
-
-(defmacro do-array ((one n arr &optional out) &body body )
-  `(dotimes (,n (length ,arr) ,out)
-     (let ((,one (aref arr ,n))) ,@body)))
-
-(defmacro do-hash ((key value  h &optional out) &body body )
-  `(progn (maphash #'(lambda (,key ,value) ,@body) ,h) ,out))
-
-(defmacro ? (obj first-slot &rest more-slots)
-  (if (null more-slots)
-    `(slot-value ,obj ',first-slot)
-    `(? (slot-value ,obj ',first-slot) ,@more-slots)))
-
-(defmacro ?? (&rest x) `(? *O* ,@x))
-
-(defmacro do-read ((it &optional f out) &body body)
-  (let ((str (gensym)))
-    `(progn 
-       (if ,f
-         (with-open-file (,str ,f)
-           (while (setf ,it (read-line ,str nil))
-             ,@body))
-         (while (setf ,it (read-line *standard-input* nil))
-           ,@body))
-       ,out)))
-
 ;---------.---------.---------.---------.--------.---------.----------
 (defstruct ch!
   (meta  #\%)
@@ -87,11 +34,79 @@
 (defvar *O* (make-control))
 
 ;---------.---------.---------.---------.--------.---------.----------
-; tricks 
-(defun list-string(lst &optional (sep ","))
-  (with-output-to-string (str) (print-list lst sep str)))
+; hash defines
+(defun stop ()
+  #+sbcl (sb-ext:exit)
+  #+:clisp (ext:exit))
 
-(defun print-list(lst sep  str)
+(defun cli ()
+  #+clisp ext:*args*
+  #+sbcl sb-ext:*posix-argv*)
+
+(defun the-slots (it)
+  (mapcar #'slot-definition-name 
+          #+clisp (class-slots (class-of it))
+          #+sbcl (sb-mop:class-slots (class-of it))))
+
+;---------.---------.---------.---------.--------.---------.----------
+; macros
+(defmacro ? (obj first-slot &rest more-slots)
+  (if (null more-slots)
+    `(slot-value ,obj ',first-slot)
+    `(? (slot-value ,obj ',first-slot) ,@more-slots)))
+
+(defmacro ?? (&rest x) `(? *O* ,@x))
+
+(defmacro while (test &body body)
+  `(do () ((not ,test)) 
+    ,@body))
+
+(defmacro aif (test then &optional else)
+  `(let ((it ,test)) 
+     (if it ,then ,else)))
+
+(defmacro whale (test &body body )
+  `(let (it)
+     (while (setf it ,test) ,@body)))
+
+(defmacro whan (test &body body )
+  `(let (it)
+     (when (setf it ,test) ,@body)))
+
+(defmacro do-array ((one n arr &optional out) &body body )
+  `(dotimes (,n (length ,arr) ,out)
+     (let ((,one (aref arr ,n))) ,@body)))
+
+(defmacro do-hash ((key value  h &optional out) &body body )
+  `(progn (maphash #'(lambda (,key ,value) ,@body) ,h) ,out))
+
+(defmacro do-read ((it &optional f out) &body body)
+  (let ((str (gensym)))
+    `(progn 
+       (if ,f
+         (with-open-file (,str ,f)
+           (while (setf ,it (read-line ,str nil))
+             ,@body))
+         (while (setf ,it (read-line *standard-input* nil))
+           ,@body))
+       ,out)))
+
+(defmacro do-cells ((val pos col row slots) &body body)
+  `(dolist (,col (slot-value (? ,row data cols) ,slots))
+     (let* ((,pos (? ,col pos))
+            (,val (aref (? ,row cells) pos)))
+       (unless (eql ,val (?? ch skip))
+         ,@body))))
+
+;---------.---------.---------.---------.--------.---------.----------
+; tricks 
+(defun l->a (lst) (coerce lst 'array))
+(defun a->l (a)   (coerce a   'list))
+
+(defun l->s (lst &optional (sep ","))
+  (with-output-to-string (str) (l->str lst sep str)))
+
+(defun l->str (lst sep  str)
   (format str "~a" (car lst))
   (dolist (x (cdr lst)) (format str "~a ~a" sep x)))
 
@@ -114,9 +129,9 @@
               (setf tmp nil)) 
               out))
           (whale (read-char str nil)
-                 (if (member a sep :test #'eql)
+                 (if (member it sep :test #'eql)
                      (end-of-word)
-                     (push a tmp)))
+                     (push it tmp)))
           (reverse (end-of-word)))))))
 
 (defun xpect (x y)
@@ -136,7 +151,7 @@
 ;---------.---------.---------.---------.--------.---------.----------
 ; symbols
 (defstruct sym
-  (counts (make-hash-table))
+  (counts (make-hash-table :test #'equalp))
   (n 0) (pos 0) (txt "") (w 1)
   (ent 0)
   (most 0)
@@ -244,19 +259,19 @@
                            (+ 0.000001 (* 2 var))))))
     (/ num (+ denom 0.000001))))
 
-
 ;---------.---------.---------.---------.--------.---------.----------
 ; rows
 
-(defstruct row tbl cells poles)
+(defstruct row data cells poles)
+
+(defmethod klass ((r row)) 
+  (klass-val (? r data) (? r cells)))
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; columns
 
 (defstruct col (w 1) (pos 0) (txt ""))
 (defstruct cols all klass goals names poles indep nums syms meta)
-
-(defmethod klass ((c cols)) (?  klass pos))
 
 (defmethod create ((c cols) arr)
   (with-slots (indep klass all names poles goals meta nums syms) c
@@ -277,8 +292,8 @@
           (if (meta)
             (push col meta)
             (push col (if (goalp) goals indep))))))
-    (reverse all)
-    (reverse names)
+    (setf all (reverse all))
+    (setf names (reverse names))
     ))
 
 (defmethod update ((cs cols) arr)
@@ -290,64 +305,151 @@
 ; data
 
 (defstruct data  rows (cols (make-cols)) (npoles 0))
-(defmethod new ((d data)) (not (? d cols names)))
+
+(defmethod new? ((d data)) 
+  (not (? d cols names)))
 
 (defmethod clone ((d1 data))
-  (let ((d2 (make-data)))
-    (create (? d2 cols) (coerce 'list (d1 cols names)))
+  (let* ((d2   (make-data))
+         (cols (l->a (? d1 cols names))))
+    (create (? d2 cols) cols)
     d2))
 
 (defmethod update ((d data) arr)
-  (if (new d)
+  (if (new? d)
     (create (? d cols) arr)
-    (let ((arr (update (? d cols) arr)))
-      (push (make-row :cells arr) (data-rows d)))))
+    (let* ((arr (update (? d cols) arr))
+           (row (make-row :data d :cells arr)))
+      (push row (data-rows d))
+      arr)))
+
+(defmethod latest-row ((d data))
+  (car (? d rows)))
+
+(defmethod klass-val ((d data) arr) 
+  (aref arr (? r cols klass pos)))
 
 (defmethod readd ((d data) &optional f)
    (do-read (x f d)
-     (update d (coerce (s->words x) 'vector))))
+     (update d (l->a (s->words x)))))
 
 (defmethod print-object ((d data) str)
-  (print-list (? d cols names)  ","  str)
+  (l->str (? d cols names)  ","  str)
   (dotimes (i  (? d npoles)) 
     (format str ", %pole~a" i))
   (terpri str)
   (dolist (row (? d rows))
-    (print-list (coerce (? row cells) 'list)  ","  str)
+    (l->str (a->l (? row cells))  ","  str)
     (if (? row poles)
-      (print-list (? row poles)  ","  str)
+      (l-> str (? row poles)  ","  str)
       (dotimes (i  (? d npoles)) 
         (format str ",0")))
     (terpri str)))
 
 ;---------.---------.---------.---------.--------.---------.----------
-(defun nb (&optional f)
-  (let ((d (make-data)))
-   (do-read (x f d)
-    (let ((row (coerce (s->words x) 'vector)))
-      (update d row)
-      ))))
+; incrementally collect performance statistics
+(defstruct abcds 
+  (yes 0)
+  (no  0)
+  (hs  (make-hash-table :test #'equalp)))
+
+(defmethod known ((x abcds) klass)
+	(setf (gethash klass (? x hs))
+        (or (gethash klass (? x hs))
+            (abcd :a (+ (? x yes) (? x no))))))
+
+(defmethod update2 ((x abcds) actual predicted)
+  (known x actual)
+  (known x predicted)
+  (if (eql actual predicted)
+    (incf (? x yes))
+    (incf (? x no)))
+  (do-hash (target abcd x x)
+    (with-slots (a b c d) abcd
+      (if (eql actual    target)
+      (if (eql predicted actual) (incf d) (incf b))
+      (if (eql predicted target) (incf c) (incf  a))))))
+
+(defstruct abcd  
+  target 
+  (a 0) (b 0) (c 0) (d 0) 
+  acc pf prec pd f g d2h)
+
+(defmethod ready ((x abcd))
+  (with-slots ( a b c d acc pf prec pd f g n d2h) x
+    (let (notpf 
+          (zip (float (expt 10 -16))))
+      (setf acc   (/ (+ a d)        (+ zip a b c d))
+            pf    (/ c              (+ zip a c    ))
+            prec  (/ d              (+ zip c d    ))
+            pd    (/ d              (+ zip b d    ))
+            notpf (- 1 pf)
+            f     (/ (* 2 prec pd)  (+ zip prec pd))
+            g     (/ (* 2 notpf pd) (+ zip notpf pd))
+            d2h   (- 1 (sqrt (+ (expt (- 0 pf) 2) 
+                                (expt (- 1 pd) 2))))))))
+
+(defmethod print-object ((x abcd) str)
+	(ready x)
+	(with-slots (target pf prec pd f g n c d acc) x
+    (setf acc (/ (? x yes) 
+                 (+ (? x yes) (? x no)))) 
+		(format str 
+      "target: ~a n: ~a pf: ~a prec: ~a pd: ~a f: ~a g: ~a acc: ~a"
+			target (+ c d) (round (* 100 pf)) (round (* 100 prec))
+			(round (* 100 pd)) (round (* 100 f)) 
+      (round (* 100 g)) (round (* 100 acc)))))
+
+;---------.---------.---------.---------.--------.---------.----------
+; nb
+(defstruct nb 
+	(abcds (make-abcds))
+  (total (make-data)) 
+  (parts (make-hash-table :test #'equal)))
+
+(defmethod create ((n nb) f))
+  (do-read (x f n)
+    (update n (l->a (s->words x)))))
+
+(defmethod update ((n nb) arr)
+  (with-slots (total parts) n
+    (setf arr (update total arr))
+    (when (> (length (? total rows)) (?? nb wait))
+      (classify nb arr))
+    (whan (latest-row total)
+			(let* ((key   (klass it))
+             (klass (or (gethash key parts)
+                        (clone total))))
+          (update klass arr)
+          (setf (gethash key parts) klass)))
+
+(defmethod classify ((n nb) arr)
+  (with-slots (total pairs abcds) n
+	  (let* ((actual    (klass-val total arr))
+           (predicted (likeliest n arr)))
+      (update2 abcds actual predicted)))) 
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; top-level
 (defun cli2options (thing &optional (argv (cli)))
     (dolist (slot (the-slots thing) thing)
-      (af (position slot argv 
+      (aif (position slot argv 
              :test #'(lambda (a b)
-                       (equalp b (format nil ":~a" slot))))
+                       (equalp b (format nil ":~a" a))))
           (setf (slot-value thing slot) 
-                (read-from-string (nth (+ 1 a ) argv))))))
+                (read-from-string (nth (+ 1 it ) argv))))))
 
 (defun weather1 ()
   (let ((d (make-data)))
     (readd d "../data/weather.csv")
-    (format t "~&~a" d)))
+    (print (? d cols nums))
+    (format t "~%====================~%")
+    (print (? (clone d) cols nums))
+    ))
 
-(defun main (&optional (argv (cli)))
-  (if argv
-    (let* ((x (first argv)))
-      (cond ((equalp x "table") (weather1))
-            ((equalp x "nb" )   (cli2options (? *O* nb))
-                                (nb))))))
-
-(main)
+(defun main (argv)
+  (let* ((x (car argv)))
+    (cond ((equalp x "table") (weather1))
+          ((equalp x "nb" )   (cli2options (? *O* nb))
+                              (nb)))))
+(if (cli) (main (cli)))

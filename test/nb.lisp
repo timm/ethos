@@ -3,6 +3,8 @@
 
 (load "../src/101")
 
-(let ((d (nb "../data/weather.csv")))
-  (print d)
+(let ((n (make-nb)))
+  (create n "../data/weather.csv")
+  (do-hash (k d (? n parts))
+     (print (? d cols klass)))
 )

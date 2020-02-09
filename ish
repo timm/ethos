@@ -98,10 +98,12 @@ tmuxrc() { cat<<-'EOF'
 vimrc() { cat<<-'EOF'
 	set lispwords+=do-items    
 	set lispwords+=do-hash    
+	set lispwords+=do-cells    
 	set lispwords+=do-array    
+	set lispwords+=do-read    
 	set lispwords+=while
 	set lispwords+=whale
-	set lispwords+=do-read    
+	set lispwords+=aif
 	set lispwords+=labels
 	set backupdir-=.
 	set backupdir^=~/tmp,/tmp
