@@ -8,13 +8,10 @@
 
 "
 
-;(locally
- ;   (declare #+sbcl(sb-ext:muffle-conditions
-  ;                  sb-exit:implicit-generic-function-warning
-   ;                 sb-kernel:redefinition-warning))
-;  (h;andler-bind
- ;     (#+sbcl (sb-kernel:redefinition-warning
-     ;        #'muffle-warning))))
+(locally
+    (declare #+sbcl(sb-ext:muffle-conditions
+                    sb-kernel:redefinition-warning))
+   (handler-bind ((style-warning #'muffle-warning)))) 
 
 ;---------.---------.---------.---------.--------.---------.----------
 (defstruct ch!
@@ -43,6 +40,22 @@
 
 (defvar *O* (make-control))
 
+;---------.---------.---------.---------.--------.---------.----------
+(defparameter *tries* 0.0000001)
+(defparameter *fails* 0)
+
+(defmacro ok (want got &optional (msg "") &rest txt)
+		`(progn 
+			 (incf *tries*)
+			 (handler-case
+				 (if (not (equalp ,want ,got))
+					 (error (format nil ,msg ,@txt)))
+				 (t (c)
+						(incf *fails*)
+						(let ((n (round (* 100 (/ (- *tries* *fails*) *tries*)))))
+							(format t "; E> ~a [~a]" c n))))))
+
+(defun p(x) (round (* 100 x)))
 ;---------.---------.---------.---------.--------.---------.----------
 ; hash defines
 (defun stop ()
@@ -151,17 +164,12 @@
                      (push it tmp)))
           (reverse (end-of-word)))))))
 
-(defun xpect (x y)
-  (let ((n (+ (? x n) (? y n))))
-     (+ (* (/ (? x n) n) 
-           (var x))
-        (* (/ (? y n) n) 
-           (var y)))))
-
-
 ;---------.---------.---------.---------.--------.---------.----------
 ; symbols
-(defstruct sym
+
+(defstruct column)
+
+(defstruct (sym (:include column))
   (counts (make-hash-table :test #'equalp))
   (n 0) (pos 0) (txt "") (w 1)
   (ent 0)
@@ -197,7 +205,7 @@
       1
       (if (eql s1 s2) 0 1))))
 
-(defmethod luke ((s sym) x prior all)
+(defmethod like ((s sym) x prior all)
   (/ (+ (* (?? nb m)
            prior)
         (gethash x (? s counts)  0))
@@ -205,7 +213,7 @@
         all)))
 
 
-(defmethod var ((s sym) x) (ent x))
+(defmethod spread ((s sym) x) (ent x))
 (defmethod mid ((s sym) x) (sym-mode x))
 (defmethod prep ((s sym) x) x)
 
@@ -218,7 +226,7 @@
   (lo most-positive-fixnum)
   (hi most-negative-fixnum))
 
-(defmethod var ((s num) x) (num-sd x))
+(defmethod spread ((s num) x) (num-sd x))
 (defmethod mid ((s num) x) (num-mu x))
 (defmethod prep ((s num) x) (if (numberp x) x (read-from-string x)))
 
@@ -256,20 +264,20 @@
 
 (defmethod dist ((nu num) n1 n2)
   (labels ((no (x) (eql x (?? ch skip))))
-    (cond ((and (no n1) (no n2)) (return 1))
-          ((no n1) (setf n2 (norm nu n2)
-                         n1 (if (< n1 0.5) 1 0)))
-          ((no n2) (setf n1 (norm nu n1)
-                         n2 (if (< n2 0.5) 1 0)))
-          (t       (setf n1 (norm nu n1)
-                         n2 (norm nu n2))))
+    (cond ((and (no n1) (no n2)) (return-from dist 1))
+    ((no n1) (setf n2 (norm nu n2)
+             n1 (if (< n1 0.5) 1 0)))
+    ((no n2) (setf n1 (norm nu n1)
+       n2 (if (< n2 0.5) 1 0)))
+    (t       (setf n1 (norm nu n1)
+                   n2 (norm nu n2))))
     (abs (- n1 n2))))
 
 (defmethod like ((n num) x prior all)
   (declare (ignore prior all))
   (let* ((e     2.71828)
          (var   (expt (? n sd) 2))
-         (demon (sqrt (* 2 pi var)))
+         (denom (sqrt (* 2 pi var)))
          (num   (expt e (/ (- (expt (- x (? n mu)) 2))
                            (+ 0.000001 (* 2 var))))))
     (/ num (+ denom 0.000001))))
@@ -288,7 +296,7 @@
 (defstruct col (w 1) (pos 0) (txt ""))
 (defstruct cols all klass goals names poles indep nums syms meta)
 
-(defmethod create ((c cols) arr)
+(defmethod init ((c cols) arr)
   (with-slots (indep klass all names poles goals meta nums syms) c
     (do-array (x pos arr)
       (labels 
@@ -311,7 +319,6 @@
     (setf names (reverse names))
     ))
 
-(print 300)
 (defmethod update ((cs cols) arr)
   (dolist (col (? cs all) arr)
     (setf (aref arr (? col pos))
@@ -328,12 +335,12 @@
 (defmethod clone ((d1 data))
   (let* ((d2   (make-data))
          (names (? d1 cols names)))
-    (create (? d2 cols) (l->a names))
+    (init (? d2 cols) (l->a names))
     d2))
 
 (defmethod update ((d data) arr)
   (if (new? d)
-    (create (? d cols) arr)
+    (init (? d cols) arr)
     (let* ((arr (update (? d cols) arr))
            (row (make-row :data d :cells arr)))
       (push row (data-rows d))
@@ -367,12 +374,24 @@
 (defstruct abcds 
   (yes 0)
   (no  0)
+  (acc 0)
   (hs  (make-hash-table :test #'equalp)))
+
+(defmethod acc ((x abcds))
+	(setf (? x acc) (/ (? x yes)
+										 (+ (? x yes) (? x no) 0.00001))))
+
+(defstruct abcd  
+  target 
+  (a 0) (b 0) (c 0) (d 0) 
+  acc pf prec pd f g d2h)
+
 
 (defmethod known ((x abcds) klass)
 	(setf (gethash klass (? x hs))
         (or (gethash klass (? x hs))
-            (abcd :a (+ (? x yes) (? x no))))))
+            (make-abcd :target klass
+                       :a (+ (? x yes) (? x no))))))
 
 (defmethod update2 ((x abcds) actual predicted)
   (known x actual)
@@ -380,16 +399,14 @@
   (if (eql actual predicted)
     (incf (? x yes))
     (incf (? x no)))
-  (do-hash (target abcd x x)
+  (do-hash (target abcd (? x hs) x)
     (with-slots (a b c d) abcd
       (if (eql actual    target)
       (if (eql predicted actual) (incf d) (incf b))
       (if (eql predicted target) (incf c) (incf  a))))))
 
-(defstruct abcd  
-  target 
-  (a 0) (b 0) (c 0) (d 0) 
-  acc pf prec pd f g d2h)
+(defmethod ready ((x abcds))
+	(do-hash (k y (? x hs)) (ready y)))
 
 (defmethod ready ((x abcd))
   (with-slots ( a b c d acc pf prec pd f g n d2h) x
@@ -405,24 +422,36 @@
             d2h   (- 1 (sqrt (+ (expt (- 0 pf) 2) 
                                 (expt (- 1 pd) 2))))))))
 
+(defmethod print-object ((x abcds) str)
+  (do-hash (k v (? x hs))
+	  (setf (? x acc) (acc x))
+    (format str "~&~a= {acc=~a, stats= ~a}" 
+                  k (round (* 100 (? x acc))) v)))
+
 (defmethod print-object ((x abcd) str)
 	(ready x)
 	(with-slots (target pf prec pd f g n c d acc) x
-    (setf acc (/ (? x yes) 
-                 (+ (? x yes) (? x no)))) 
 		(format str 
-      "target: ~a n: ~a pf: ~a prec: ~a pd: ~a f: ~a g: ~a acc: ~a"
+      "{target: ~a n: ~a pf: ~a prec: ~a pd: ~a f: ~a g: ~a acc: ~a}"
 			target (+ c d) (round (* 100 pf)) (round (* 100 prec))
 			(round (* 100 pd)) (round (* 100 f)) 
       (round (* 100 g)) (round (* 100 acc)))))
 
-(print 400)
-
 ;---------.---------.---------.---------.--------.---------.----------
+
 (defun adds (make lst)
   (let ((x (funcall make)))
     (dolist (one lst x)
       (update x one))))
+
+(defun xpect (x y)
+  (let ((n (+ (? x n) (? y n))))
+     (+ (* (/ (? x n) n) 
+           (spread x))
+        (* (/ (? y n) n) 
+           (spread y)))))
+
+
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; nb
@@ -431,21 +460,9 @@
   (total (make-data)) 
   (parts (make-hash-table :test #'equal)))
 
-(defmethod create ((n nb) f)
+(defmethod init ((n nb) f)
   (do-read (x f n)
     (update n (l->a (s->words x)))))
-
-(defmethod update ((n nb) arr)
-  (with-slots (total parts) n
-    (setf arr (update total arr))
-    (when (> (length (? total rows)) (?? nb wait))
-      (classify nb arr))
-    (whan (latest-row total)
-			(let* ((key   (klass it))
-             (klass (or (gethash key parts)
-                        (clone total))))
-          (update klass arr)
-          (setf (gethash key parts) klass)))))
 
 (defmethod classify ((n nb) arr)
   (with-slots (total pairs abcds) n
@@ -453,7 +470,20 @@
            (predicted (likeliest n arr)))
       (update2 abcds actual predicted)))) 
 
-(print 440)
+
+(defmethod update ((n nb) arr)
+  (with-slots (total parts) n
+    (setf arr (update total arr))
+    (when (> (length (? total rows)) (?? nb wait))
+      (classify nb arr))?
+    (whan (latest-row total)
+			(let* ((key   (klass it))
+             (klass (or (gethash key parts)
+                        (clone total))))
+          (update klass arr)
+          (setf (gethash key parts) klass)))))
+
+
 ;---------.---------.---------.---------.--------.---------.----------
 ; top-level
 (defun cli2options (thing &optional (argv (cli)))
@@ -472,11 +502,11 @@
     (print (? (clone d) cols nums))
     ))
 
-(defun main (argv)
+(defun main (argv) 
   (let* ((x (car argv)))
     (cond ((equalp x "table") (weather1))
           ((equalp x "nb" )   (cli2options (? *O* nb))
                               (nb)))))
 
 (print 1)
-(if (cli) (main (cli)))
+;(if (cli) (main (cli)))
