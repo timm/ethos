@@ -1,5 +1,4 @@
-#!/usr/local/bin/clisp -q
-; -*- mode: Lisp; fill-column: 75; comment-column: 50; -*-
+;#!/usr/local/bin/sbcl --script
 ; vim: filetype=lisp: ts=2 sw=2 sts=2  et :
 
 "
@@ -7,11 +6,10 @@
 # An experiment in ethics
 
 "
-
-(locally
-    (declare #+sbcl(sb-ext:muffle-conditions
-                    sb-kernel:redefinition-warning))
-   (handler-bind ((style-warning #'muffle-warning)))) 
+;(locally
+ ;   (declare #+sbcl(sb-ext:muffle-conditions
+  ;                  sb-kernel:redefinition-warning))
+   ;(handler-bind ((style-warning #'muffle-warning)))) 
 
 ;---------.---------.---------.---------.--------.---------.----------
 (defstruct ch!
@@ -114,7 +112,7 @@
 
 (defmacro do-read ((it &optional f out) &body body)
   (let ((str (gensym)))
-    `(progn 
+    `(let(,it) 
        (if ,f
          (with-open-file (,str ,f)
            (while (setf ,it (read-line ,str nil))
@@ -133,7 +131,7 @@
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; tricks 
-(defun l->a (lst) (coerce lst 'array))
+(defun l->a (lst) (coerce lst 'vector))
 (defun a->l (a)   (coerce a   'list))
 
 
@@ -278,15 +276,12 @@
 
 (defmethod like ((n num) x &optional  prior )
   (with-slots (mu sd) n
-    ;(format t "      ~a~%"  `(x ,x mu ,mu sd ,sd))
-    (if (<= (- mu (* 3 sd)) x (+ mu (* 3 sd)))
-      (gaussian-pdf x  mu sd)
-      0)))
+    (if (<= (- mu (* 4 sd)) x (+ mu (* 4 sd)))
+      (/ (exp (- (/ (expt (- x mu) 2)
+                    (* 2 (expt sd 2)))))
+         (* sd (sqrt (* 2 pi))))
 
-(defun gaussian-pdf (x &optional (mu 0) (sigma 1))
-  (/ (exp (- (/ (expt (- x mu) 2)
-                (* 2 (expt sigma 2)))))
-     (* sigma (sqrt (* 2 pi)))))
+      0)))
 
 (defmethod spread ((s num) x) (num-sd x))
 (defmethod mid ((s num) x) (num-mu x))
@@ -323,12 +318,12 @@
                (todo  (if (nump) #'make-num #'make-sym))
                (col   (funcall todo :pos pos :txt x :w w)))
           (push col all)
-          (push col (if (nump) nums  syms))
+          (if (nump) (push col nums)  (push col syms))
           (if (has x (?? ch klass)) (setf klass col))
           (if (has x (?? ch pole))  (push col poles))
           (if (meta)
             (push col meta)
-            (push col (if (goalp) goals indep))))))
+            (if (goalp) (push col goals) (push col indep))))))
     (setf all (reverse all))
     (setf names (reverse names))
     ))
