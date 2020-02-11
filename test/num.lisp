@@ -6,7 +6,7 @@
 
 (let ((n (adds '(85 80 83 70 68 65 
                  64 72 69 75 75 72 81))))
-  (ok 0.015 (round2 (like n 85)))
+x  (ok 0.015 (round2 (like n 85)))
   (ok 0.057 (round2 (like n 72)))
   (ok 0.058 (round2 (like n 75)))
 

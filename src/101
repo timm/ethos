@@ -74,7 +74,6 @@
   (mapcar #'slot-definition-name
           (class-slots (class-of it))))
   
-
 ;---------.---------.---------.---------.--------.---------.----------
 ; macros
 (defmacro ? (obj first-slot &rest more-slots)
@@ -276,6 +275,7 @@
 
       0)))
 
+
 (defmethod spread ((s num) x) (num-sd x))
 (defmethod mid ((s num) x) (num-mu x))
 (defmethod prep ((s num) x) (if (numberp x) x (read-from-string x)))
@@ -302,24 +302,23 @@
   (with-slots (indep klass all names poles goals meta nums syms) c
     (do-array (x pos arr)
       (labels 
-        ((goalp() (has x (?? ch klass) (?? ch less) (?? ch more)))
-         (nump()  (has x (?? ch num)   (?? ch less) (?? ch more)))
-         (meta()  (has x (?? ch meta)  (?? ch pole))))
-        (unless (has x (?? ch skip)))
-        (push x names)
-        (let* ((w     (if (has x (?? ch less)) -1 1))
-               (todo  (if (nump) #'make-num #'make-sym))
-               (col   (funcall todo :pos pos :txt x :w w)))
-          (push col all)
-          (if (nump) (push col nums)  (push col syms))
-          (if (has x (?? ch klass)) (setf klass col))
-          (if (has x (?? ch pole))  (push col poles))
-          (if (meta)
-            (push col meta)
-            (if (goalp) (push col goals) (push col indep))))))
-    (setf all (reverse all))
-    (setf names (reverse names))
-    ))
+					((goalp() (has x (?? ch klass) (?? ch less) (?? ch more)))
+					 (nump()  (has x (?? ch num)   (?? ch less) (?? ch more)))
+					 (meta()  (has x (?? ch meta)  (?? ch pole))))
+        (unless (has x (?? ch skip))
+					(push x names)
+					(let* ((w     (if (has x (?? ch less)) -1 1))
+								 (todo  (if (nump) #'make-num #'make-sym))
+								 (col   (funcall todo :pos pos :txt x :w w)))
+						(push col all)
+						(if (nump) (push col nums)  (push col syms))
+						(if (has x (?? ch klass)) (setf klass col))
+						(if (has x (?? ch pole))  (push col poles))
+						(if (meta)
+								(push col meta)
+								(if (goalp) (push col goals) (push col indep)))))))
+		(sort all #'< :key #'(lambda (x) (? x pos)))
+		(setf names (mapcar #'(lambda (x) (? x txt)) all))))
 
 (defmethod update ((cs cols) arr)
   (dolist (col (? cs all) arr)
