@@ -17,7 +17,8 @@
  	(progn (setf (gethash  i h) (* i 12)))))
 
 (defun ps+(p n)
- (dotimes (i n)
+  (dotimes (i n)
+    (/ 1 0)
  	(progn (setf (get p i)  (* i 11)))))
 
 (defun main2 (n r)
