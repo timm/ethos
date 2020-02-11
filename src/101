@@ -1,15 +1,12 @@
+; -*- mode:lisp; indent-tabs-mode: t; c-basic-offset: 2; tab-width: 2 -*- 
+  ; vim: filetype=lisp: ts=2 sw=2 sts=2  et :
 ;#!/usr/local/bin/sbcl --script
-; vim: filetype=lisp: ts=2 sw=2 sts=2  et :
-
 "
+
 
 # An experiment in ethics
 
 "
-;(locally
- ;   (declare #+sbcl(sb-ext:muffle-conditions
-  ;                  sb-kernel:redefinition-warning))
-   ;(handler-bind ((style-warning #'muffle-warning)))) 
 
 ;---------.---------.---------.---------.--------.---------.----------
 (defstruct ch!
@@ -20,7 +17,7 @@
   (more  #\>)
   (klass #\!)
   (skip  #\?)
-    (sep   #\,))
+	(sep   #\,))
 
 (defstruct lsh!
   (poles 10)
@@ -134,15 +131,12 @@
 (defun l->a (lst) (coerce lst 'vector))
 (defun a->l (a)   (coerce a   'list))
 
-
 (defun l->str (lst sep  str)
   (format str "~a" (car lst))
   (dolist (x (cdr lst)) (format str "~a ~a" sep x)))
 
-
 (defun l->s (lst &optional (sep ","))
   (with-output-to-string (str) (l->str lst sep str)))
-
 
 (defun has (x &rest lst) 
   (dolist (y lst)
@@ -157,20 +151,20 @@
     (with-input-from-string (str s)
       (let (tmp out)
         (labels 
-          ((end-of-word () 
-            (when tmp
-              (push (concatenate 'string (reverse tmp)) out) 
-              (setf tmp nil)) 
-              out))
+						((end-of-word () 
+							 (when tmp
+								 (push (concatenate 'string (reverse tmp)) out) 
+								 (setf tmp nil)) 
+							 out))
           (whale (read-char str nil)
-                 (if (member it sep :test #'eql)
-                     (end-of-word)
-                     (push it tmp)))
+						(if (member it sep :test #'eql)
+								(end-of-word)
+								(push it tmp)))
           (reverse (end-of-word)))))))
 
 (defun round2 (number &optional (precision 3)  (what #'round))
-    (let ((div (expt 10 precision)))
-             (float (/ (funcall what (* number div)) div))))
+	(let ((div (expt 10 precision)))
+		(float (/ (funcall what (* number div)) div))))
 
 ;---------.---------.---------.---------.--------.---------.----------
 ; symbols
@@ -217,7 +211,6 @@
         (gethash x (? s counts)  0))
      (+ (?? nb m)
         (? s n))))
-
 
 (defmethod spread ((s sym) x) (ent x))
 (defmethod mid ((s sym) x) (sym-mode x))

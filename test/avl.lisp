@@ -1,7 +1,7 @@
 
 (defun hashes(n)
 	(let ((h (make-hash-table)))
-		(dotimes (i n h) (setf (gethash i h) i))))
+		(deotimes (i n h) (setf (gethash i h) i))))
 
 (defun ps(n)
 	(let ((x (gensym)))

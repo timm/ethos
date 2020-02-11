@@ -1,5 +1,5 @@
-#!/usr/local/bin/sbcl --script
-;#!/usr/bin/env clisp -q
+;#!/usr/local/bin/sbcl --script
+                                        ;#!/usr/bin/env clisp -q
 ; vim: filetype=lisp: ts=2 sw=2 sts=2  et :
 ;(locally
  ;   (declare #+sbcl(sb-ext:muffle-conditions
