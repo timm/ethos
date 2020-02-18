@@ -1,7 +1,76 @@
 # vim: filetype=sh:nospell:
+# -*- mode=lisp -*- 
 # All my tricks
 
-
+dotemacs() { cat<<-'EOF'
+	(setq column-number-mode t)
+	;(menu-bar-mode 0) 
+        (defun slime0()
+		(require 'package)
+		(add-to-list 'package-archives
+		     '("melpa"     . "http://melpa.milkbox.net/packages/"))
+		(package-initialize)	
+	)
+	(progn
+	  (setq inhibit-startup-message t)
+	  (setq make-backup-files nil) 
+	  (global-font-lock-mode t)
+	  (xterm-mouse-mode t)
+	  (show-paren-mode t)
+	  (transient-mark-mode t)
+	  (setq scroll-step 1)
+	  (global-hl-line-mode 1)
+	  (setq-default indent-tabs-mode nil)
+	  (setq-default fill-column 52))
+	
+	(add-hook 'lisp-mode-hook
+	   (lambda ()		    
+	       (setq-default c-electric-flag nil)
+	       (setq indent-tabs-mode nil
+	       	     tab-width 2)
+	       (setq lisp-indent 2)))
+	(require 'package)
+	(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+	                    (not (gnutls-available-p))))
+	       (proto (if no-ssl "http" "https")))
+	  (when no-ssl (warn "\
+	Your version of Emacs does not support SSL connections,
+	which is unsafe because it allows man-in-the-middle attacks.
+	There are two things you can do about this warning:
+	1. Install an Emacs version that does support SSL and be safe.
+	2. Remove this warning from your init file so you won't see it again."))
+	  (add-to-list 'package-archives 
+	     (cons "melpa" (concat proto "://melpa.org/packages/")) t)
+	  ;; Comment/uncomment this line to enable MELPA Stable if desired.  
+	  ;; See `package-archive-priorities`
+	  ;; and `package-pinned-packages`. Most users will not need or want to do this.
+	  ;;(add-to-list 'package-archives (cons "melpa-stable" 
+          ;;(concat proto "://stable.melpa.org/packages/")) t)
+	  )
+	(package-initialize)
+	(setq inferior-lisp-program "/usr/local/bin/sbcl")
+	(require 'slime)
+	(require 'slime-autoloads)
+	(slime-setup '(slime-fancy))
+	(custom-set-variables
+	 ;; custom-set-variables was added by Custom.
+	 ;; If you edit it by hand, you could mess it up, so be careful.
+	 ;; Your init file should contain only one such instance.
+	 ;; If there is more than one, they won't work right.
+	 '(ansi-color-faces-vector
+	   [default default default italic underline success warning error])
+	 '(ansi-color-names-vector
+	   ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
+	 '(custom-enabled-themes (quote (manoj-dark)))
+	 '(package-selected-packages (quote (slime))))
+	(custom-set-faces
+	 ;; custom-set-faces was added by Custom.
+	 ;; If you edit it by hand, you could mess it up, so be careful.
+	 ;; Your init file should contain only one such instance.
+	 ;; If there is more than one, they won't work right.
+	 )
+	EOF
+}
 tmuxrc() { cat<<-'EOF'
 	set -g aggressive-resize on
 	unbind C-b
@@ -205,6 +274,7 @@ bashrc() { cat<<-'EOF'
 	ishs=$HOME/tmp/ish
 	mkdir -p $ishs
         export PATH="$PATH:$HOME/opt/fun/bin:$(PWD)"
+	alias emacs="$(which emacs) -q -l $ishs/emacs.el "
 	alias vi="vim -u $ishs/.vimrc "
 	alias ..='cd ..'
 	alias tmux="$(which tmux) -f $ishs/.tmuxrc "
@@ -278,6 +348,9 @@ if [ "$AFTER" == "1" ]; then
   if [ ! -f ".vimrc"  ]; then vimrc  > .vimrc;  fi  
   if [ ! -f ".tmuxrc" ]; then tmuxrc > .tmuxrc; fi  
   if [ ! -f ".bashrc" ]; then bashrc > .bashrc; fi  
+  if [ ! -f ".emacs"  ]; then 
+       dotemacs > emacs.el; 
+  fi  
   if [ ! -d "bundle"  ]; then
      mkdir -p bundle
      git clone https://github.com/VundleVim/Vundle.vim.git bundle/Vundle.vim
