@@ -5,13 +5,8 @@
 dotemacs() { cat<<-'EOF'
 	(setq column-number-mode t)
 	;(menu-bar-mode 0) 
-        (defun slime0()
-		(require 'package)
-		(add-to-list 'package-archives
-		     '("melpa"     . "http://melpa.milkbox.net/packages/"))
-		(package-initialize)	
-	)
 	(progn
+	  (setq blink-matching-paren  1)
 	  (setq inhibit-startup-message t)
 	  (setq make-backup-files nil) 
 	  (global-font-lock-mode t)
@@ -19,7 +14,7 @@ dotemacs() { cat<<-'EOF'
 	  (show-paren-mode t)
 	  (transient-mark-mode t)
 	  (setq scroll-step 1)
-	  (global-hl-line-mode 1)
+	  (global-hl-line-mode nil)
 	  (setq-default indent-tabs-mode nil)
 	  (setq-default fill-column 52))
 	
@@ -274,7 +269,7 @@ bashrc() { cat<<-'EOF'
 	ishs=$HOME/tmp/ish
 	mkdir -p $ishs
         export PATH="$PATH:$HOME/opt/fun/bin:$(PWD)"
-	alias emacs="$(which emacs) -q -l $ishs/emacs.el "
+	alias emacs="$(which emacs) -nw -q -l $ishs/emacs.el "
 	alias vi="vim -u $ishs/.vimrc "
 	alias ..='cd ..'
 	alias tmux="$(which tmux) -f $ishs/.tmuxrc "
