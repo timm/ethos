@@ -20,6 +20,8 @@
 (defmethod x- ((r range) z &optional (xs (? r xs))) (dec    xs (x r z)))
 (defmethod y- ((r range) z &optional (ys (? r ys))) (dec    ys (y r item))))
 
+(defmethod at ((r range) i) (aref (? r arr) i))
+
 (defmethod create ((r ranges) lst &key epsilon (cohen 0.3))
   (with-slots (n arr fxs fys epsilon xs ys first last jump) r
     (setf n   (length lst)
@@ -36,51 +38,38 @@
       (y+ r item))
     (setf epsilon (or epsilon (* cohen (spread xs))))))
 
-(defmethod argmin ((r ranges) xright yright lo hi)
-   (with-slots (n jump epsilon start stop trivial) r
-     (let (cut 
-           (min     (spread yright))
-           (xleft   (funcall (? r fxs)))
-           (yleft   (funcall (? r fys)))
-           xleft1
-           yleft1
-           (yright1 (copy-structure yright))
-           (xright1 (copy-structure xright)))
-       (loop for i from lo to hi do
-            (let* ((z (aref (? r arr) i)))
-              (x+ r z xleft)
-              (y+ r z yleft)
-              (x- r z xright)
-              (y- r z yright)
-              (when (and (> i (+ lo jump))
-                         (< i (- hi jump)))
-                (let* ((z1    (aref (? r arr) (1+ i)))
-                       (after (x r z1))
-                       (now   (x r z)))
-                  (unless (or (equal now (? r skip))
-                              (equal after now))
-                    (if (and (<  epsilon (- after start))
-                             (<  epsilon (- stop  now))
-                             (<= trivial (/ (mid xright) (mid xleft)))
-                             (<  epsilon (- (mid xright) (mid xleft))))
-                        (let ((new (xpect yleft yright)))
-                          (if (<  (* new trivial) min)
-                              (setq cut     i
-                                    min     new
-                                    xright1 (copy-structure xright)
-                                    xleft1  (copy-structure xleft)
-                                    yright1 (copy-structure yright)
-                                    yleft1  (copy-structure yleft)))))))))))
-     (values cut xleft1 xright1 yleft1 yright1)))
-
-(defmethod div ((r ranges) &key (xright (? r xs))
-                             (yright (? r ys))
-                             (lo 0) (hi (? r n)))
-  (multiple-value-bind (cut xleft1 xright1 yleft1 yright1)
-      (argmin r xright yright lo hi)
-    (if cut
-        (progn
-          (div r xleft1 yleft1 lo cut)
-          (duv r xright1 yright1 (1+ cut) hi))  
-        (loop for i from lo to hi do
-             (funcall (? r put)  (aref (? r arr) i)))))) 
+(defmethod div ((r ranges) 
+		&optional (xrhs (? r xs)) (yrhs (? r ys)) (lo 0) (hi (? r n)))
+  (with-slots (n jump epsilon start stop trivial) r
+    (let ((min   (spread yrhs))
+	  (xlhs  (funcall (? r fxs)))
+	  (ylhs  (funcall (? r fys)))
+	  yrhs1 xrhs1 xlhs1 ylhs1 cut)
+      (loop for i from lo to hi do
+	(let* ((z     (at r i))
+	       (z1    (at r (1+ i)))
+	       (now   (x r z))
+	       (after (x r z1)))
+	  (x+ r z xlhs)
+	  (y+ r z ylhs)
+	  (x- r z xrhs)
+	  (y- r z yrhs)
+	  (if  (and (>   i (+ lo jump))
+		    (<   i (- hi jump))
+		    (not (equal now (? r skip)))
+		    (not (equal after now))
+		    (<   epsilon (- after start))
+		    (<   epsilon (- stop  now))
+		    (<=  trivial (/ (mid xrhs) (mid xlhs)))
+		    (<   epsilon (- (mid xrhs) (mid xlhs)))
+		    (<=  trivial (/ min (xpect ylhs yrhs))))
+	    (setq cut   (1+ i)
+		  min   (xpect ylhs yrhs)
+		  xrhs1 (copy-structure xrhs)
+		  xlhs1 (copy-structure xlhs)
+		  yrhs0 (copy-structure yrhs)
+		  ylhs1 (copy-structure ylhs)))))
+      (cond (cut (div r xlhs1 ylhs1 lo  cut)
+		 (div r xrhs1 yrhs1 cut hi)) 
+	    (t   (loop for i from lo to hi do
+		       (funcall (? r put) (at r i))))))))
