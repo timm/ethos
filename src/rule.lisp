@@ -11,16 +11,17 @@
   (trivial 1.01)
   ys)
 
+
 (defmethod x ((r ranges) z) (funcall (? r fx)  z))
 (defmethod y ((r ranges) z) (funcall (? r fy)  z))
 
-(defmethod x+ ((r range) z &optional (xs (? r xs))) (update xs (x r z)))
-(defmethod y+ ((r range) z &optional (ys (? r ys))) (update ys (y r z)))
+(defmethod x+ ((r ranges) z &optional (xs (? r xs))) (update xs (x r z)))
+(defmethod y+ ((r ranges) z &optional (ys (? r ys))) (update ys (y r z)))
 
-(defmethod x- ((r range) z &optional (xs (? r xs))) (dec    xs (x r z)))
-(defmethod y- ((r range) z &optional (ys (? r ys))) (dec    ys (y r item))))
+(defmethod x- ((r ranges) z &optional (xs (? r xs))) (dec xs (x r z)))
+(defmethod y- ((r ranges) z &optional (ys (? r ys))) (dec ys (y r item)))
 
-(defmethod at ((r range) i) (aref (? r arr) i))
+(defmethod at ((r ranges) i) (aref (? r arr) i))
 
 (defmethod create ((r ranges) lst &key epsilon (cohen 0.3))
   (with-slots (n arr fxs fys epsilon xs ys first last jump) r
