@@ -5,7 +5,7 @@ local Div = the.class()
 function Div:_init(data,   rows,cols,min,far,n)
   self.data = data
   self.rows = rows or data.rows
-  self.cols = cols or data:some("y")
+  self.cols = cols or data.some.y
   self.min  = min  or the.fmap.min 
   print(33)
   self.min  = (#rows)^self.min
