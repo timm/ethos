@@ -249,6 +249,7 @@ vimrc() { cat<<-'EOF'
 	Plugin 'nequo/vim-allomancer'
 	Plugin 'nanotech/jellybeans.vim'
 	Plugin 'vimwiki/vimwiki'
+	Plugin 'kovisoft/slimv'
         " All of your Plugins must be added before the following line
 	call vundle#end()            " required
 	filetype plugin indent on    " required
