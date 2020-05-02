@@ -8,7 +8,7 @@ function Div:_init(data,   rows,cols,min,far,n)
   self.cols = cols or data.some.y
   self.min  = min  or the.fmap.min 
   print(33)
-  self.min  = (#rows)^self.min
+  self.min  = (#self.rows)^self.min
   self.far  = far  or the.fmap.far
   self.n    = n    or the.fmap.n
   self.some = lib.anys( self.rows, self.n )
