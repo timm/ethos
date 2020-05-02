@@ -15,7 +15,7 @@ function Data:_init(header)
   self.rows    = {}
   self.cols    = nil
   self.samples = the.data.samples
-  self._some   =lib.cache(function (k)
+  self.some   =lib.cache(function (k)
                            return  self.cols:some(k) end)
   if header then self:header(header) end
 end
@@ -46,17 +46,12 @@ end
 -- ## Querying
 -- Get klass columm.
 function Data:klass() 
-  return self.cols:some("klass")[1] end
+  return self.some.klass[1] end
 
 -- Get klass value from a row.
 function Data:klassVal(row) 
   local klass=self:klass()
   return row.cells[klass.pos]
-end
-
-function Data:some(x)
-  self._some[x] = self._some[x] or self.cols:some(x)
-  return self._some[x]
 end
 
 --------- --------- -------- ---------- ---------  ---------  
@@ -74,9 +69,10 @@ end
 -- ## Distances
 -- ## Distances
 -- Get the `dist` between two rows.
-function Data:dist(r1,r2,cols,   n,d,d0,x,y)
-  d,n=0,the.tiny
-  cols = cols or self.cols:some("x")
+function Data:dist(r1,r2,cols,p,   n,d,d0,x,y)
+  d,n  = 0,the.tiny
+  p    = p or self.p or the.data.p
+  cols = cols or self.some.x
   for _,c in pairs(cols) do
     n  = n+1
     d0 = c:dist( r1.cells[c.pos], r2.cells[c.pos] )
@@ -85,25 +81,28 @@ function Data:dist(r1,r2,cols,   n,d,d0,x,y)
   return  (d/n)^self.p
 end
 
-function Data:closest(row,cols,  t) 
-  t=  self:near(row, cols, self.rows)
-  return t[2].row
-end
-
-function Data:furthest(row,cols,  t) 
-  t=  self:near(row, cols, self.rows)
-  return t[#t].row
-end
-
-function Data:near(r1,cols, rows,   f)
-  f= (function (r2) return {dist= self:dist(r1,r2), row=r2} end)
+function Data:near(r,cols,rows,   f)
+  f= (function (s) 
+        return {dist=self:dist(r,s,cols), row=s} end)
   return lib.sort( lib.map(rows,f), "dist")
 end
 
-function Data:far(r1,cols,rows,f,   f)
+-- Find a row that is closest to me.
+function Data:closest(row,cols,  t) 
+  t= self:near(row, cols, self.rows)
+  return t[2].row
+end
+
+-- Find a row that is most far away from `row`.
+function Data:furthest(row, cols,  t) 
+  t= self:near(row, cols, self.rows)
+  return t[#t].row
+end
+
+-- Find a row that is, say, `f=90%` away from `row`. 
+function Data:distant(row,cols,rows,f,   f)
   t= self:near(row, cols, self.rows)
   return t[ math.floor(#t*f) ].row
 end
 
-  
 return Data

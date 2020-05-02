@@ -133,11 +133,11 @@ vimrc() { cat<<-'EOF'
 	set statusline=
 	set statusline+=%F
 	set statusline+=\ 
-	set statusline+=%y
-	set statusline+=%=
 	set statusline+=%m
+	set statusline+=%=
+	set statusline+=%y
 	set statusline+=\ 
-	set statusline+=%c
+	set statusline+=%c 
 	set statusline+=:
 	set statusline+=%l
 	set statusline+=\ 
