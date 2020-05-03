@@ -3,12 +3,15 @@ local oo  = the.oo
 require "ok"
 
 Data= require "data"
-Div = require "div"
+Sway = require "sway"
 
-local function some1(  d)
+local function some1(  d,s)
   d=Data()
   d:read(the.csv .. 'auto93.csv')
-  Div(d)
+  print("==========")
+  s=Sway(d)
+  s.debug = true
+  d:clone( s:select())
 end
 
 some1()

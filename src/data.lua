@@ -20,9 +20,14 @@ function Data:_init(header)
   if header then self:header(header) end
 end
 
-function Data:header(t) self.cols = Cols(t) end
+function Data:header(t) 
+  the.oo(t)
+  print(777)
+  self.cols = Cols(t) 
+end
 
 function Data:add(t,   row)
+  print(333)
   row = t.cells and t or Row(t) 
   self.cols:add(row.cells)
   self.rows[#self.rows+1] = row
@@ -35,10 +40,16 @@ function Data:read(f)
     else self:header(row) end end
 end
 
-function Data:clone(rows,  clone)
-  clone = Data( lib.keys(self.cols, "txt") )
+function Data:clone(rows,  f,t,clone)
+  f = (function(col) return col.txt end)
+  t = lib.map(self.cols, f)
+  clone = Data( t )
   if rows then
-    for _,row in pairs(rows) do clone:add(row) end end
+    for _,row in pairs(rows) do 
+      the.o(row)
+      clone:add(row) end 
+      print(666)
+  end
   return clone
 end
 
@@ -67,7 +78,6 @@ end
 
 --------- --------- -------- ---------- ---------  ---------  
 -- ## Distances
--- ## Distances
 -- Get the `dist` between two rows.
 function Data:dist(r1,r2,cols,p,   n,d,d0,x,y)
   d,n  = 0,the.tiny
@@ -84,7 +94,7 @@ end
 function Data:near(r,cols,rows,   f)
   f= (function (s) 
         return {dist=self:dist(r,s,cols), row=s} end)
-  return lib.sort( lib.map(rows,f), "dist")
+  return lib.sort(lib.map(rows,f), "dist")
 end
 
 -- Find a row that is closest to me.
@@ -100,9 +110,9 @@ function Data:furthest(row, cols,  t)
 end
 
 -- Find a row that is, say, `f=90%` away from `row`. 
-function Data:distant(row,cols,rows,f,   f)
+function Data:distant(row,cols,rows,f,   t)
   t= self:near(row, cols, self.rows)
-  return t[ math.floor(#t*f) ].row
+  return t[ math.floor((#t)*f) ].row
 end
 
 return Data

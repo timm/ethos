@@ -21,7 +21,8 @@ return {
   sep=    ",",
   tiny=   1/math.maxinteger,
   fmap=   { n   = 128,
-            far =   0.9
+            far = .9,
+            min = .5
           },
   data =  { p      = 2,
              sample = 128,
