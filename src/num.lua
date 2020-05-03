@@ -12,7 +12,8 @@ end
 
 function Num:mid()  return self.mu end
 function Num:var()  return self.sd end
-function Num:show() return (w<0 and"<"or">")..self:mid() end
+function Num:show() 
+  return (self.w<0 and"<"or">")..tostring(self:mid()) end
 
 function Num:__tostring()
   return string.format("Num(%s,%s)", self.mu, self.sd)

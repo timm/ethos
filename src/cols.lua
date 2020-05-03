@@ -13,8 +13,16 @@ function Cols:_init(t,   col)
     self.all[k] = col(v,k) end
 end
 
+function Cols:show(x, t)
+  the.o(self.all[x])
+  return the.ooo(lib.map(self.all[x],
+              function (z) return z:show() end))
+end
+
 function Cols:add(t) 
-  for k,v in pairs(t) do self.all[k]:add(v) end end
+  for k,v in pairs(t) do 
+     self.all[k]:add(v) end 
+end
 
 function Cols:some(f,   g,h) 
   g = getmetatable(self)[f]

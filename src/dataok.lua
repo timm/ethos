@@ -5,7 +5,7 @@ require "ok"
 
 Data=require "data"
 
-nok{some = function (  d,t)
+ok{some = function (  d,t)
   d = Data()
   d:read(the.csv .. 'weather4.csv')
   t= d.some.x
@@ -17,9 +17,9 @@ local function clone(  d,t,d1)
   d = Data()
   d:read(the.csv .. 'weather4.csv')
   d1 = d:clone( d.rows )
+  assert(d1.cols.all[1].mode == d.cols.all[1].mode) 
+  assert(d1.cols.all[2].sd   == d.cols.all[2].sd) 
 end
-
-clone()
 
 ok{clone=clone}
 
@@ -40,6 +40,6 @@ local function dist1(f,   row1,d,close,far,d1,d2)
     assert(d1 < d2) end
 end
 
-nok{dist1b = function() dist1("weather4.csv") end }
-nok{dist1b = function() dist1("diabetes.csv") end }
+ok{dist1b = function() dist1("weather4.csv") end }
+ok{dist1b = function() dist1("diabetes.csv") end }
 

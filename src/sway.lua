@@ -5,7 +5,8 @@ local Sway = the.class()
 function Sway:_init(data)
   self.n     = the.fmap.n
   self.far   = the.fmap.far
-  self.min   = (#data.rows)^the.fmap.min
+  self.min   = math.floor((#data.rows)^the.fmap.min)
+
   self.data  = data 
   self.cols  = data.some.y
   self.debug = false

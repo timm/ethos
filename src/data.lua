@@ -10,24 +10,26 @@ local Data = the.class()
 --------- --------- -------- ---------- ---------  ---------  
 -- ## Creation and Updates
 
-function Data:_init(header)   
+function Data:_init(head)
   self.p       = the.data.p 
   self.rows    = {}
   self.cols    = nil
   self.samples = the.data.samples
-  self.some   =lib.cache(function (k)
-                           return  self.cols:some(k) end)
-  if header then self:header(header) end
+  self.some    = lib.cache(function (k)
+                     return  self.cols:some(k) end)
+  if head then self:header(head) end
+end
+function Data:show(x, t)
+  return the.ooo(lib.map(self.some[x],
+              function (z) return z:show() end))
 end
 
+
 function Data:header(t) 
-  the.oo(t)
-  print(777)
   self.cols = Cols(t) 
 end
 
 function Data:add(t,   row)
-  print(333)
   row = t.cells and t or Row(t) 
   self.cols:add(row.cells)
   self.rows[#self.rows+1] = row
@@ -40,15 +42,14 @@ function Data:read(f)
     else self:header(row) end end
 end
 
-function Data:clone(rows,  f,t,clone)
-  f = (function(col) return col.txt end)
-  t = lib.map(self.cols, f)
-  clone = Data( t )
+function Data:clone(rows,  clone)
+  clone = Data( 
+         lib.map(self.cols.all, 
+                 function (z) return z.txt end))
   if rows then
-    for _,row in pairs(rows) do 
-      the.o(row)
+    for j,row in pairs(rows) do 
       clone:add(row) end 
-      print(666)
+
   end
   return clone
 end

@@ -5,15 +5,14 @@ require "ok"
 Data= require "data"
 Sway = require "sway"
 
-local function some1(  d,s)
-  d=Data()
-  d:read(the.csv .. 'auto93.csv')
+local function some1(  all,best)
+  all=Data()
+  all:read(the.csv .. 'auto93.csv')
   print("==========")
-  s=Sway(d)
-  s.debug = true
-  d:clone( s:select())
+  best= all:clone( Sway(all):select() )
+  print(all:show("y"))
+  print(best:show("y"))
 end
 
-some1()
 
 ok{some = some1}
