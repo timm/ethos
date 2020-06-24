@@ -1,7 +1,8 @@
 remote_theme: chromatical/jekyll-materialdocs
 
+site_name: "DUO: data miners using/used-by optimizers"
 logo: /assests/img/pair.png # an absolute or relative image path to use as the site logo
-mdl_colors: indigo-pink # a supported Material Design Lite color scheme
+mdl_colors: deep-orange # a supported Material Design Lite color scheme
 copyright: Tim Menzies # will override the copyright notice (default is site title)
 search: true # enabled by default, set to false to disable site search
 menu_style: dropdown # will only show child menu items for the main item selected
