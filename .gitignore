@@ -1,4 +1,5 @@
-/docs/*.py
+docs/*.py
+.var/
 
 # Swap
 [._]*.s[a-v][a-z]
