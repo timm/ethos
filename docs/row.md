@@ -1,6 +1,6 @@
 # Row
 
-```py
+```python
 from lib import Pretty
 import math
 
@@ -15,7 +15,7 @@ class Row(Pretty):
 ## dom(row1, row2, cols=None): bool
 Distance is calculated using `cols` which defaults to `i.tab.cols.x`.
 
-```py
+```python
   def dist(i,j, cols=None):
     d, n, p = 0, 0.001, Row.p
     for c in  cols or i.tab.cols.x:
@@ -28,7 +28,7 @@ Distance is calculated using `cols` which defaults to `i.tab.cols.x`.
 ```
 ## dom(row1, row2): bool
 
-```py
+```python
   def dom(i,j):
     s1,s2,e,n = 0,0, math.e, len(i.tab.cols.y)+0.0001
     for c in i.tab.cols.y:
