@@ -13,7 +13,7 @@ end
 function Num:mid()  return self.mu end
 function Num:var()  return self.sd end
 function Num:show() 
-  return (self.w<0 and"<"or">")..tostring(self:mid()) end
+  return (self.w<0 and"<"or">")..self:mid() end
 
 function Num:__tostring()
   return string.format("Num(%s,%s)", self.mu, self.sd)
@@ -52,18 +52,19 @@ function Num:sd0()
 end
 
 function Num:dist(x,y)
-  if x == the.ch.skip and y == the.ch.skip then
+  local no = the.ch.skip
+  if x == no and y == no then
     return 1
-  elseif x == the.ch.skip then
+  elseif x == no then
     y = self:norm(y)
     x = y < 0.5 and 1 or 0
-  elseif y == the.ch.skip then 
+  elseif y == no then 
     x = self:norm(x)
     y = x < 0.5 and 1 or 0
-  else 
+  else
     x,y = self:norm(x), self:norm(y)
   end
-  return math.abs(x - y)
+  return math.abs(x-y)
 end
 
 function Num:norm(x)
