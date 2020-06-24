@@ -1,6 +1,6 @@
 remote_theme: chromatical/jekyll-materialdocs
 
-title: DUO. Data miners using, used-by, optimizers.
+title: DUO (data miners using, used-by, optimizers)
 logo: /assests/img/pair.png # an absolute or relative image path to use as the site logo
 mdl_colors: orange-amber # a supported Material Design Lite color scheme
 copyright: Tim Menzies # will override the copyright notice (default is site title)
