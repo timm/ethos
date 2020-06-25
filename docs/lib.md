@@ -6,10 +6,12 @@
 - [Lists](#lists) : 
     - [Multiple Members](#multiple-members) : 
     - [Within](#within) : 
+- [Dictionaries](#dictionaries) : 
+    - [Pretty print dictionaries](#pretty-print-dictionaries) : 
 - [Input](#input) : 
     - [Source](#source-read-from-strings-or-file-or-lists) : read from strings or file or lists
     - [Rows](#rows-csv-reader) : csv reader
-- [Pretty print dictionaries](#pretty-print-dictionaries) : 
+    - [Cols](#cols-trick-for-skipping-columns) : trick for skipping columns
 - [Error handling](#error-handling) : 
 - [Unit test tool](#unit-test-tool) : 
 
@@ -41,6 +43,7 @@ def ins(lst,x):
 def within(x,y,z):
   return y>= x and y <= z
 ```
+
 ## Dictionaries
 ### Pretty print dictionaries
 Show keys in sorted order, don't show 
