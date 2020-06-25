@@ -481,6 +481,11 @@ transpiles() {
     done
   fi )
 } 
+toc() {
+  (cd $Duo/docs
+   ls *.md | grep -v ok.md | gawk -F \. '{print "- ["$1"](" $1 "." $2 ")" }'
+  )
+}
 help() { 
   bash -c 'echo -en "\e[33m"'
   cat<<'EOF'
@@ -495,6 +500,7 @@ usage1: u : update all files
   -h        help
   -i        advanced tricks (vim, git, tmux, bask tricks)
   -t        run tmux
+  -T        make TOC
 
 Also, When called as ". o",  it sets up some useful bash tricks
   
@@ -519,7 +525,7 @@ if [ -z "$*" ]; then
   PROMPT_COMMAND='echo -ne "DUO:$(git branch 2>/dev/null | grep '^*' | colrm 1 2) ";PS1="$(here ..)/$(here .) \!>\e[m "'
   banner
 else
-  while getopts "cde:hit" X; do
+  while getopts "cde:hitT" X; do
       case $X in
       c) transpiles;;
       d) sh $Duo/d;;
@@ -527,6 +533,7 @@ else
       h) help;;
       i) tricks;;
       t) tmux -f $Duo/.var/.tmux-conf;;
+      T) toc;;
       *) echo "bad arg"; exit 1 ;;
       esac
   done
