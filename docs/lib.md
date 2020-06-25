@@ -17,6 +17,11 @@
 
 ---------------
 
+```py
+import sys
+from zipfile import ZipFile
+```
+
 ## Class Magic
 ### Thing: a class that knows how to show off
 ```py
@@ -62,21 +67,30 @@ def dprint(d, pre="",no="_"):
                             for k,v in l]) +'}'
 ```
 ## Input 
-### Src: read from strings or file or lists
+### Src: read from strings or file or lists or zip files or standard input
 
 ```py
-def src(x):
+def src(x=None):
   def items(z):
     for y in z: yield y
   def strings(z):
-    for y in z.splitlines(): yield y
+    for y in z.splitlines(): yield y.strip()
   def csv(z):
     with open(z) as fp:
       for y in fp: yield y.strip()
-  f = items
-  if isinstance(x,str):
-     f = csv if x[-3:]=='csv' else strings
-  for z in f(x): yield z
+  def stdin(z):
+    for y in sys.stdin: yield y.string()
+  def zip(z):
+    x = x.split("/",1)
+    with ZipFile(x[0]) as zf:
+      with zf.open(x[1]) as fp:
+        for y in fp: yield y.strip()
+  if   not x                 : f = stdio
+  elif not isinstance(x,str) : f = items
+  elif x[-3:]=='zip'         : f = zip
+  elif x[-3:]=='csv'         : f = csv
+  else                       : f = strings
+  for y in f(x): yield y
 ```
 ### Rows: csv reader
 Convert lines into lists, killing whitespace

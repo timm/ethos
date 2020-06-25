@@ -69,3 +69,4 @@ Optionally, add in some rows.
   def clone(i,rows=[]):
    return Tab(cols = [c.txt for c in i.cols.all],
               rows = rows)
+```
