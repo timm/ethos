@@ -15,6 +15,7 @@
 - [Error handling](#error-handling) : 
 - [Unit test tool](#unit-test-tool) : 
 
+--------
 
 ## Class Magic
 ### Pretty: a class that knows how to show off
