@@ -490,7 +490,7 @@ toc() {
 cat $1 |
 gawk '
 function ns(n,    s) {
-   while(n-- > 0) s= s "    "
+   while(n-- > 0) s= s "  "
    return s
 }
 function trim(s) {

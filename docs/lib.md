@@ -1,19 +1,20 @@
 # Lib
 
 - [Class Magic](#class-magic) : 
-    - [Pretty](#pretty-a-class-that-knows-how-to-show-off) : a class that knows how to show off
-    - [Simple Structs](#simple-structs) : 
+  - [Pretty](#pretty-a-class-that-knows-how-to-show-off) : a class that knows how to show off
+  - [Simple Structs](#simple-structs) : 
 - [Lists](#lists) : 
-    - [Multiple Members](#multiple-members) : 
-    - [Within](#within) : 
+  - [Multiple Members](#multiple-members) : 
+  - [Within](#within) : 
 - [Dictionaries](#dictionaries) : 
-    - [Pretty print dictionaries](#pretty-print-dictionaries) : 
+  - [Pretty print dictionaries](#pretty-print-dictionaries) : 
 - [Input](#input) : 
-    - [Source](#source-read-from-strings-or-file-or-lists) : read from strings or file or lists
-    - [Rows](#rows-csv-reader) : csv reader
-    - [Cols](#cols-trick-for-skipping-columns) : trick for skipping columns
+  - [Source](#source-read-from-strings-or-file-or-lists) : read from strings or file or lists
+  - [Rows](#rows-csv-reader) : csv reader
+  - [Cols](#cols-trick-for-skipping-columns) : trick for skipping columns
 - [Error handling](#error-handling) : 
 - [Unit test tool](#unit-test-tool) : 
+
 
 ## Class Magic
 ### Pretty: a class that knows how to show off
