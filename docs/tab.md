@@ -1,10 +1,11 @@
-```py
-from lib import o,ins,Pretty,cols,rows,source
-from col import Col
-from num import Num
-from sym import Sym
-from row import Row
-```
+
+# Tab
+Stores rows. Row values are summarized in columns.
+
+- [Add headers](#add-headers) : 
+- [Add row](#add-row) : 
+- [Read a table](#read-a-table) : 
+
 
 ```py
 class Tab(Pretty):
