@@ -14,14 +14,14 @@ import math
 
 class Row(Pretty):
   p=2
+  distant = 0.9
   def __init__(i, cells=[], tab=None):
     i.cells = cells
     i.dom = 0
-    i._tab=None
-    i.p = 2
-    i.distant=0.9
+    i._tab=tab
 ```
-## Domination
+## Domination: multi-objective ranking of two rows
+
 ```py
   def dom(i,j):
     cols    = i._tab.cols.y
@@ -35,7 +35,7 @@ class Row(Pretty):
       s2 -= math.e**(c.w*(y-x)/n)
     return s1/n < s2/n
 ```
-## Distance
+## Distance: via the Minkowski  calculation.
 Distance is calculated using `cols` which defaults to `i._tab.cols.x`.
 ### dist
 ```py
@@ -43,7 +43,7 @@ Distance is calculated using `cols` which defaults to `i._tab.cols.x`.
     d, n, p = 0, 0.001, Row.p
     for c in  cols or i._tab.cols.x:
       x   = i.cells[c.pos]
-      y   = y.cells[c.pos]
+      y   = j.cells[c.pos]
       inc = c.dist(x, y)
       d  += inc**p
       n  += 1
@@ -55,8 +55,9 @@ Return a list of other rows, sorted by
 the distance to this row.
 ```py
   def around(i, cols=[], rows=[]):
-    return [(i.dist(i,j, cols), i,j) 
-             for j in rows or i._tab.rows].sort()
+    a= [(i.dist(j, cols), i,j) for j in rows or i._tab.rows]
+    a.sort(key=lambda z:z[0])
+    return a
 ```
 ### far
 Return something `i.distant` away (e.g. 90%
@@ -65,5 +66,5 @@ to the most distant row).
 ```py
   def far(i, cols=[], rows=[]):
     a= i.around(i, cols, rows)
-    return a[ int( len(a) * i.distant ) ][2]
+    return a[ int( len(a) * Row.distant ) ][2]
 ```

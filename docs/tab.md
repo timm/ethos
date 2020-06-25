@@ -8,6 +8,12 @@ Stores rows. Row values are summarized in columns.
 
 
 ```py
+from lib import Pretty,o,cols,rows,source,ins
+from col import Col
+from sym import Sym
+from num import Num
+from row import Row
+
 class Tab(Pretty):
   def __init__(i,file=None,cols=[],rows=[]):
     i.rows  = []
