@@ -51,14 +51,19 @@ Distance is calculated using `cols` which defaults to `i._tab.cols.x`.
 ```
 
 ### around
+Return a list of other rows, sorted by
+the distance to this row.
 ```py
   def around(i, cols=[], rows=[]):
     return [(i.dist(i,j, cols), i,j) 
              for j in rows or i._tab.rows].sort()
 ```
 ### far
+Return something `i.distant` away (e.g. 90%
+to the most distant row).
+
 ```py
   def far(i, cols=[], rows=[]):
     a= i.around(i, cols, rows)
     return a[ int( len(a) * i.distant ) ][2]
-
+```
