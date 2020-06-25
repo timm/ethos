@@ -1,7 +1,7 @@
 # Lib
 
 - [Class Magic](#class-magic) : 
-  - [Pretty](#pretty-a-class-that-knows-how-to-show-off) : a class that knows how to show off
+  - [Thing](#thing-a-class-that-knows-how-to-show-off) : a class that knows how to show off
   - [Simple Structs](#simple-structs) : 
 - [Lists](#lists) : 
   - [Multiple Members](#multiple-members) : 
@@ -9,18 +9,18 @@
 - [Dictionaries](#dictionaries) : 
   - [Pretty print dictionaries](#pretty-print-dictionaries) : 
 - [Input](#input) : 
-  - [Source](#source-read-from-strings-or-file-or-lists) : read from strings or file or lists
+  - [Src](#src-read-from-strings-or-file-or-lists) : read from strings or file or lists
   - [Rows](#rows-csv-reader) : csv reader
   - [Cols](#cols-trick-for-skipping-columns) : trick for skipping columns
 - [Error handling](#error-handling) : 
 - [Unit test tool](#unit-test-tool) : 
 
---------
+---------------
 
 ## Class Magic
-### Pretty: a class that knows how to show off
+### Thing: a class that knows how to show off
 ```py
-class Pretty:
+class Thing:
   def __repr__(i):
     return dprint(i.__dict__.items(), 
                   i.__class__.__name__)
@@ -28,7 +28,7 @@ class Pretty:
 ### Simple Structs
 
 ```py
-class o(Pretty):
+class o(Thing):
   def __init__(i,**d) : i.__dict__.update(**d)
 ```
 

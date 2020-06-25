@@ -1,8 +1,9 @@
 ```py
+from lib import Thing
 from random import random  as r
 from random import choice  as any
 
-class Project(Pretty):
+class Project(Thing):
   min = 0.5
   enough = 256
   cols = lambda z: z.cols.x

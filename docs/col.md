@@ -1,8 +1,8 @@
 ```py
-from lib import Pretty
+from lib import Thing
 import math
 
-class Col(Pretty):
+class Col(Thing):
   no    = "?"
   less  = "<"
   more  = ">"

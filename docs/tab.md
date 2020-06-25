@@ -10,13 +10,13 @@ Stores rows. Row values are summarized in columns.
 
 
 ```py
-from lib import Pretty,o,cols,rows,src,ins
+from lib import Thing,o,cols,rows,src,ins
 from col import Col
 from sym import Sym
 from num import Num
 from row import Row
 
-class Tab(Pretty):
+class Tab(Thing):
   def __init__(i,file=None,cols=[],rows=[]):
     i.rows  = []
     i.cols  = o(all= [],   # all columns
@@ -60,5 +60,11 @@ the column summaries
     for lst in cols(rows(src(data))):
       i.row(lst) if i.cols.all else i.headers(lst)
 ```
+## Clone a table
+Copy the format of this table to make a new one.
+Optionally, add in some rows.
 
-
+```py
+  def clone(i,rows=[]):
+   return Tab(cols = [c.txt for c in i.cols.all],
+              rows = rows)

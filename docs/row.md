@@ -9,10 +9,10 @@
 ---------------
 
 ```py
-from lib import Pretty
+from lib import Thing
 import math
 
-class Row(Pretty):
+class Row(Thing):
   p=2
   distant = 0.9
   def __init__(i, cells=[], tab=None):
