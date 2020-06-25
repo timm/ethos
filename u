@@ -513,7 +513,7 @@ function trim(s) {
           print ns(new) "- [" s    "](#" tolower(link) ") " 
      else print ns(new) "- [" a[1] "](#" tolower(link) ") : " a[2] 
 }
-END {print ""}'
+END {print ""; print "---------------"; print ""}'
 }
 help() { 
   bash -c 'echo -en "\e[33m"'

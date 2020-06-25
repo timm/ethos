@@ -1,5 +1,13 @@
 # Row
 
+- [Domination](#domination) : 
+- [Distance](#distance) : 
+  - [dist](#dist) : 
+  - [around](#around) : 
+  - [far](#far) : 
+
+---------------
+
 ```py
 from lib import Pretty
 import math
@@ -11,10 +19,25 @@ class Row(Pretty):
     i.dom = 0
     i._tab=None
     i.p = 2
+    i.distant=0.9
 ```
-## dom(row1, row2, cols=None): bool
-Distance is calculated using `cols` which defaults to `i.tab.cols.x`.
-
+## Domination
+```py
+  def dom(i,j):
+    cols    = i._tab.cols.y
+    s1,s2,n = 0,0,len(cols)+0.0001
+    for c in cols:
+      x   = i.cells[c.pos]
+      y   = j.cells[c.pos]
+      x   = c.norm(x)
+      y   = c.norm(y)
+      s1 -= math.e**(c.w*(x-y)/n)
+      s2 -= math.e**(c.w*(y-x)/n)
+    return s1/n < s2/n
+```
+## Distance
+Distance is calculated using `cols` which defaults to `i._tab.cols.x`.
+### dist
 ```py
   def dist(i,j, cols=None):
     d, n, p = 0, 0.001, Row.p
@@ -26,18 +49,16 @@ Distance is calculated using `cols` which defaults to `i.tab.cols.x`.
       n  += 1
     return (d/n)**1/p
 ```
-## dom(row1, row2): bool
 
+### around
 ```py
-  def dom(i,j):
-    s1,s2,e,n = 0,0, math.e, len(i.tab.cols.y)+0.0001
-    for c in i._tab.cols.y:
-      x   = i.cells[c.pos]
-      y   = j.cells[c.pos]
-      x   = c.norm(x)
-      y   = c.norm(y)
-      s1 -= e**(c.w*(x-y)/n)
-      s2 -= e**(c.w*(y-x)/n)
-    return s1/n < s2/n
+  def around(i, cols=[], rows=[]):
+    return [(i.dist(i,j, cols), i,j) 
+             for j in rows or i._tab.rows].sort()
 ```
+### far
+```py
+  def far(i, cols=[], rows=[]):
+    a= i.around(i, cols, rows)
+    return a[ int( len(a) * i.distant ) ][2]
 
