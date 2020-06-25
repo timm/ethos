@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
-banner() { 
-  bash -c 'echo -en "\e[96m"'
-  cat <<'EOF'
-  __                     
- /\ \                    
- \_\ \    __  __     ___   
- /'_` \  /\ \/\ \   / __`\ 
-/\ \L\ \ \ \ \_\ \ /\ \L\ \
-\ \___,_\ \ \____/ \ \____/
- \/__,_ /  \/___/   \/___/
 
+# https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+RED=`tput setaf 1`
+BLUE=`tput setaf 6`
+YELLOW=`tput setaf 3`
+WHITE=`tput sgr0`
+
+banner() { 
+  echo  -n "${BLUE}"; cat <<'EOF'
+ ____                       
+/\  _`\                     
+\ \ \/\ \    __  __     ___   
+ \ \ \ \ \  /\ \/\ \   / __`\ 
+  \ \ \_\ \ \ \ \_\ \ /\ \L\ \
+   \ \____/  \ \____/ \ \____/
+    \/___/    \/___/   \/___/ 
+                            
 EOF
-  bash -c 'echo -en "\e[0m"'
+  echo -n "${WHITE}"
 }
 
 gitignore() { cat<<'EOF'
@@ -516,8 +522,7 @@ function trim(s) {
 END {print ""; print "---------------"; print ""}'
 }
 help() { 
-  bash -c 'echo -en "\e[33m"'
-  cat<<'EOF'
+  echo  -n "${YELLOW}"; cat <<'EOF'
 
 u: the DUO usage manager
 
@@ -540,7 +545,7 @@ Also, When called as ". o",  it sets up some useful bash tricks
   gg        git "get" (i.e. grab from server using git pull)
   gp        git commit -am 'saving'; git push; git satus
 EOF
-  bash -c 'echo -en "\e[0m"'
+  echo  -n "${WHITE}"
 }
 if [ -z "$*" ]; then
   alias o="$Duo/o"

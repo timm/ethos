@@ -19,8 +19,12 @@ from row import Row
 class Tab(Pretty):
   def __init__(i,file=None,cols=[],rows=[]):
     i.rows  = []
-    i.cols  = o(all=[], nums=[], x=[], y=[],klass=None)
-    i.headers(cols)     # does nothing in no cols provided
+    i.cols  = o(all= [],   # all columns
+               nums= [],   # just the numeric columns
+               x   = [],   # just the independent columns
+               y   = [],   # just the dependent columns
+               klass=None) # just the klass column
+    i.headers(cols)        # does nothing in no cols 
     [i.row(one) for one in rows] # does nothing if no rows
     if file: i.read(file)        # does nothing if no file
 ```
