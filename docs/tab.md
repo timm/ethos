@@ -11,11 +11,10 @@ Stores rows. Row values are summarized in columns.
 class Tab(Pretty):
   def __init__(i,file=None,cols=[],rows=[]):
     i.rows  = []
-    i.cols  = o(all=[], nums=[], x=[], y=[])
-    i.klass = ""
-    i.headers(cols)
-    [i.row(one) for one in rows]
-    if file: i.read(file)
+    i.cols  = o(all=[], nums=[], x=[], y=[],klass=None)
+    i.headers(cols)     # does nothing in no cols provided
+    [i.row(one) for one in rows] # does nothing if no rows
+    if file: i.read(file)        # does nothing if no file
 ```
 ## Add headers
 Updating the `i.cols` sublists.
@@ -28,7 +27,7 @@ Updating the `i.cols` sublists.
       xy    = i.cols.y if ins(Col.y, col.txt) else i.cols.x  
       xy   += [col]
       if ins(Col.nums, col.txt) : i.cols.nums += [col]
-      if Col.klass in txt       : i.klass = col
+      if Col.klass in txt       : i.cols.klass = col
       i.cols.all += [col]
 ```
 ## Add row
