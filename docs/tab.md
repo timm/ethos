@@ -1,6 +1,7 @@
 
 # Tab
-Stores rows. Row values are summarized in columns.
+Tables stores [Row](row)s. Row values are summarized in 
+[Num](num)eric or [Sym](sym)bolic columns.
 
 - [Add headers](#add-headers) : 
 - [Add row](#add-row) : 
