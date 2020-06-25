@@ -467,18 +467,17 @@ transpile() {
   local g=$(basename $1 .md).py
   if [ "$f" -nt "$g" ]; then
     cat $f | gawk '
-    /^```py/ { in=1; print "# " $0; next  }
-    /^```/   { in=0; print "# " $0; next  }
-             { print (in ? ""0 : "# ") $0 } ' > $g
+    /^```py/ { In=1; print "# " $0; next }
+    /^```/   { In=0; print "# " $0; next }
+             { print (In ? "" : "# ") $0 } ' > $g
   fi
 }
 transpiles() {
   (cd $Duo/docs
-  f=`find $Duo/docs -name "*.md" 2> /dev/null`
-  echo ":::$f"
+  f=`ls *.md 2> /dev/null`
   if [ -n "$f" ]; then
     for g in $f; do
-      transpile $f 
+      transpile $g 
     done
   fi )
 } 
@@ -533,12 +532,10 @@ else
   done
 fi
 
-if [ -f "$1.md" ]; then
+if [ -f "$1" ]; then
   transpiles
   g=$(basename $1 .md).py
-  echo "--${g}--"
   if [ -t 0 ]; then python3 $g
   else      cat - | python3 $g
   fi
 fi
-  

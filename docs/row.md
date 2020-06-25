@@ -9,7 +9,7 @@ class Row(Pretty):
   def __init__(i, cells=[], tab=None):
     i.cells = cells
     i.dom = 0
-    i.tab=None
+    i._tab=None
     i.p = 2
 ```
 ## dom(row1, row2, cols=None): bool
@@ -18,7 +18,7 @@ Distance is calculated using `cols` which defaults to `i.tab.cols.x`.
 ```py
   def dist(i,j, cols=None):
     d, n, p = 0, 0.001, Row.p
-    for c in  cols or i.tab.cols.x:
+    for c in  cols or i._tab.cols.x:
       x   = i.cells[c.pos]
       y   = y.cells[c.pos]
       inc = c.dist(x, y)
@@ -31,7 +31,7 @@ Distance is calculated using `cols` which defaults to `i.tab.cols.x`.
 ```py
   def dom(i,j):
     s1,s2,e,n = 0,0, math.e, len(i.tab.cols.y)+0.0001
-    for c in i.tab.cols.y:
+    for c in i._tab.cols.y:
       x   = i.cells[c.pos]
       y   = j.cells[c.pos]
       x   = c.norm(x)
