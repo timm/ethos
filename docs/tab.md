@@ -6,6 +6,8 @@ Stores rows. Row values are summarized in columns.
 - [Add row](#add-row) : 
 - [Read a table](#read-a-table) : 
 
+---------------
+
 
 ```py
 from lib import Pretty,o,cols,rows,source,ins
