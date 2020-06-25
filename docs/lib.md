@@ -62,10 +62,10 @@ def dprint(d, pre="",no="_"):
                             for k,v in l]) +'}'
 ```
 ## Input 
-### Source: read from strings or file or lists
+### Src: read from strings or file or lists
 
 ```py
-def source(x):
+def src(x):
   def items(z):
     for y in z: yield y
   def strings(z):

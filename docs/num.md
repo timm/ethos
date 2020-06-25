@@ -24,7 +24,7 @@ class Num(Col):
     if x is Col.no: 
        y = i.norm(y); x = 0 if y>0.5 else 1
     elif y is Col.no: 
-       x = i.norm(y); y = 0 if x>0.5 else 1
+       x = i.norm(x); y = 0 if x>0.5 else 1
     else:
        x,y = i.norm(x), i.norm(y)
     return abs(x - y)

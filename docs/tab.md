@@ -10,7 +10,7 @@ Stores rows. Row values are summarized in columns.
 
 
 ```py
-from lib import Pretty,o,cols,rows,source,ins
+from lib import Pretty,o,cols,rows,src,ins
 from col import Col
 from sym import Sym
 from num import Num
@@ -53,7 +53,7 @@ the column summaries
 
 ```py
   def read(i, data):
-    for lst in cols(rows(source(data))):
+    for lst in cols(rows(src(data))):
       i.row(lst) if i.cols.all else i.headers(lst)
 ```
 

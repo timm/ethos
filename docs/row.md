@@ -55,7 +55,7 @@ Return a list of other rows, sorted by
 the distance to this row.
 ```py
   def around(i, cols=[], rows=[]):
-    a= [(i.dist(j, cols), i,j) for j in rows or i._tab.rows]
+    a = [(i.dist(j, cols), i,j) for j in rows or i._tab.rows]
     a.sort(key=lambda z:z[0])
     return a
 ```

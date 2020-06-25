@@ -1,6 +1,6 @@
 
 ```py
-from lib import ok,source,rows,cols,dprint
+from lib import ok,src,rows,cols,dprint
 
 @ok
 def ok1():
@@ -23,7 +23,7 @@ def source1():
 
 @ok
 def rows1():
-  for line in cols(rows(source("data/weather4.csv"))):
+  for line in cols(rows(src("data/weather4.csv"))):
     assert isinstance(line,list) 
     assert len(line) == 4
 

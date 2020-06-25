@@ -22,7 +22,7 @@ class Col(Pretty):
     i.n += 1
     return i.add1(x)
   def norm(i,x):
-    return x if x==Col.no else i.add1(x)
+    return x if x==Col.no else i.norm1(x)
   def dist(i, x,y):
     if x is Col.no and y is Col.no: 
        return 1
