@@ -343,6 +343,7 @@ set formatoptions-=t
 set nowrap
 " Markdown
 let g:markdown_fenced_languages = ['awk','py=python']
+map <F2> V}!../u -T %<CR>
 EOF
 } 
 tmuxconf() { cat<<'EOF'
@@ -519,7 +520,7 @@ function trim(s) {
           print ns(new) "- [" s    "](#" tolower(link) ") " 
      else print ns(new) "- [" a[1] "](#" tolower(link) ") : " a[2] 
 }
-END {print ""; print "---------------"; print ""}'
+END {print "---------------"; print ""}'
 }
 help() { 
   echo  -n "${YELLOW}"; cat <<'EOF'
@@ -534,7 +535,8 @@ usage1: u : update all files
   -h        help
   -i        advanced tricks (vim, git, tmux, bask tricks)
   -t        run tmux
-  -I        make index
+  -I        make main index
+  -T        show table of contents for one file
 
 Also, When called as ". o",  it sets up some useful bash tricks
   

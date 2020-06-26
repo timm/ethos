@@ -9,12 +9,11 @@
 - [Dictionaries](#dictionaries) : 
   - [Pretty print dictionaries](#pretty-print-dictionaries) : 
 - [Input](#input) : 
-  - [Src](#src-read-from-strings-or-file-or-lists) : read from strings or file or lists
+  - [Src](#src-read-from-strings-or-file-or-lists-or-zip-files-or-standard-input) : read from strings or file or lists or zip files or standard input
   - [Rows](#rows-csv-reader) : csv reader
   - [Cols](#cols-trick-for-skipping-columns) : trick for skipping columns
 - [Error handling](#error-handling) : 
 - [Unit test tool](#unit-test-tool) : 
-
 ---------------
 
 ```py
