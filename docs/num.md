@@ -18,7 +18,8 @@ class Num(Col):
     i.lo  = sys.maxsize - 1
     i.hi  = -1*i.lo
 ```
-## Add: update lo, hi, mu, sd
+## Methods
+### Add: update lo, hi, mu, sd
 
 ```py
   def add1(i,x):
@@ -32,13 +33,13 @@ class Num(Col):
       i.sd = (i.m2 / (i.n - 1))**0.5
     return x
 ```
-## Normalisation
+### Normalisation
 
 ```py
   def norm1(i,x):
     return (x - i.lo) / (i.hi - i.lo + 0.000001)
 ```
-## Distance
+### Distance
 
 ```py
   def dist1(i, x,y):
