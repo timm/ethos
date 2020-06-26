@@ -26,12 +26,12 @@ class Project(Thing):
 ## Methods
 ### div: Recursive descent
 ```py
-  def i.div(i,t, cols, rows):
+  def div(i,t, cols, rows):
     t1 = t.clone(rows)
     if len(rows) >= i.min: 
       here = o(tab=t1, los=None, his=None)
     else:
-      here     = i.lohi(t, cols,  t1.rows)
+      here     = i.lohi(cols,  t1.rows)
       here.los = i.div(i, t, cols, here.los)
       here.his = i.div(i, t, cols, here.his)
       here.tab = t1
@@ -40,7 +40,7 @@ class Project(Thing):
 ### lohi: Split the rows into lo and hi
 
 ```py
-  def i.lohi(i, t, cols, rows):
+  def lohi(i,  cols, rows):
     one = any(rows)
     lo  = one.far(cols, rows)
     hi  = lo.far( cols, rows)
