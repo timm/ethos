@@ -1,3 +1,12 @@
+# Num
+Summarize numeric columns
+
+- [add](#add-update-lo-hi-mu-sd)  : update lo, hi, mu, sd
+- [Normalisation](#normalisation) 
+- [Distance](#distance) 
+
+---------------
+
 ```py
 from col import Col
 import sys
@@ -8,6 +17,10 @@ class Num(Col):
     i.mu  = i.m2 = i.sd = 0
     i.lo  = sys.maxsize - 1
     i.hi  = -1*i.lo
+```
+## Add: update lo, hi, mu, sd
+
+```py
   def add1(i,x):
     x     = float(x)
     i.lo  = min(i.lo, x)
@@ -18,8 +31,16 @@ class Num(Col):
     if i.n > 1:
       i.sd = (i.m2 / (i.n - 1))**0.5
     return x
+```
+## Normalisation
+
+```py
   def norm1(i,x):
     return (x - i.lo) / (i.hi - i.lo + 0.000001)
+```
+## Distance
+
+```py
   def dist1(i, x,y):
     if x is Col.no: 
        y = i.norm(y); x = 0 if y>0.5 else 1
