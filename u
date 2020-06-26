@@ -520,7 +520,7 @@ function trim(s) {
           print ns(new) "- [" s    "](#" tolower(link) ") " 
      else print ns(new) "- [" a[1] "](#" tolower(link) ") : " a[2] 
 }
-END {print "---------------"; print ""}'
+END {print ""; print "---------------"; print ""}'
 }
 help() { 
   echo  -n "${YELLOW}"; cat <<'EOF'

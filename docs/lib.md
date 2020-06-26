@@ -14,6 +14,7 @@
   - [Cols](#cols-trick-for-skipping-columns) : trick for skipping columns
 - [Error handling](#error-handling) : 
 - [Unit test tool](#unit-test-tool) : 
+
 ---------------
 
 ```py
