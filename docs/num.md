@@ -1,9 +1,12 @@
 # Num
 Summarize numeric columns
 
-- [add](#add-update-lo-hi-mu-sd)  : update lo, hi, mu, sd
-- [Normalisation](#normalisation) 
-- [Distance](#distance) 
+- [Methods](#methods) 
+  - [Add](#add-update-lo-hi-mu-sd)  : update lo, hi, mu, sd
+  - [Normalisation](#normalisation) 
+  - [Distance](#distance) 
+
+---------------
 
 ---------------
 

@@ -27,14 +27,15 @@ from zipfile import ZipFile
 ```py
 class Thing:
   def __repr__(i):
-    return dprint(i.__dict__.items(), 
+    return dprint(i.__dict__, 
                   i.__class__.__name__)
 ```
 ### Simple Structs
 
 ```py
 class o(Thing):
-  def __init__(i,**d) : i.__dict__.update(**d)
+  def __init__(i,**d)   : i.__dict__.update(**d)
+  def __getitem__(i, k) : return i.__dict__[k]
 ```
 
 ## Lists
@@ -62,9 +63,9 @@ def dprint(d, pre="",no="_"):
     if isinstance(z,float): return "%5.3f" % z
     if callable(z): return "f(%s)" % z.__name__
     return str(z)
-  l=sorted([(k,v) for k,v in d if k[0] != no])
+  l = sorted([(k,d[k]) for k in d if k[0] != no])
   return pre+'{'+", ".join([('%s=%s' % (k,q(v))) 
-                            for k,v in l]) +'}'
+                             for k,v in l]) +'}'
 ```
 ## Input 
 ### Src: read from strings or file or lists or zip files or standard input

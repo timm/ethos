@@ -1,6 +1,6 @@
 
 ```py
-from lib import ok,src,rows,cols,dprint
+from lib import o,ok,src,rows,cols,dprint
 
 @ok
 def ok1():
@@ -13,12 +13,19 @@ def ok2():
   assert x==2
 
 @ok
+def o1():
+  x = o(aa=1, bb=2, cc=3)
+  x.k=23
+  assert x["aa"] == 1
+  assert x["k"]  == 23
+
+@ok
 def source1():
   s="""a ,  b,  c
        23, 31, 20
        40, 32, 90
     """
-  for c in source(s):
+  for c in src(s):
     print(c)
 
 @ok

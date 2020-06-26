@@ -36,7 +36,9 @@ class Row(Thing):
     return s1/n < s2/n
 ```
 ## Distance: via the Minkowski  calculation.
-Distance is calculated using `cols` which defaults to `i._tab.cols.x`.
+Distance is calculated using `cols` which 
+defaults to `i._tab.cols.x`.
+
 ### dist
 ```py
   def dist(i,j, cols=None):
