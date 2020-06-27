@@ -26,6 +26,7 @@
         <p class="view"><a href="{{ site.github.repository_url }}">View the Project on GitHub <small>{{ site.github.repository_nwo }}</small></a></p>
         {% endif %}
 
+
         {% if site.github.is_user_page %}
         <p class="view"><a href="{{ site.github.owner_url }}">View My GitHub Profile</a></p>
         {% endif %}
@@ -37,9 +38,14 @@
           <li><a href="{{ site.github.repository_url }}">View On <strong>GitHub</strong></a></li>
         </ul>
         {% endif %}
+      
+      {% include buttons.html %}
+      
       </header>
       <section>
-      {% include buttons.html %}
+
+      {% include nav.html %}
+
       {{ content }}
 
       </section>
