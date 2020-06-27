@@ -18,7 +18,7 @@ from num import Num
 from row import Row
 
 class Tab(Thing):
-  def __init__(i,file=None,cols=[],rows=[]):
+  def __init__(i, file=None, cols=[], rows=[]):
     i.rows  = []
     i.cols  = o(all= [],   # all columns
                nums= [],   # just the numeric columns
@@ -67,6 +67,11 @@ Optionally, add in some rows.
 
 ```py
   def clone(i,rows=[]):
-   return Tab(cols = [c.txt for c in i.cols.all],
-              rows = rows)
+    return Tab(cols = [c.txt for c in i.cols.all],
+               rows = rows)
+```
+## Summary
+```py
+  def summary(i):
+    return ', '.join([('%5.2f' % c.mid()) for c in i.cols.y])
 ```

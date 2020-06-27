@@ -18,7 +18,7 @@
 ---------------
 
 ```py
-import sys
+import sys,random
 from zipfile import ZipFile
 ```
 
@@ -134,6 +134,7 @@ def now(t,m):
 ```py
 import traceback,re
 
+SEED = 1
 class ok:
   tries,fails = 0,0  #  tracks the record so far
   def __init__(i,fun=None):
@@ -144,6 +145,7 @@ class ok:
     try:
       ok.tries += 1
       print("### ",fun.__name__)
+      random.seed(SEED)
       fun()
       print(score(ok.tries, ok.fails),':',fun.__name__)
     except Exception:

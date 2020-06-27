@@ -54,3 +54,9 @@ class Num(Col):
        x,y = i.norm(x), i.norm(y)
     return abs(x - y)
 ```
+### Summary
+
+```py
+  def mid(i): return i.mu
+  def var(i): return i.sd
+```

@@ -1,7 +1,8 @@
 ## Sym Class
 
 ```py
-from col import Col
+from col  import Col
+from math import log2
 
 class Sym(Col):
   def __init__(i,*l,**d):
@@ -15,4 +16,13 @@ class Sym(Col):
     return x
   def norm1(i,x):    return x
   def dist1(i, x,y): return 0 if x==y else 1
-```  
+  def ent(i):
+    return sum([ -n/i.n*log2(n/i.n) 
+                 for _,n in i.seen.items() if n>0 ])
+```
+### Summary
+
+```py
+  def mid(i): return i.mode
+  def var(i): return i.ent()
+`````  

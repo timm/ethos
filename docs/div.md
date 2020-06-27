@@ -14,22 +14,26 @@ from random import choice  as any
 
 class Div(Thing):
   min    = 0.5
-  enough = 512
-  cols   = "x"
+  enough = 256
+  cols   = "y"
+  debug  = False
 
   def __init__(i, t, cols=None):
     i.enough = Div.enough/ len(t.rows)
     i.min    = 2*len(t.rows)**Div.min
     i.div(t,  t.cols[cols or Div.cols],
-              [row for row in t.rows if r() < i.enough],
-              0)
+              [row for row in t.rows if r() < i.enough])
+
 ```
 ## Methods
 ### div: Recursive descent
 ```py
-  def div(i,t, cols, rows, lvl):
+  def div(i,t, cols, rows, lvl=0):
     t1 = t.clone(rows)
-    print(("|.. "*lvl) , len(rows))
+    if Div.debug : 
+      print('%s \t %s%s' % (t1.summary(),
+                            "|.. " * lvl,
+                            len(rows)))
     if len(rows) <  i.min: 
       here = o(tab=t1, los=None, his=None)
     else:
@@ -56,11 +60,10 @@ class Div(Thing):
       if (x < 0): x = 0
       mid  += x
       row.x = x
-    mid /= len(rows)
-    los, his = [],[]
+    mid, los, his = mid / len(rows), [],[]
     for row in rows: 
       (los if row.x <= mid else his).append(row)
-    return o(kids= [los,his],
-             lo = lo,  hi = hi,
-             c  = c,   mid= mid)
+    return o(kids = [los,his],
+             lo=lo, hi =hi,
+             c =c,  mid=mid)
 ```
