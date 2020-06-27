@@ -67,6 +67,6 @@ to the most distant row).
 
 ```py
   def far(i, cols=[], rows=[]):
-    a= i.around(i, cols, rows)
+    a= i.around(cols, rows)
     return a[ int( len(a) * Row.distant ) ][2]
 ```
