@@ -1,25 +1,29 @@
 ```py
 from div import Div
+from random import random as r
+from tab import Tab
 
 class Best(Div):
-  def __init__(i, *l, **d):
-    i.rest = None
-    i.best = None()
-    super().__init__(*l, **d)
+  ratio = 3
+  def __init__(i, t, cols=None):
+    n1 = len(t.rows)
+    n2 = n1**Div.min
+    i.max = Best.ratio * 4*n2 / (n1-n2)
+    i.best = t.clone()
+    i.rest = t.clone()
+    super().__init__(t, cols=cols)
 
-  def div(i,t,cols,rorws, lvl=0):
-    i.best = i.best or t.clone()
-    i.rest = i.rest or t.clone()
-    t1 = t.clone(rows)
+
+  def div(i,t,cols,rows, lvl=0):
     if Div.debug : 
       print('%s%s' % ("|.. " * lvl,len(rows)))
     if len(rows) <  i.min: 
-      [i.best.add(row) for row in rows]
+      i.best = t.clone(rows=rows)
     else:
-      here      = i.lohi(cols,  t1.rows)
-      here.tab  = t1
-      best = 0 if  here.lo.dom(here.hi) else 1
-      rest = 1 - best
-      [i.rest.add(row) for row in here.kids[rest]]
-      self.div(i,t,cols, here.kids[best])
+      z      = i.lohi(cols,  rows)
+      z.tab  = Tab(rows=rows)
+      i.rest = i.rest or t.clone()
+      [i.rest.row(row) 
+           for row in z.kids[z.rest] if r() < i.max]
+      i.div(t,cols,   z.kids[z.best],lvl+1)
 ```

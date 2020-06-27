@@ -1,6 +1,6 @@
 
 ```py
-from lib import o,ok,src,rows,cols,dprint
+from lib import o,ok,src,rows,cols,dprint,excursion
 
 @ok
 def ok1():
@@ -16,7 +16,6 @@ def ok2():
 def o1():
   x = o(aa=1, bb=2, cc=3)
   x.k=23
-  assert x["aa"] == 1
   assert x["k"]  == 23
 
 @ok
@@ -37,4 +36,23 @@ def rows1():
 @ok
 def dprint1():
    print(dprint(dict(x=1,y=dict(k=10,bb=23),c=2)))
+
+class Demo1:
+  a=1
+  b=2
+  def __init__(i): i.x=1
+
+class Demo2:
+  a=1
+  b=2
+  def __init__(i): i.x=1
+
+@ok
+def _excursion():
+  with excursion(Demo1,Demo2):
+    Demo1.a, Demo1.b = 10,20
+    Demo2.a, Demo2.b = 100,200
+    assert Demo1.a + Demo1.b + Demo2.a + Demo2.b == 330
+  assert Demo1.a + Demo1.b + Demo2.a + Demo2.b == 6
+  
 ```

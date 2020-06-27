@@ -47,11 +47,12 @@ class Div(Thing):
 
 ```py
   def lohi(i,  cols, rows):
-    one = any(rows)
-    lo  = one.far(cols, rows)
-    hi  = lo.far( cols, rows)
-    c   = lo.dist(hi,   cols)
-    mid = 0
+    one  = any(rows)
+    lo   = one.far(cols, rows)
+    hi   = lo.far( cols, rows)
+    c    = lo.dist(hi,   cols)
+    mid  = 0
+    d   = {}
     for row in rows:
       a = row.dist(lo, cols)
       b = row.dist(hi, cols)
@@ -59,11 +60,13 @@ class Div(Thing):
       if (x > 1): x = 1
       if (x < 0): x = 0
       mid  += x
-      row.x = x
+      d[row] = x
     mid, los, his = mid / len(rows), [],[]
     for row in rows: 
-      (los if row.x <= mid else his).append(row)
+      (los if d[row] <= mid else his).append(row)
+    best = 0 if lo.dom(hi) else 1
     return o(kids = [los,his],
              lo=lo, hi =hi,
+             best = best, rest = 1 - best,
              c =c,  mid=mid)
 ```

@@ -1,25 +1,30 @@
 # Lib
 
-- [Class Magic](#class-magic) : 
-  - [Thing](#thing-a-class-that-knows-how-to-show-off) : a class that knows how to show off
-  - [Simple Structs](#simple-structs) : 
-- [Lists](#lists) : 
-  - [Multiple Members](#multiple-members) : 
-  - [Within](#within) : 
-- [Dictionaries](#dictionaries) : 
-  - [Pretty print dictionaries](#pretty-print-dictionaries) : 
-- [Input](#input) : 
-  - [Src](#src-read-from-strings-or-file-or-lists-or-zip-files-or-standard-input) : read from strings or file or lists or zip files or standard input
-  - [Rows](#rows-csv-reader) : csv reader
-  - [Cols](#cols-trick-for-skipping-columns) : trick for skipping columns
-- [Error handling](#error-handling) : 
-- [Unit test tool](#unit-test-tool) : 
+- [Class Magic](#class-magic) 
+  - [Thing](#thing-a-class-that-knows-how-to-show-off)  : a class that knows how to show off
+  - [Simple Structs](#simple-structs) 
+- [Lists](#lists) 
+  - [Multiple Members](#multiple-members) 
+  - [Within](#within) 
+- [Dictionaries](#dictionaries) 
+  - [Pretty print dictionaries](#pretty-print-dictionaries) 
+- [Input](#input) 
+  - [Src](#src-read-from-strings-or-file-or-lists-or-zip-files-or-standard-input)  : read from strings or file or lists or zip files or standard input
+  - [Rows](#rows-csv-reader)  : csv reader
+  - [Cols](#cols-trick-for-skipping-columns)  : trick for skipping columns
+- [Error handling](#error-handling) 
+- [Unit test tool](#unit-test-tool) 
+  - [ok](#ok-decorator-for-run-at-load-tests)  : decorator for "run-at-load" tests
+  - [excursion](#excursion-save-state-of-classes--reset-after-test)  : save state of classes , reset after test
+
+---------------
 
 ---------------
 
 ```py
 import sys,random
 from zipfile import ZipFile
+from contextlib import contextmanager
 ```
 
 ## Class Magic
@@ -131,6 +136,7 @@ def now(t,m):
 ```
 
 ## Unit test tool
+### ok: decorator for "run-at-load" tests
 ```py
 import traceback,re
 
@@ -138,22 +144,37 @@ SEED = 1
 class ok:
   tries,fails = 0,0  #  tracks the record so far
   def __init__(i,fun=None):
-    def score(t,f): 
-      return f"#TEST PASS = {t-f} FAIL = {f}"
+    def score(txt):
+      t,f = ok.tries, ok.fails
+      return f"#TEST {txt} passes = {t-f} fails = {f}"
     if not fun:     
-      return print(score(ok.tries, ok.fails))
+      return print(score("STATUS"))
     try:
       ok.tries += 1
       print("### ",fun.__name__)
       random.seed(SEED)
       fun()
-      print(score(ok.tries, ok.fails),':',fun.__name__)
+      print(score("PASS"),':',fun.__name__)
     except Exception:
       ok.fails += 1
       print(ok.fails,ok.tries)
       import traceback
       print(traceback.format_exc())
-      print(score(ok.tries, ok.fails),':',fun.__name__)
+      print(score("FAIL"),':',fun.__name__)
 ```
-
+### excursion: save state of classes , reset after test
+```py
+@contextmanager
+def excursion(*l):
+  def state():
+    for x in l:
+      for k in dir(x):
+        if k[:2] != "__":
+          if not callable(getattr(x,k)):
+            yield x,k, getattr(x,k)
+  b4 = [s for s in state()]
+  yield
+  for x,k,v in b4: 
+    setattr(x,k,v)
+```
 

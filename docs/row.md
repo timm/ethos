@@ -17,7 +17,7 @@ class Row(Thing):
   distant = 0.9
   def __init__(i, cells=[], tab=None):
     i.cells = cells
-    i.dom = 0
+    i.doms = 0
     i._tab=tab
 ```
 ## Domination: multi-objective ranking of two rows
