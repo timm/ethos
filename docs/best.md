@@ -1,14 +1,14 @@
 ```py
 from div import Div
-from random import random as r
+from random import random as ra
 from tab import Tab
 
 class Best(Div):
   ratio = 3
   def __init__(i, t, cols=None):
-    n1 = len(t.rows)
-    n2 = n1**Div.min
-    i.max = Best.ratio * 4*n2 / (n1-n2)
+    n1     = len(t.rows)
+    n2     = n1**Div.min
+    i.max  = Best.ratio * 4*n2 / (n1-n2)
     i.best = t.clone()
     i.rest = t.clone()
     super().__init__(t, cols=cols)
@@ -23,7 +23,6 @@ class Best(Div):
       z      = i.lohi(cols,  rows)
       z.tab  = Tab(rows=rows)
       i.rest = i.rest or t.clone()
-      [i.rest.row(row) 
-           for row in z.kids[z.rest] if r() < i.max]
-      i.div(t,cols,   z.kids[z.best],lvl+1)
+      [i.rest.row(r) for r in z.kids[z.rest] if ra() < i.max]
+      i.div(t,cols,           z.kids[z.best], lvl+1)
 ```
