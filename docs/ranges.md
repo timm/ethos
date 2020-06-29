@@ -5,125 +5,94 @@ from sym import Sym
 import sys
 
 class LoHi(Thing):
+  id=0
   def __init__(i, want, min):
     i.want  = want
     i.best  = i.rest = 0.00001
     i.min   = min
-    i._left  = None
-    i._right = None
     i.lo    = sys.maxsize - 1
     i.hi    = -i.lo
     i.n     = 0
-
-  def __repr__(i):
-    left  = i._left or o(tag=0) 
-    right = i._right or o(tag=0) 
-    return dprint(dict(
-      tag=i.tag, want= i.want, best= i.best, rest = i.rest,
-      min = i.min,  left= left.tag, right= right.tag,
-      lo  = i.lo,   hi  = i.hi,        n    = i.n))
-
-  def filled(i,x,y):
+    i.tag   = LoHi.id = LoHi.id + 1
+    
+  def add(i,x,y):
     i.lo    = min(x, i.lo)
     i.hi    = max(x, i.hi)
     i.n    += 1
     i.best += (y == i.want)
     i.rest += (y != i.want)
-    return i.n >= i.min
+    return i
 
-  def maybe(i,j,bs,rs) :
-    b  = (i.best + j.best) / bs
-    r  = (i.rest + j.rest) / rs
-    s  = b**2/(b+r)
-    s1 = i.score(bs,rs)
-    s2 = j.score(bs,rs)
-    better1 = s - s1
-    better2 = s - s2
-    return (better1 < 0.02 or better2 < 0.02)
-
-  def merge(one,two, bs,rs):
-     one.hi    = two.hi
-     one.best += two.best
-     one.rest += two.rest
-     one.n    += two.n
-     if two._right: 
-       one._right = two._right
-       two._right._left = one
-     two._left = two._right = None
-     return one
+  def merge(i,j):
+     k      = LoHi(i.want, i.min)
+     k.lo   = min(i.lo, j.lo)
+     k.hi   = max(i.hi, j.hi)
+     k.n    = i.n    + j.n
+     k.best = i.best + j.best
+     k.rest = i.rest + j.rest
+     return k
  
   def score(i, bs, rs):
-     b       = i.best / bs
-     r       = i.rest / rs
-     i.scr   =  b**2 / (b+r)
-     return i.scr
+     b = i.best  / bs
+     r = i.rest  / rs
+     return b**2 / (b+r)
 
 class Ranges:
-  bins = 10
-  min  =  20
-  def __init__(i,pairs,goal = True):
-    pairs.sort(key = lambda z:z[0])
-    i.min      = i.whatSize(pairs)
-    print("min",i.min)
-    i.head     = LoHi(goal,i.min)
-    i.bs= i.rs = 0
-    i.grow(i.head, goal, pairs)
-
-  def prune(i):
-    b4  = i.size()
-    now = 0
-    loop=0
-    while now < b4:
-      loop += 1
-      b4 = i.size()
-      i.pruned(b4, i.head )
-      now = i.size()
-    for z in i.items():
-      yield z.n,z.lo, z.hi, z.score(i.bs, i.bs)
-
-  def items(i):
-    z = i.head
-    while z:
-      yield z
-      z = z._right
-   
-  def size(i): 
-    n,x = 0, i.head
-    while x: n, x = n+1, x._right
-    return n 
+  bins = [16,8,4,2]
+  min  = 4
+  def __init__(i, xy, goal = True,debug=False):
+    xy.sort(key = lambda z:z[0])
+    i.min  = i.whatSize(xy)
+    i.bs, i.rs = 0.0001, 0.0001
+    i.all = i.grow(goal, xy)
+    i.debug = False
 
   def whatSize(i,a):
-    j, lo = Ranges.bins, 0
-    while j >= 2:
+    lo = 0
+    least = Ranges.min if len(a) < 256 else len(a)**0.5
+    for j in Ranges.bins:
       lo = int( len(a)/j )
-      if lo >= len(a)**0.5: return lo
-      j /= 2
-    return lo
+      if lo >= least:  
+        return lo
+    return max(least,lo)
 
-  def grow(i, lohi, goal, pairs):
-    n, bs, rs = 1, 0.0001, 0.0001
-    lohi.tag = n
-    for j,(x,y) in enumerate(pairs):
+  def grow(i, goal, xy):
+    out = [ LoHi(goal, i.min) ]
+    for j,(x,y) in enumerate(xy):
       i.bs += (y == goal)
       i.rs += (y != goal)
-      if lohi.filled( x,y ):
-        if j < len(pairs)-1-i.min:
-          x1 = pairs[j+1][0]
-          if x != x1:
-            n += 1
-            tmp         = LoHi(goal, i.min)
-            tmp.tag     = n
-            lohi._right = tmp
-            tmp._left   = lohi
-            lohi        = tmp
-    lohi._right = None
-    return n
+      out[-1].add(x,y)
+      if out[-1].n >= i.min: 
+        if j < len(xy) - i.min:
+          if x != xy[j+1][0]:
+            out += [ LoHi(goal, i.min) ]
+    return out
 
-  def pruned(i,n, one):
-    if n > 0 and one and one._right:
-      if one.maybe(one._right, i.bs, i.rs):
-         one.merge(one._right, i.bs, i.rs)
-         i.pruned( n-1, one )
-      else:
-         i.pruned( n-1, one._right )
+  def v(i,z): return z.score(i.bs, i.rs)
+
+  def ranges(i):
+    i.merge() 
+    for z in i.all: 
+      yield z.lo, z.hi, i.v(z)
+
+  def merge(i,lvl=1):
+    j, tmp, pre = 0, [], "|-- " * lvl
+    if i.debug:
+      print(pre +  "::",len(i.all))
+    while j < len(i.all):
+      a = i.all[j]
+      if j< len(i.all) - 1:
+        b = i.all[j+1]
+        c = a.merge(b)
+        if i.v(c) >= i.v(a) and i.v(c) >= i.v(b):
+          tmp  += [c]
+          j    += 2
+          continue
+      tmp  += [a]
+      j    += 1
+    if len(tmp) < len(i.all):
+      i.all = tmp
+      if i.debug:
+        [ print(pre + "now", x) for x in i.all ]
+      i.merge(lvl+1)
 ```

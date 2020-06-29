@@ -3,15 +3,23 @@
 Some other process has divided some sub-sample of `data`
 into two tables, `best` and `rest`.  
 
+
 ```py
+from lib  import Thing
 from col  import Col
 from div  import Div
 from sym  import Sym
 from best import Best,Tab
+```
+## Class Why
 
-class Why(Pretty):
+```py
+class Why(Thing):
   min = 4
-  def __init__(i, t): return i.div(t)
+  def __init__(i, t): i.tree= i.div(t)
+```
+Build a tree
+```py
 
   def div(t): 
     if len(t.rows) <= Why.min:
@@ -28,7 +36,7 @@ class Why(Pretty):
         if s > most:
           pos, lo, hi, most = pos1, lo1, hi1, s
     return pos, lo, hi
-  
+
   def recurse(i,all,t, pos, lo, hi)
     yes, no = all.clone(), all.clone()
     for row in all.rows:
@@ -38,7 +46,9 @@ class Why(Pretty):
     return o(t = t, col=pos, lo=lo, hi=hi
              yes = yes,
              no  = i.div(ll, no))
-
+```
+Split on symbolics
+```py
   def syms(i, t, col, br):
     bs = len(br.best.rows) + 0.001
     rs = len(br.rest.rows) + 0.001
@@ -49,6 +59,9 @@ class Why(Pretty):
         r  = r/rs
         if b>r:
           yield col.pos,k,k,b**2/(b+r)
+```
+Split on numerics
+```py
 
    def nums(i, t, col, br):
     f = lambda row: row.cells[col.pos]
