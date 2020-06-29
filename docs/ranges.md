@@ -1,14 +1,30 @@
 # Ranges
-Supervised discretization of numerics, based on some discrete class
-value.  This is a bottom-up procedure that first divides ranges
-into (say) 16 bins, then repeatedly merge similar adjacent bins.
-
 ```py
 from lib import Thing,o,dprint
 from num import Num
 from sym import Sym
 import sys
 ```
+Supervised discretization of numerics, based on some discrete class
+value.  This is a bottom-up procedure that first divides ranges
+into (say) 16 bins, then repeatedly merge similar adjacent bins.
+
+For example:
+
+        n = 10**4
+        lst = [[i, i > .1*n and i<.2*n or i>.7*n ] 
+               for i in range(n)]
+        for x,y,z in Ranges(xy).ranges(): 
+          print("lo:",x,"hi:",y,"score:",z)
+      
+Output:
+
+        lo:    0 hi:  624 score: 0
+        lo:  625 hi: 1874 score: 0.17
+        lo: 1875 hi: 2499 score: 0
+        lo: 2500 hi: 6874 score: 0
+        lo: 6875 hi: 9999 score: 0.73
+        
 ## Classes
 This code uses two classes:
 - `Range` stores information about one range;
