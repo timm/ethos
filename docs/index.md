@@ -16,10 +16,6 @@ optimizers report how to jump between the parts. Used together, each can simplif
 
 ---------------
 
----------------
-
----------------
-
 ## Code Overview
 
 ### Storage
