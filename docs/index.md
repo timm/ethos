@@ -18,7 +18,7 @@ Data:
 |           | [Why](why.md)       | Generate rules that distinguish between two tables of best and rest examples  |
 |-----------|---------------------|-------------------------------------------------------------------------------|
 | optimize  | [Best](best.md)     | Using `Div`, recursive clustering and prune worse half                        |
-|           | [Ranges](ranges.md) | Find, then rank, important ranges within numerics. Like a discretizer, but ranges selected by effectiveness for selecting the preferred class.                           |
+|           | [Ranges](ranges.md) | Find, then rank, important ranges within numerics. Like a discretizer, but ranges selected by how effective they are  for selecting the preferred class.                           |
 |-----------|---------------------|-------------------------------------------------------------------------------|
 | misc      | [lib](lib.md)       | Misc utils. e.g. unit tests                                                   |
 
