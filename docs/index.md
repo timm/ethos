@@ -27,8 +27,8 @@ http://menzies.us
 ### License
 BSD 2-Clause License
 
-Copyright (<span class=copyleft>&copy;</span>) 2020, Tim Menzies  
-All rights reserved.
+<p>Copyright (<span class=copyleft>&copy;</span>) 2020, Tim Menzies  
+All rights reserved.</p>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
