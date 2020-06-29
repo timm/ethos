@@ -1,23 +1,7 @@
 # Ranges
-Given a list of `[x,y]` pairs,
-
-1. Sort on `x`; 
-2. Then divide the `x` values into many small bins;
-2. Then repeatedly,
-   - find adjacent bins which, if combined, 
-     do _no better_ than the combination;
-   - Merge them;
-   - And repeat, till no more merge-able items are found.
-
-Here, _no better_ is defined by the `LoHi.score` method:
-
-- Given a range containing `b` best things and `r` rest;
-- And a total number of `B` and `R` things found in all ranges;
-- Then the value of that range is 
-  &alpha;<sup>2</sup>/(&alpha; + &beta;) 
-  where &alpha; =`b/B` and &beta; =`r/R`
-- This function rewards ranges that have many more examples
-  of the best things than anything else.
+Supervised discretization of numerics, based on some discrete class
+value.  This is a bottom-up procedure that first divides ranges
+into (say) 16 bins, then repeatedly merge similar adjacent bins.
 
 ```py
 from lib import Thing,o,dprint
@@ -26,13 +10,13 @@ from sym import Sym
 import sys
 ```
 ## Classes
-### LoHi
-This class keeps a count of the number of `best` classes  n a range,
-as well as the `lo` and `hi`  values seen in this range.
+### Range
+This class stores what we know about a range.  It stores a count
+of the number of `best` classes  n a range, as well as the `lo` and
+`hi`  values seen in this range.
 
 ```py
-class LoHi(Thing):
-  id=0
+class Range(Thing):
   def __init__(i, want, min):
     i.want  = want
     i.best  = i.rest = 0.00001
@@ -40,10 +24,15 @@ class LoHi(Thing):
     i.lo    = sys.maxsize - 1
     i.hi    = -i.lo
     i.n     = 0
-    i.tag   = LoHi.id = LoHi.id + 1
 ```
-Update the internal counts.
-
+Score a range.
+```py
+  def score(i, bs, rs):
+     b = i.best  / bs
+     r = i.rest  / rs
+     return b**2 / (b+r)
+```
+Update the internal counts of a range.
 ```py    
   def add(i,x,y):
     i.lo    = min(x, i.lo)
@@ -56,7 +45,7 @@ Update the internal counts.
 Merge two ranges.
 ```py
   def merge(i,j):
-     k      = LoHi(i.want, i.min)
+     k      = Range(i.want, i.min)
      k.lo   = min(i.lo, j.lo)
      k.hi   = max(i.hi, j.hi)
      k.n    = i.n    + j.n
@@ -64,14 +53,27 @@ Merge two ranges.
      k.rest = i.rest + j.rest
      return k
 ```
-Score a range.
-```py
-  def score(i, bs, rs):
-     b = i.best  / bs
-     r = i.rest  / rs
-     return b**2 / (b+r)
-```
 ### Ranges
+Given a list of `[x,y]` pairs,
+
+1. Sort on `x`; 
+2. Then divide the `x` values into many small bins;
+2. Then repeatedly,
+   - find adjacent bins which, if combined, 
+     do _no better_ than the combination;
+   - Merge them;
+   - And repeat, till no more merge-able items are found.
+
+Here, _no better_ is defined by the `Range.score` method:
+
+- Given a range containing `b` best things and `r` rest;
+- And a total number of `B` and `R` things found in all ranges;
+- Then the value of that range is 
+  &alpha;<sup>2</sup>/(&alpha; + &beta;) 
+  where &alpha; =`b/B` and &beta; =`r/R`
+- This function rewards ranges that have many more examples
+  of the best things than anything else.
+
 ```py
 class Ranges:
   bins = [16,8,4,2]
@@ -80,9 +82,12 @@ class Ranges:
     xy.sort(key = lambda z:z[0])
     i.min  = i.whatSize(xy)
     i.bs, i.rs = 0.0001, 0.0001
-    i.all = i.grow(goal, xy)
+    i.all = i.divide(goal, xy)
     i.debug = False
-
+```
+Work out how small a bin can be and still be larger
+than some useful minimum.
+```py
   def whatSize(i,a):
     lo = 0
     least = Ranges.min if len(a) < 256 else len(a)**0.5
@@ -91,30 +96,28 @@ class Ranges:
       if lo >= least:  
         return lo
     return max(least,lo)
-
-  def grow(i, goal, xy):
-    out = [ LoHi(goal, i.min) ]
+```
+Chop things up.
+```py
+  def divide(i, goal, xy):
+    out = [ Range(goal, i.min) ]
     for j,(x,y) in enumerate(xy):
       i.bs += (y == goal)
       i.rs += (y != goal)
       out[-1].add(x,y)
-      if out[-1].n >= i.min: 
-        if j < len(xy) - i.min:
+      if out[-1].n >= i.min:    # good ranges have "min" items
+        if j < len(xy) - i.min: # enough space for other ranges
           if x != xy[j+1][0]:
-            out += [ LoHi(goal, i.min) ]
+            out += [ Range(goal, i.min) ]
     return out
-
-  def v(i,z): return z.score(i.bs, i.rs)
-
-  def ranges(i):
-    i.merge() 
-    for z in i.all: 
-      yield z.lo, z.hi, i.v(z)
-
+```
+If you can merge two things:
+- Jump on to the next thing;
+- If you can't merge, then just go onto the next bin.
+```py
   def merge(i,lvl=1):
     j, tmp, pre = 0, [], "|-- " * lvl
-    if i.debug:
-      print(pre +  "::",len(i.all))
+    if i.debug: print(pre +  "::",len(i.all))
     while j < len(i.all):
       a = i.all[j]
       if j< len(i.all) - 1:
@@ -128,7 +131,16 @@ class Ranges:
       j    += 1
     if len(tmp) < len(i.all):
       i.all = tmp
-      if i.debug:
-        [ print(pre + "now", x) for x in i.all ]
+      if i.debug: [ print(pre + "now", x) for x in i.all ]
       i.merge(lvl+1)
+```
+Support tricks.
+```py
+  def v(i,z): return z.score(i.bs, i.rs)
+
+  def ranges(i):
+    i.merge() 
+    for z in i.all: 
+      yield z.lo, z.hi, i.v(z)
+
 ```
