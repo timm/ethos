@@ -100,7 +100,18 @@ ul { padding-bottom: 3px; }
 .button a:hover { color: white; text-decoration:underline; font-weight:normal; }
 .button a:active { color: white; text-decoration:none; font-weight:normal; }
 
+
 .button1 { background-color: rgb(154,205,50); } /* Gray */ 
 .button2 { background-color: rgb(204,204,0); } /* Blue */
 .button3 { background-color: #C23B23; } /* Red */ 
 .button5  {background-color: #F39A27;} /* Black */
+
+
+.copyleft {
+  display:inline-block;
+  transform: rotate(180deg);
+}
+
+
+
+
