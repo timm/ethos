@@ -111,8 +111,8 @@ Chop things up.
     return out
 ```
 If you can merge two things:
-- Jump on to the next thing;
-- If you can't merge, then just go onto the next bin.
+- Merge them, then jump two places to something else (`j&nbsp;+=&nbsp;2`);
+- If you can't merge, then just go onto the next bin (`j&nbsp;+=&nbsp;1`).
 
 ```py
   def merge(i,lvl=1):
