@@ -60,7 +60,10 @@ Merge two ranges.
      return k
 ```
 ### Ranges
-Given a list of `[x,y]` pairs,
+This classes creates the `Range`s and, then, 
+repeatedly combine similar things.
+
+It works this way. Given a list of `[x,y]` pairs,
 
 1. Sort on `x`; 
 2. Then divide the `x` values into many small bins;
