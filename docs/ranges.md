@@ -21,8 +21,7 @@ Output:
 
         lo:    0 hi:  624 score: 0
         lo:  625 hi: 1874 score: 0.17
-        lo: 1875 hi: 2499 score: 0
-        lo: 2500 hi: 6874 score: 0
+        lo: 1875 hi: 6874 score: 0
         lo: 6875 hi: 9999 score: 0.73
         
 ## Classes
@@ -150,7 +149,8 @@ If you can merge two adjacent items:
       if j< len(i.all) - 1:
         b = i.all[j+1]
         c = a.merge(b)
-        if i.v(c) >= i.v(a) and i.v(c) >= i.v(b):
+        if i.v(c) >= i.v(a) and i.v(c) >= i.v(b) or \
+           abs(i.v(a) - i.v(b)) < 0.01: 
           tmp  += [c]
           j    += 2
           continue
