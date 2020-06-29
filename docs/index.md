@@ -4,16 +4,23 @@ Data miners and optimizers both explore the landscape of data. Data miners divid
 into parts and 
 optimizers report how to jump between the parts. Used together, each can simplify the other.
 
-- [best](best.md)
-- [col](col.md)
-- [div](div.md)
-- [lib](lib.md)
-- [num](num.md)
-- [ranges](ranges.md)
-- [row](row.md)
-- [sym](sym.md)
-- [tab](tab.md)
-- [why](why.md)
+Data:
+
+| Component | File                | Class                                                                         |
+|-----------|---------------------|-------------------------------------------------------------------------------|
+| optimize  | [Ranges](ranges.md) |  Find and rank ranges within numerics                                         |
+|           | [Best](best.md)     | Using `Div`, recursive clustering and prune worse half                        |
+|-----------|---------------------|-------------------------------------------------------------------------------|
+| data      | [Tab](tab.md)       | `Tab`les store `Row`s of data                                                 |
+|           | [Row](row.md)       | `Rows` hold cells, compute distance and domination between pairs of `Row`s    |
+|           | [Col](col.md)       | `Col`s summaries columns of data within `Row`s                                |
+|           | [Num](num.md)       | `Num`eric columns                                                             |
+|           | [Sym](sym.md)       | `Sym`bolic columns                                                            |
+|-----------|---------------------|-------------------------------------------------------------------------------|
+| mining    | [Div](div.md)       | Recursive bi-clustering (using random projections)                            |
+|           | [Why](why.md)       | Generate rules that distinguish between two tables of best and rest examples  |
+|-----------|---------------------|-------------------------------------------------------------------------------|
+| misc      | [lib](lib.md)       | Misc utils. e.g. unit tests                                                   |
 
 ------
 
