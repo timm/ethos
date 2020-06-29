@@ -18,6 +18,7 @@ optimizers report how to jump between the parts. Used together, each can simplif
 ------
 
 ## Details
+
 ### Contact
 
 ![Tim Menzies](https://github.com/timm.png?size=150)
