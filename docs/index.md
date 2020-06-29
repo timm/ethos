@@ -20,6 +20,7 @@ optimizers report how to jump between the parts. Used together, each can simplif
 ## Details
 ### Contact
 
+<img align=right width=200 src="https://github.com/timm.png">
 Tim Menzies   
 [timm@ieee.org](mailto:timm@ieee.org)   
 [http://menzies.us](http://menzies.us)
@@ -29,7 +30,6 @@ Tim Menzies
 T. Menzies,
 DUO: data miners using/used-by optimizers,
 June 2020,
-10.5281/zenodo.3921771,
 [https://doi.org/10.5281/zenodo.3921771](https://doi.org/10.5281/zenodo.3921771)
 
 
