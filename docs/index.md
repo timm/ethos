@@ -26,10 +26,10 @@ Tim Menzies
 
 ### Citation
 
-T. Menzies   
-DUO: data miners using/used-by optimizers  
-June 2020,  
-10.5281/zenodo.3921771,   
+T. Menzies,
+DUO: data miners using/used-by optimizers,
+June 2020,
+10.5281/zenodo.3921771,
 [https://doi.org/10.5281/zenodo.3921771](https://doi.org/10.5281/zenodo.3921771)
 
 
