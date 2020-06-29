@@ -75,7 +75,7 @@ Merge two ranges.
      return k
 ```
 ### Ranges
-This classes creates the `Range`s and, then, 
+This class creates the `Range`s and, then, 
 repeatedly combine similar things.
 
 It works this way. Given a list of `[x,y]` pairs,
