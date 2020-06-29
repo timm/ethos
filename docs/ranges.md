@@ -15,7 +15,7 @@ Here, _no better_ is defined by the `LoHi.score` method:
 - And a total number of `B` and `R` things found in all ranges;
 - Then the value of that range is 
   &alpha;<sup>2</sup>/(&alpha; + &beta;) 
-  where `&alpha;=b/B` and `&beta=r/R`
+  where &alpha; =`b/B` and &beta; =`r/R`
 - This function rewards ranges that have many more examples
   of the best things than anything else.
 
