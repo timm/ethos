@@ -4,11 +4,11 @@ Data miners and optimizers both explore the landscape of data. Data miners divid
 into parts and 
 optimizers report how to jump between the parts. Used together, each can simplify the other.
 
-Data:
+This code divides as follows:
 
 | Component | File                | Class                                                                         |
 |-----------|---------------------|-------------------------------------------------------------------------------|
-| data      | [Tab](tab.md)       | `Tab`les store `Row`s of data                                                 |
+| data store| [Tab](tab.md)       | `Tab`les store `Row`s of data                                                 |
 |           | [Row](row.md)       | `Rows` hold cells, compute distance and domination between pairs of `Row`s    |
 |           | [Col](col.md)       | `Col`s summaries columns of data within `Row`s                                |
 |           | [Num](num.md)       | `Num`eric columns                                                             |
