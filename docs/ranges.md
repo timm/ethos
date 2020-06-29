@@ -1,9 +1,36 @@
+# Ranges
+Given a list of `[x,y]` pairs,
+
+1. Sort on `x`; 
+2. Then divide the `x` values into many small bins;
+2. Then repeatedly,
+   - find adjacent bins which, if combined, 
+     do _no better_ than the combination;
+   - Merge them;
+   - And repeat, till no more merge-able items are found.
+
+Here, _no better_ is defined by the `LoHi.score` method:
+
+- Given a range containing `b` best things and `r` rest;
+- And a total number of `B` and `R` things found in all ranges;
+- Then the value of that range is 
+  &alpha;<sup>2</sup>/(&alpha; + &beta;) 
+  where `&alpha;=b/B` and `&beta=r/R`
+- This function rewards ranges that have many more examples
+  of the best things than anything else.
+
 ```py
 from lib import Thing,o,dprint
 from num import Num
 from sym import Sym
 import sys
+```
+## Classes
+### LoHi
+This class keeps a count of the number of `best` classes  n a range,
+as well as the `lo` and `hi`  values seen in this range.
 
+```py
 class LoHi(Thing):
   id=0
   def __init__(i, want, min):
@@ -14,7 +41,10 @@ class LoHi(Thing):
     i.hi    = -i.lo
     i.n     = 0
     i.tag   = LoHi.id = LoHi.id + 1
-    
+```
+Update the internal counts.
+
+```py    
   def add(i,x,y):
     i.lo    = min(x, i.lo)
     i.hi    = max(x, i.hi)
@@ -22,7 +52,9 @@ class LoHi(Thing):
     i.best += (y == i.want)
     i.rest += (y != i.want)
     return i
-
+```
+Merge two ranges.
+```py
   def merge(i,j):
      k      = LoHi(i.want, i.min)
      k.lo   = min(i.lo, j.lo)
@@ -31,12 +63,16 @@ class LoHi(Thing):
      k.best = i.best + j.best
      k.rest = i.rest + j.rest
      return k
- 
+```
+Score a range.
+```py
   def score(i, bs, rs):
      b = i.best  / bs
      r = i.rest  / rs
      return b**2 / (b+r)
-
+```
+### Ranges
+```py
 class Ranges:
   bins = [16,8,4,2]
   min  = 4
