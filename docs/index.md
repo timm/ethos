@@ -20,7 +20,7 @@ optimizers report how to jump between the parts. Used together, each can simplif
 ## Details
 ### Contact
 
-<img align=right width=200 src="https://github.com/timm.png">
+![Tim Menzies](https://github.com/timm.png?size=150)
 
 Tim Menzies   
 [timm@ieee.org](mailto:timm@ieee.org)   
