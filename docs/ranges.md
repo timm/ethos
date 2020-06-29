@@ -114,6 +114,7 @@ Chop things up.
 If you can merge two things:
 - Jump on to the next thing;
 - If you can't merge, then just go onto the next bin.
+
 ```py
   def merge(i,lvl=1):
     j, tmp, pre = 0, [], "|-- " * lvl
@@ -142,5 +143,4 @@ Support tricks.
     i.merge() 
     for z in i.all: 
       yield z.lo, z.hi, i.v(z)
-
 ```
