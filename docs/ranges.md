@@ -83,7 +83,6 @@ class Ranges:
     i.min  = i.whatSize(xy)
     i.bs, i.rs = 0.0001, 0.0001
     i.all = i.divide(goal, xy)
-    i.debug = False
 ```
 Work out how small a bin can be and still be larger
 than some useful minimum.
@@ -118,7 +117,6 @@ If you can merge two things:
 ```py
   def merge(i,lvl=1):
     j, tmp, pre = 0, [], "|-- " * lvl
-    if i.debug: print(pre +  "::",len(i.all))
     while j < len(i.all):
       a = i.all[j]
       if j< len(i.all) - 1:
@@ -130,10 +128,9 @@ If you can merge two things:
           continue
       tmp  += [a]
       j    += 1
-    if len(tmp) < len(i.all):
-      i.all = tmp
-      if i.debug: [ print(pre + "now", x) for x in i.all ]
-      i.merge(lvl+1)
+    if len(tmp) < len(i.all): # we now have fewer bins
+      i.all = tmp             # so update "all"
+      i.merge(lvl+1) # check if anything else can be merged 
 ```
 Support tricks.
 ```py
