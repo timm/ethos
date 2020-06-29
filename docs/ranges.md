@@ -130,11 +130,12 @@ If you can merge two things:
       j    += 1
     if len(tmp) < len(i.all): # we now have fewer bins
       i.all = tmp             # so update "all"
-      i.merge(lvl+1) # check if anything else can be merged 
+      i.merge(lvl+1) # repeat:  can merge anything else?
 ```
 Support tricks.
 ```py
-  def v(i,z): return z.score(i.bs, i.rs)
+  def v(i,z): 
+    return z.score(i.bs, i.rs)
 
   def ranges(i):
     i.merge() 
