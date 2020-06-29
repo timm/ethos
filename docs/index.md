@@ -8,7 +8,7 @@ This code divides as follows:
 
 | Component | Class               | Super | Notes
 |-----------|---------------------|---- |-------------------------------------------------------------------------------|
-| data store| [Tab](tab.md)       |     | `Tab`les store `Row`s of data                                                 |
+| storage   | [Tab](tab.md)       |     | `Tab`les store `Row`s of data                                                 |
 |           | [Row](row.md)       |     | `Rows` hold cells, compute distance and domination between pairs of `Row`s    |
 |           | [Col](col.md)       |     | `Col`s summaries columns of data within `Row`s                                |
 |           | [Num](num.md)       | Col |  `Num`eric columns                                                  |
