@@ -8,21 +8,20 @@ Data:
 
 | Component | File                | Class                                                                         |
 |-----------|---------------------|-------------------------------------------------------------------------------|
-| optimize  | [Ranges](ranges.md) |  Find and rank ranges within numerics                                         |
-|           | [Best](best.md)     | Using `Div`, recursive clustering and prune worse half                        |
-|-----------|---------------------|-------------------------------------------------------------------------------|
 | data      | [Tab](tab.md)       | `Tab`les store `Row`s of data                                                 |
 |           | [Row](row.md)       | `Rows` hold cells, compute distance and domination between pairs of `Row`s    |
 |           | [Col](col.md)       | `Col`s summaries columns of data within `Row`s                                |
 |           | [Num](num.md)       | `Num`eric columns                                                             |
 |           | [Sym](sym.md)       | `Sym`bolic columns                                                            |
 |-----------|---------------------|-------------------------------------------------------------------------------|
-| mining    | [Div](div.md)       | Recursive bi-clustering (using random projections)                            |
+| mine      | [Div](div.md)       | Recursive bi-clustering (using random projections)                            |
 |           | [Why](why.md)       | Generate rules that distinguish between two tables of best and rest examples  |
+|-----------|---------------------|-------------------------------------------------------------------------------|
+| optimize  | [Best](best.md)     | Using `Div`, recursive clustering and prune worse half                        |
+|           | [Ranges](ranges.md) | Find, then rank, important ranges within numerics. Like a discretizer, but ranges selected by effectiveness for selecting the preferred class.                           |
 |-----------|---------------------|-------------------------------------------------------------------------------|
 | misc      | [lib](lib.md)       | Misc utils. e.g. unit tests                                                   |
 
-------
 
 ## Details
 
