@@ -112,9 +112,9 @@ Chop things up.
 ```
 If you can merge two things:
 - Merge them, then jump two places to something else:
-  - i.e. do `j += 2`
+  - i.e. jump by `j += 2`
 - If you can't merge, then just go onto the next bin:
-  - i.e. do `j += 1`
+  - i.e. jump by `j += 1`
 
 ```py
   def merge(i,lvl=1):
