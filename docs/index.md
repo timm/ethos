@@ -21,7 +21,7 @@ optimizers report how to jump between the parts. Used together, each can simplif
 
 ### Contact
 
-![Tim Menzies](https://github.com/timm.png?size=150){: .align-right}
+![Tim Menzies](https://github.com/timm.png?size=100){: .align-right}
 
 
 Tim Menzies   
