@@ -4,23 +4,53 @@ Data miners and optimizers both explore the landscape of data. Data miners divid
 into parts and 
 optimizers report how to jump between the parts. Used together, each can simplify the other.
 
-This code divides as follows:
+- [Code Overview](#code-overview) 
+  - [Storage](#storage) 
+  - [Mining](#mining) 
+  - [Optimize](#optimize) 
+  - [Misc](#misc) 
+- [Details](#details) 
+  - [Contact](#contact) 
+  - [Citation](#citation) 
+  - [License](#license) 
 
-| Component | Class               | Super | Notes
-|-----------|---------------------|---- |-------------------------------------------------------------------------------|
-| storage   | [Tab](tab.md)       |     | `Tab`les store `Row`s of data                                                 |
-|           | [Row](row.md)       |     | `Rows` hold cells, compute distance and domination between pairs of `Row`s    |
-|           | [Col](col.md)       |     | `Col`s summaries columns of data within `Row`s                                |
-|           | [Num](num.md)       | Col |  `Num`eric columns                                                  |
-|           | [Sym](sym.md)       | Col | `Sym`bolic columns                                                 |
-|-----------|---------------------|-----|-------------------------------------------------------------------------|
-| mine      | [Div](div.md)       |     | Recursive bi-clustering (using random projections)                            |
-|           | [Why](why.md)       | Div | Generate rules that distinguish between two tables of best and rest examples  |
-|-----------|---------------------|-------------------------------------------------------------------------------|
-| optimize  | [Best](best.md)     | Div | Ecursive clustering and prune worse half                        |
-|           | [Ranges](ranges.md) |     | Find, then rank, important ranges within numerics. Like a discretizer, but ranges selected by how effective they are  for selecting the preferred class.                           |
-|-----------|---------------------|-----|-------------------------------------------------------------------------|
-| misc      | [lib](lib.md)       |     | Misc utils. e.g. unit tests                                                   |
+---------------
+
+---------------
+
+---------------
+
+## Code Overview
+
+### Storage
+
+|  Class               | Super | Notes
+|---------------------|---- |-------------------------------------------------------------------------------|
+| [Tab](tab.md)       |     | `Tab`les store `Row`s of data                                                 |
+| [Row](row.md)       |     | `Rows` hold cells, compute distance and domination between pairs of `Row`s    |
+| [Col](col.md)       |     | `Col`s summaries columns of data within `Row`s                                |
+| [Num](num.md)       | Col |  `Num`eric columns                                                  |
+| [Sym](sym.md)       | Col | `Sym`bolic columns                                                 |
+
+### Mining
+
+| Class               | Super | Notes
+|---------------------|-----|-------------------------------------------------------------------------|
+| [Div](div.md)       |     | Recursive bi-clustering (using random projections)                            |
+| [Why](why.md)       | Div | Generate rules that distinguish between two tables of best and rest examples  |
+
+### Optimize
+
+| Class               | Super | Notes
+|---------------------|-------------------------------------------------------------------------------|
+| [Best](best.md)     | Div | Ecursive clustering and prune worse half                        |
+| [Ranges](ranges.md) |     | Find, then rank, important ranges within numerics. Like a discretizer, but ranges selected by how effective they are  for selecting the preferred class.                           |
+
+### Misc
+
+|  Class               | Super | Notes
+|---------------------|-----|-------------------------------------------------------------------------|
+| [lib](lib.md)       |     | Misc utils. e.g. unit tests                                                   |
 
 
 ## Details
