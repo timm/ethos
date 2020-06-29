@@ -48,8 +48,9 @@ June 2020,
 ### License
 BSD 2-Clause License
 
-<p>Copyright &copy; 2020, Tim Menzies</br>
-All rights reserved.</p>
+Copyright &copy; 2020    
+Tim Menzies   
+All rights reserved
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
