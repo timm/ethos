@@ -7,6 +7,7 @@ YELLOW=`tput setaf 3`
 WHITE=`tput sgr0`
 
 banner() { 
+  tput bold
   echo  -n "${BLUE}"; cat <<'EOF'
  ____                       
 /\  _`\                     
