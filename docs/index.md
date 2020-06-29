@@ -18,18 +18,38 @@ optimizers report how to jump between the parts. Used together, each can simplif
 ------
 
 ## Details
-### Citation
-
 ### Contact
 
 Tim Menzies   
 [timm@ieee.org](mailto:timm@ieee.org)   
 [http://menzies.us](http://menzies.us)
 
+### Citation
+
+T. Menzies   
+DUO: data miners using/used-by optimizers  
+June 2020,  
+10.5281/zenodo.3921771,   
+[https://doi.org/10.5281/zenodo.3921771](https://doi.org/10.5281/zenodo.3921771)
+
+
+```bibtex
+@software{duo2020,
+  title        = {DUO: data miners using/used by optimizers},
+  Author       = {Tim Menzies},
+  month        = jun,
+  year         = 2020,
+  publisher    = {Zenodo},
+  version      = {zenodo},
+  doi          = {10.5281/zenodo.3921771},
+  url          = {https://doi.org/10.5281/zenodo.3921771}
+}
+```
+
 ### License
 BSD 2-Clause License
 
-<p>Copyright <span class="copyleft">&copy;</span> 2020, Tim Menzies</br>
+<p>Copyright &copy; 2020, Tim Menzies</br>
 All rights reserved.</p>
 
 Redistribution and use in source and binary forms, with or without
