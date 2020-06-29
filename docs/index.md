@@ -6,21 +6,21 @@ optimizers report how to jump between the parts. Used together, each can simplif
 
 This code divides as follows:
 
-| Component | File                | Class                                                                         |
+| Component | Class               | Super | Notes
+|-----------|---------------------|---- |-------------------------------------------------------------------------------|
+| data store| [Tab](tab.md)       |     | `Tab`les store `Row`s of data                                                 |
+|           | [Row](row.md)       |     | `Rows` hold cells, compute distance and domination between pairs of `Row`s    |
+|           | [Col](col.md)       |     | `Col`s summaries columns of data within `Row`s                                |
+|           | [Num](num.md)       | Col |  `Num`eric columns                                                  |
+|           | [Sym](sym.md)       | Col | `Sym`bolic columns                                                 |
+|-----------|---------------------|-----|-------------------------------------------------------------------------|
+| mine      | [Div](div.md)       |     | Recursive bi-clustering (using random projections)                            |
+|           | [Why](why.md)       | Div | Generate rules that distinguish between two tables of best and rest examples  |
 |-----------|---------------------|-------------------------------------------------------------------------------|
-| data store| [Tab](tab.md)       | `Tab`les store `Row`s of data                                                 |
-|           | [Row](row.md)       | `Rows` hold cells, compute distance and domination between pairs of `Row`s    |
-|           | [Col](col.md)       | `Col`s summaries columns of data within `Row`s                                |
-|           | [Num](num.md)       | `Num`eric columns                                                             |
-|           | [Sym](sym.md)       | `Sym`bolic columns                                                            |
-|-----------|---------------------|-------------------------------------------------------------------------------|
-| mine      | [Div](div.md)       | Recursive bi-clustering (using random projections)                            |
-|           | [Why](why.md)       | Generate rules that distinguish between two tables of best and rest examples  |
-|-----------|---------------------|-------------------------------------------------------------------------------|
-| optimize  | [Best](best.md)     | Using `Div`, recursive clustering and prune worse half                        |
-|           | [Ranges](ranges.md) | Find, then rank, important ranges within numerics. Like a discretizer, but ranges selected by how effective they are  for selecting the preferred class.                           |
-|-----------|---------------------|-------------------------------------------------------------------------------|
-| misc      | [lib](lib.md)       | Misc utils. e.g. unit tests                                                   |
+| optimize  | [Best](best.md)     | Div | Ecursive clustering and prune worse half                        |
+|           | [Ranges](ranges.md) |     | Find, then rank, important ranges within numerics. Like a discretizer, but ranges selected by how effective they are  for selecting the preferred class.                           |
+|-----------|---------------------|-----|-------------------------------------------------------------------------|
+| misc      | [lib](lib.md)       |     | Misc utils. e.g. unit tests                                                   |
 
 
 ## Details
