@@ -21,8 +21,7 @@ optimizers report how to jump between the parts. Used together, each can simplif
 
 ### Contact
 
-Tim Menzies,   [timm@ieee.org](mailto:timm@ieee.org),   [http://menzies.us](http://menzies.us)
-
+Tim Menzies,   [timm@ieee.org](mailto:timm@ieee.org),   [http://menzies.us](http://menzies.us)   
 ![Tim Menzies](https://github.com/timm.png?size=80)
 
 ### Citation
