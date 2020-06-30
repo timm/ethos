@@ -46,7 +46,7 @@ optimizers report how to jump between the parts. Used together, each can simplif
 
 |  Class               | Super | Notes
 |---------------------|-----|-------------------------------------------------------------------------|
-| [lib](lib.md)       |     | Misc utils. e.g. unit tests                                                   |
+| [lib](lib.md)       |     | Misc utils. e.g. unit tests (see `ok`); pretty prints for classes and dictionaries (see `dprint` and `Thing`), and `csv` reader  |
 
 
 ## Details
