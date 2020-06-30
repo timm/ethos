@@ -38,5 +38,4 @@
 
 |  Class               | Super | Notes
 |---------------------|-----|-------------------------------------------------------------------------|
-| [lib](lib.md)       |     | Misc utils. e.g. unit tests (see [`ok`](lib.html#ok-decorator-for-run-at-load-tests)); pretty prints for classes and dictionaries (see [`dprint`](lib.html#pretty-print-dictionaries) and 
-[`Thing`](lib.html#thing-a-class-that-knows-how-to-show-off)), and the reader of [`rows`](lib.html#rows-csv-reader) from a csv file.  |
+| [lib](lib.md)       |     | Misc utils. e.g. unit tests (see [`ok`](lib.html#ok-decorator-for-run-at-load-tests)); pretty prints for classes and dictionaries (see [`dprint`](lib.html#pretty-print-dictionaries) and [`Thing`](lib.html#thing-a-class-that-knows-how-to-show-off)), and the reader of [`rows`](lib.html#rows-csv-reader) from a csv file.  |
