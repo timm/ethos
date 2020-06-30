@@ -4,16 +4,6 @@ Data miners and optimizers both explore the landscape of data. Data miners divid
 into parts and 
 optimizers report how to jump between the parts. Used together, each can simplify the other.
 
-- [Site Map](#site-map) 
-- [Details](#details) 
-  - [Contact](#contact) 
-  - [Citation](#citation) 
-  - [License](#license) 
-
----------------
-
-## About this code
-
 Overview [about](about) this code.
 
 File index:
