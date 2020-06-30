@@ -27,6 +27,8 @@ optimizers report how to jump between the parts. Used together, each can simplif
 - [tab](tab.md)
 - [why](why.md)
 
+-----------------
+
 ## Details
 
 ### Contact
