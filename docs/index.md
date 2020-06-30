@@ -18,7 +18,8 @@ optimizers report how to jump between the parts. Used together, each can simplif
 
 ## Code Overview
 
-- Storage
+### Storage
+
 |  Class               | Super | Notes
 |---------------------|---- |-------------------------------------------------------------------------------|
 | [Tab](tab.md)       |     | `Tab`les store `Row`s of data                                                 |
@@ -26,17 +27,23 @@ optimizers report how to jump between the parts. Used together, each can simplif
 | [Col](col.md)       |     | `Col`s summaries columns of data within `Row`s                                |
 | [Num](num.md)       | Col |  `Num`eric columns                                                  |
 | [Sym](sym.md)       | Col | `Sym`bolic columns                                                 |
-- Mining
+
+### Mining
+
 | Class               | Super | Notes
 |---------------------|-----|-------------------------------------------------------------------------|
 | [Div](div.md)       |     | Recursive bi-clustering (using random projections)                            |
 | [Why](why.md)       | Div | Generate rules that distinguish between two tables of best and rest examples  |
--Optimize
+
+### Optimize
+
 | Class               | Super | Notes
 |---------------------|-------------------------------------------------------------------------------|
-| [Best](best.md)     | Div | Ecursive clustering and prune worse half                        |
+| [Best](best.md)     | Div | Ecursive clustering and prune worse half                                |
 | [Ranges](ranges.md) |     | Find, then rank, important ranges within numerics. Like a discretizer, but ranges selected by how effective they are  for selecting the preferred class.                           |
-- Misc
+
+### Misc
+
 |  Class               | Super | Notes
 |---------------------|-----|-------------------------------------------------------------------------|
 | [lib](lib.md)       |     | Misc utils. e.g. unit tests                                                   |
