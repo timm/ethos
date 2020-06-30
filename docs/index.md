@@ -12,8 +12,11 @@ optimizers report how to jump between the parts. Used together, each can simplif
 
 ---------------
 
-## Site Map
+## About this code
 
+Overview [about](about) this code.
+
+File index:
 
 - [about](about.md)
 - [best](best.md)
