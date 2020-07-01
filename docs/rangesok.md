@@ -7,7 +7,7 @@ from random import random as r
 def _range0(xy):
   print("")
   for x,y,z in Ranges(xy).ranges(): 
-    print(x,y,z)
+    print(x,y,0, '%5.3f'%z)
 
 
 @ok
@@ -35,11 +35,8 @@ def _range5():
   n = 10**3
   _range0( [[i, 0] for i in range(n)])
 
-
 @ok
 def _range6():
   n = 10**3
   _range0( [[i, i> .4*n and i < .6*n] for i in range(n)] )
-
-
 ```
