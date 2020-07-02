@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
 
 # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+# http://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
 RED=`tput setaf 1`
 BLUE=`tput setaf 6`
 YELLOW=`tput setaf 3`
 WHITE=`tput sgr0`
 
 banner() { 
-  tput bold
-  echo  -n "${BLUE}"; cat <<'EOF'
- ____                       
-/\  _`\                     
-\ \ \/\ \    __  __     ___   
- \ \ \ \ \  /\ \/\ \   / __`\ 
-  \ \ \_\ \ \ \ \_\ \ /\ \L\ \
-   \ \____/  \ \____/ \ \____/
-    \/___/    \/___/   \/___/ 
-                            
+  echo  -n "$(tput bold) ${RED}"; cat <<'EOF'
+  _           
+ _| | _ _  ___ 
+| . || | || . |
+|___||___||___|
+                                  
 EOF
   echo -n "${WHITE}"
 }
@@ -344,7 +341,6 @@ set formatoptions-=t
 set nowrap
 " Markdown
 let g:markdown_fenced_languages = ['awk','py=python']
-map <F2> V}!../u -T %<CR>
 EOF
 } 
 tmuxconf() { cat<<'EOF'
@@ -519,7 +515,7 @@ function trim(s) {
      a[2] = trim( a[2] )
      if (length(a) == 1)
           print ns(new) "- [" s    "](#" tolower(link) ") " 
-     else print ns(new) "- [" a[1] "](#" tolower(link) ") " (a[2] ? " : " a[2] : "") 
+     else print ns(new) "- [" a[1] "](#" tolower(link) ") : " a[2] 
 }
 END {print ""; print "---------------"; print ""}'
 }
@@ -536,8 +532,7 @@ usage1: u : update all files
   -h        help
   -i        advanced tricks (vim, git, tmux, bask tricks)
   -t        run tmux
-  -I        make main index
-  -T        show table of contents for one file
+  -I        make index
 
 Also, When called as ". o",  it sets up some useful bash tricks
   
