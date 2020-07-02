@@ -72,6 +72,21 @@ def dprint(d, pre="",no="_"):
   return pre+'{'+", ".join([('%s=%s' % (k,q(v))) 
                              for k,v in l]) +'}'
 ```
+### Cachine
+
+```py
+class Cache(Thing):
+   def __init__(i, **funs):
+     i.cache={}
+     i.funs = funs
+   def __getattr__(self, name):
+     def _missing(k):
+       if not k in i.cache:
+         i.cache[k] = i.funs[k](i)
+       return i.cache[k]
+     return _missing
+```
+
 ## Input 
 ### Src: read from strings or file or lists or zip files or standard input
 
