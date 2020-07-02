@@ -72,7 +72,7 @@ def dprint(d, pre="",no="_"):
   return pre+'{'+", ".join([('%s=%s' % (k,q(v))) 
                              for k,v in l]) +'}'
 ```
-### Cachine
+### Cache
 
 ```py
 class Cache(Thing):
