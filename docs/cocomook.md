@@ -1,18 +1,14 @@
 ```py
-from cocomo import Cocomo,w
-from cocrisk import risk
+from cocomo import Cocomo,w,u
 
-lst=[Cocomo(
-            kloc = w(2,100), ltex = w(6),
-            sced = w(6),     acap = w(6),
-            pmat = w(6)
-           ).effort() 
-    for _ in range(10000)]
+c   = lambda: Cocomo(kloc=w(2,100), acap=6, ltex=5,
+                     sced=6)
+lst = [c().effort() for _ in range(1000)]
 lst = sorted(lst)
-q   = lambda n: '%.0f' % lst[int(n* len(lst))]
+q   = lambda n: '%.0f' % lst[ int(n * len(lst)) ]
+#print(*[q(n) for n in [0.1, 0.3, 0.5, 0.7, 0.9]])
 
-print(q(.1), q(.3), q(.5), q(.7), q(.9))
 
-
-print(risk(Cocomo()))
+for _ in range(100):
+  print(c().risk( ))
 ```

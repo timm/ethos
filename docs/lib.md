@@ -39,10 +39,22 @@ class Thing:
 
 ```py
 class o(Thing):
-  def __init__(i,**d)   : i.__dict__.update(**d)
-  def __getitem__(i, k) : return i.__dict__[k]
+  def __init__(i,**d)    : i.__dict__.update(**d)
+  def __getitem__(i,k)  : return i.__dict__[k]
+  def __setitem__(i,k,v): i.__dict__[k] = v
+  def __iter__(i): 
+    for k in i.__dict__: yield k
 ```
 
+## Maths
+### prod
+```py
+def prod(lst):
+  y = 1
+  for x in lst: y = y*x
+  return y
+ 
+```
 ## Lists
 ### Multiple Members
 ```py
