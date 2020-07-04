@@ -1,10 +1,16 @@
 # Rx
 A treatment "`Rx`" is a label (`i.rx`) and a set of 
 values (`i.all`).  
-Statistically indistinguishable
-treatments can be `group`ed into
-sets of similar values.
-:w
+
+- Similar treatments can be `group`ed together into
+sets of values with the same `rank`
+- Things in the same rank are 
+statistically indistinguishable, as judged by both a
+  - A very fast non-parametric `D` test 
+  - A (slightly more thorough) non-parametric effect 
+    size test (the Cliff's Delta);
+  - A (very thorough) non-parametric 
+    significance test (the Bootstrap);
 
 ## Class
 
