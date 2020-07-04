@@ -1,6 +1,7 @@
 
 ```py
-from lib import o,ok,src,rows,cols,dprint,excursion
+from lib import o,ok,src,rows,cols,dprint,excursion,xtiles
+from random import random as r
 
 @ok
 def ok1():
@@ -54,5 +55,14 @@ def _excursion():
     Demo2.a, Demo2.b = 100,200
     assert Demo1.a + Demo1.b + Demo2.a + Demo2.b == 330
   assert Demo1.a + Demo1.b + Demo2.a + Demo2.b == 6
-  
+ 
+@ok
+def _xtiles():
+  a,n = [], 10000
+  a  += [[r()**2   for _ in range(n)]]
+  a  += [[r()**0.5 for _ in range(n)]]
+  a  += [[r()      for _ in range(n)]]
+  xtiles(a,chops = [.3,.5,.7],
+           show  = '%5.2f',
+           marks = ["-","-","-"])
 ```

@@ -5,6 +5,7 @@ from x import F,I
 from cocrisk import rules
 
 class Cocomo(Thing):
+  __name__ = "Cocomo"
   defaults = o(
       misc= o( kloc = F(2,1000), 
                a    = F(2.2,9.8),
@@ -18,7 +19,7 @@ class Cocomo(Thing):
       sf  = o( prec = I(1,6),  flex = I(1,6), arch = I(1,6), 
                team = I(1,6),  pmat = I(1,6)))
  
-  def __init__(i,*listofdicts):
+  def __init__(i,listofdicts=[]):
     i.x, i.y, dd = o(), o(), kopy(Cocomo.defaults)
     # set up the defaults
     for d in dd:  
@@ -42,7 +43,7 @@ class Cocomo(Thing):
     for k in Cocomo.defaults.sf  : sf += i.y[k]
     for k in Cocomo.defaults.pos : em *= i.y[k]
     for k in Cocomo.defaults.neg : em *= i.y[k]
-    return round(i.x.a() * em * i.x.goal()*i.x.kloc() ** (b + sf/100), 1)
+    return round(i.x.a() * em * (i.x.kloc()) ** (b + 0.01*sf), 1)
  
   def risk(i, r=0):
     for k1,rules1 in rules.items():

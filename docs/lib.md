@@ -57,7 +57,16 @@ def prod(lst):
 def perc(l, p=[.25, .5, .75]):
   l = sorted(l)
   return [  l[int(p0 * len(l))] for p0 in p]
- 
+```
+### median
+```py
+def median(l):
+  l = sorted(l)
+  m = int( len(l)/2 )
+  if len(l)/2 % 2: # odd
+    return l[m]
+  else:
+    return (l[m] + l[m + 1])/2
 ```
 ## Lists
 ### Multiple Members
@@ -66,7 +75,15 @@ def ins(lst,x):
   for y in lst:
     if y in x: return True
 ```
-
+### Pairs of items ina  list
+Return all pairs of items i,i+1 from a list.
+```py
+def pairs(lst):
+  last=lst[0]
+  for i in lst[1:]:
+    yield last,i
+    last = i
+```
 ### Within 
 ```py
 def within(x,y,z):
@@ -88,20 +105,41 @@ def dprint(d, pre="",no="_"):
   return pre+'{'+", ".join([('%s=%s' % (k,q(v))) 
                              for k,v in l]) +'}'
 ```
-### Cache
+### Xtiles
+
+Take a list of numbers, sort them,
+then print them as a
+horizontal
+xtile chart (in ascii format). The default is a
+contracted _quintile_ that shows the
+10,30,50,70,90 breaks in the data (but this can be
+changed- see the optional flags of the function).
 
 ```py
-class Cache(Thing):
-   def __init__(i, **funs):
-     i.cache={}
-     i.funs = funs
-   def __getattr__(self, name):
-     def _missing(k):
-       if not k in i.cache:
-         i.cache[k] = i.funs[k](i)
-       return i.cache[k]
-     return _missing
-```
+def xtile(lst,lo=0,hi=1,
+             width = 50,
+             chops = [0.1 ,0.3,0.5,0.7,0.9],
+             marks = [" " ,"-"," ","-"," "],
+             bar   = "|",
+             star  = "*",
+             show  = " %5.3f"):
+    def at(p): 
+      return ordered[int(len(lst)*p)]
+    def norm(x): 
+      return int(width*float((x - lo))/(hi - lo+0.00001))
+    def pretty(lst):
+      return ', '.join([show % x for x in lst])
+    ordered = sorted(lst)
+    what    = [at(p)   for p in chops]
+    where   = [norm(n) for n in  what]
+    out     = [" "] * width
+    for one,two in pairs(where):
+      for i in range(one,two):
+        out[i] = marks[0]
+      marks = marks[1:]
+    out[int(width/2)]  = bar
+    out[norm(at(0.5))] = star
+    return '('+''.join(out) +  ")," +  pretty(what)
 
 ## Input 
 ### Src: read from strings or file or lists or zip files or standard input

@@ -13,12 +13,14 @@ from lib import Thing
 import random
 
 class X(Thing):
+  __name__ = "X"
   def __init__(i, lo,hi=None): 
     i.lo = lo
     i.hi = lo if hi==None else hi
+    i.lo0, i.hi0 = i.lo, i.hi
     i.x  = None
   def ok(i,z): 
-    return i.lo <= z <= i.hi
+    return i.lo0 <= z <= i.hi0
   def __call__(i):
     if i.x == None: i.x = i.get()
     return i.x
