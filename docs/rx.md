@@ -7,10 +7,18 @@ sets of values with the same `rank`
 - Things in the same rank are 
 statistically indistinguishable, as judged by both a
   - A very fast non-parametric `D` test 
+      - Sort the numns, use 30% of "spread"
+        (90th-10th percentile range); 
   - A (slightly more thorough) non-parametric effect 
     size test (the Cliff's Delta);
+      -  Twp lists are different if, usually, 
+         things from one list do not fall into the middle 
+         of the other.
   - A (very thorough) non-parametric 
     significance test (the Bootstrap);
+       - See if hundreds of sample-with-replacements
+         sets from two lists and  different properties to 
+         the overall list.
 
 ## Class
 
