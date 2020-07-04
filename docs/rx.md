@@ -24,10 +24,23 @@ class Rx(Thing):
     i.n    = len(i.all)
     i.med  = i.all[int(i.n/2)]
     i.parts= [i]
+```
+Treatments are sorted on their `med` value.
+```py
   def __lt__(i,j): 
     return i.med < j.med
+```
+Two treatments are statistically indistinguishable
+if a non-parametric effect size test (`cliffsDelta`)
+and a non-parametric significance test (`bootstrap`)
+say that there are no differences between them.
+
+```py
   def __eq__(i,j):
     return cliffsDelta(i.all,j.all) and bootstrap(i.all,j.all)
+```
+Treatments can be combined and printed.
+```py
   def __add__(i,j):
     k =  Rx(all = i.all + j.all,
             lo=min(i.lo, j.lo), 
