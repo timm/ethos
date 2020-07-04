@@ -1,55 +1,55 @@
 ```py
 from lib import Thing,o
-import random
+from copy import deepcopy as kopy
+from x import F,I
 from cocrisk import rules
 
-def u(lo, hi=None):  return random.uniform(lo, hi or lo)
-def w(lo, hi=None):  return random.randint(lo, hi or lo)
-
 class Cocomo(Thing):
-  def __init__(i,**my):
-    i.x, i.y, dd = o(), o(), i.defaults()
+  defaults = o(
+      misc= o( kloc = F(2,1000), 
+               a    = F(2.2,9.8),
+               goal = F(0.1, 2)),
+      pos = o( rely = I(1,5),  data = I(2,5), cplx = I(1,6),
+               ruse = I(2,6),  docu = I(1,5), time = I(3,6),
+               stor = I(3,6),  pvol = I(2,5)),
+      neg = o( acap = I(1,5),  pcap = I(1,5), pcon = I(1,5),
+               aexp = I(1,5),  plex = I(1,5), ltex = I(1,5),
+               tool = I(1,5),  site = I(1,6), sced = I(1,5)),
+      sf  = o( prec = I(1,6),  flex = I(1,6), arch = I(1,6), 
+               team = I(1,6),  pmat = I(1,6)))
+ 
+  def __init__(i,*listofdicts):
+    i.x, i.y, dd = o(), o(), kopy(Cocomo.defaults)
+    # set up the defaults
+    for d in dd:  
+      for k in dd[d] : i.x[k]  = dd[d][k] # can't +=: no background info 
+    # apply any other constraints 
+    for dict1 in listofdicts:  
+      for k in dict1 : 
+         try: i.x[k] += dict1[k] # now you can +=
+         except Exception as e:
+              print(k, e)
     # ----------------------------------------------------------
-    for j in dd:
-      for k in dd[j]: i.x[k] = dd[j][k] 
-    for k in my:      i.x[k] = my[k]
+    for k in dd.misc:i.y[k]= i.x[k]()
+    for k in dd.pos: i.y[k]= F( .073,  .21)()   * (i.x[k]() -3) +1
+    for k in dd.neg: i.y[k]= F(-.178, -.078)()  * (i.x[k]() -3) +1
+    for k in dd.sf : i.y[k]= F(-1.56, -1.014)() * (i.x[k]() -6)
     # ----------------------------------------------------------
-    for k in dd.misc: i.y[k]= i.x[k]
-    for k in dd.pos:  i.y[k]= u(  .073,  .21) *(i.x[k] - 3) +1
-    for k in dd.neg:  i.y[k]= u( -.178, -.078)*(i.x[k] - 3) +1
-    for k in dd.sf :  i.y[k]= u(-1.56, -1.014)*(i.x[k] - 6)
-    # ----------------------------------------------------------
-    i.b = (0.85-1.1) / (9.18-2.2) * i.x.a  + 1.1+ (1.1-0.8)*.5 
 
-  def defaults(i):
-    return o(
-      misc= o( kloc = u(2,1000), a  = u(2.2,9.8)),
-      pos = o( rely = w(1,5),  data = w(2,5), cplx = w(1,6),
-               ruse = w(2,6),  docu = w(1,5), time = w(3,6),
-               stor = w(3,6),  pvol = w(2,5)),
-      neg = o( acap = w(1,5),  pcap = w(1,5), pcon = w(1,5),
-               aexp = w(1,5),  plex = w(1,5), ltex = w(1,5),
-               tool = w(1,5),  site = w(1,6), sced = w(1,5)),
-      sf  = o( prec = w(1,6),  flex = w(1,6), arch = w(1,6), 
-               team = w(1,6),  pmat = w(1,6)))
- 
   def effort(i):
-    em,sf = 1,0
-    for k in i.defaults().sf  : sf += i.y[k]
-    for k in i.defaults().pos : em *= i.y[k]
-    for k in i.defaults().neg : em *= i.y[k]
-    return i.x.a * em * i.x.kloc ** (i.b + 0.01 * sf) 
+    em, sf = 1, 0
+    b      = (0.85-1.1)/(9.18-2.2) * i.x.a() + 1.1+(1.1-0.8)*.5 
+    for k in Cocomo.defaults.sf  : sf += i.y[k]
+    for k in Cocomo.defaults.pos : em *= i.y[k]
+    for k in Cocomo.defaults.neg : em *= i.y[k]
+    return round(i.x.a() * em * i.x.goal()*i.x.kloc() ** (b + sf/100), 1)
  
-  def risk(i):
-    r = 0
+  def risk(i, r=0):
     for k1,rules1 in rules.items():
       for k2,m in rules1.items():
-        x  = i.x[k1]
-        y  = i.x[k2]
+        x  = i.x[k1]()
+        y  = i.x[k2]()
         z  = m[x-1][y-1]
         r += z
-    return round(100 * r / 104,2)
-
-  def eg(i):
-    return [ i.y[k] for k in i.x ] + [ i.effort(), i.risk() ]
+    return round(100 * r / 104, 1)
 ```

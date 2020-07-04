@@ -19,8 +19,6 @@
 
 ---------------
 
----------------
-
 ```py
 import sys,random
 from zipfile import ZipFile
@@ -53,6 +51,12 @@ def prod(lst):
   y = 1
   for x in lst: y = y*x
   return y
+```
+### perc
+```py
+def perc(l, p=[.25, .5, .75]):
+  l = sorted(l)
+  return [  l[int(p0 * len(l))] for p0 in p]
  
 ```
 ## Lists
