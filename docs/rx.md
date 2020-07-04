@@ -10,6 +10,7 @@ sets of similar values.
 
 ```py
 from lib import Thing, xtile
+import random
 
 class Rx(Thing):
   dull  = [0.147,0.33, 0.474][0]
@@ -52,6 +53,8 @@ Treatments can be combined and printed.
 ```
 ## Statistical Tests
 ### CliffsDelta
+For every item in `lst1`, find its position in `lst2`
+
 ```py
 def cliffsDelta(lst1, lst2, dull=Rx.dull):
   def runs(lst):
