@@ -17,10 +17,6 @@ into sets of values with the same `rank`
 
 ---------------
 
-
----------------
-
-
 ## Notes
 ### Overview
 
@@ -149,7 +145,7 @@ def cliffsDelta(lst1, lst2, dull=Rx.dull):
         i = j
       one=two
     yield j - i + 1,two
-  #---------------------
+  # --- end runs function ---------------------
   m, n = len(lst1), len(lst2)
   lst2 = sorted(lst2)
   j = more = less = 0
