@@ -249,6 +249,7 @@ Now either recurse to find more merges, or print out the results.
           rx.rank = n
           print(n, rx) 
       return lst
+  # --- end merge function ------------------
 ```
 Now the work begins:
 ```py
