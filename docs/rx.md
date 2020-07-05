@@ -210,7 +210,7 @@ Now the actual work begins.
 ## Output
 ### Group
 Given a dictionary of values, sort the values by their median
-then iterative merge together adjacent similar items.
+then iteratively merge together adjacent similar items.
 
 ```py
 def group(d, cohen = 0.3, 
