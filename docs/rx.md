@@ -12,8 +12,11 @@ into sets of values with the same `rank`
 - [Statistical Tests](#statistical-tests) : 
   - [CliffsDelta](#cliffsdelta) : 
   - [Bootstrap](#bootstrap) : 
+  - [Bootstrap](#bootstrap) : 
 - [Output](#output) : 
   - [Group](#group) : 
+
+---------------
 
 ---------------
 
