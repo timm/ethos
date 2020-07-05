@@ -32,4 +32,12 @@ def _rx2():
      width= 30,
      chops= [.25,  .5, .75],
      marks= ["-", "-", " "])
+
+@ok
+def _rx3():
+  m,n = 256,1000
+  d= {}
+  for x in range(1,m):
+   d[x]  = [r()**(1/x) for _ in range(n)]
+  group(d)
 ```

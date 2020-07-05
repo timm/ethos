@@ -16,7 +16,6 @@ into sets of values with the same `rank`
 - [Output](#output) : 
   - [Group](#group) : 
 
----------------
 
 ---------------
 
@@ -26,19 +25,26 @@ into sets of values with the same `rank`
 
 - Things in the same rank are statistically 
   indistinguishable, as judged by all three of:
-  - A very fast non-parametric `D` test 
+  1. A very fast non-parametric `D` test 
       - Sort the numns, ignore divisions less that
         30% of "spread" (90th-10th percentile range); 
-  - A (slightly more thorough) non-parametric effect 
+  2. A (slightly more thorough) non-parametric effect 
     size test (the Cliff's Delta);
       -  Twp lists are different if, usually, 
          things from one list do not fall into the middle 
          of the other.
-  - A (very thorough) non-parametric 
+  3. (very thorough) non-parametric 
     significance test (the Bootstrap);
        - See if hundreds of sample-with-replacements
          sets from two lists and  different properties to 
          the overall list.
+
+Of the above, the third is far slower than the rest. Often, if it is
+omitted, the results are often the same as just using 1+2.  So when
+each treatment has 1000s of values, it would be reasonable to skip
+it. Without bootstrapping,  256 treatments with 1000 values
+can be sorted in less than 2 seconds. But with that skipping
+that same process takes half an hour.
 
 ### Example
 
@@ -162,7 +168,6 @@ From p220 to 223 of the Efron text  'introduction to the bootstrap'.
 This function checks for  different properties between (a) the two
 lists and (b) hundreds of sample-with-replacements sets.
 
-### Bootstrap
 ```py
 def bootstrap(y0,z0,conf=Rx.conf,b=Rx.b):
   
@@ -218,6 +223,7 @@ def group(d, cohen = 0.3,
              chops = [0.1 ,0.3,0.5,0.7,0.9],
              marks = [" " ,"-"," ","-"," "]):
   def merge(lst, lvl=0):
+    print(lvl, len(lst))
 ```
 Do one pass, see what we can combine.
 ```py
