@@ -2,9 +2,11 @@
 from cocomo import Cocomo,F,I
 import sys,cocoeg
 from lib import perc
+from rx import group
 
 c= lambda: Cocomo(
-       [dict(goal=F(1),kloc=F(2,100), acap=I(1), ltex=I(5), sced=I(5))])
+       [dict(goal=F(1), kloc=F(2,100), 
+             acap=I(1), ltex=I(5), sced=I(5))])
 
 
 # d.effort(), d.risk())
@@ -25,15 +27,21 @@ def one():
   n=256
   for k1 in cocoeg.projects:
     print("#")
-    efforts = []
-    risks   = []
+    e = {}
+    r = {}
     for k2 in cocoeg.better:
-      c= lambda: Cocomo( 
-                 [cocoeg.better[k2] ,
-                 cocoeg.projects[k1]]
-          )
-      efforts += [[c().effort() for _ in range(n)]]
-      risks   += [[c().risk()   for _ in range(n)]]
+      c= lambda: Cocomo( [cocoeg.better[k2] ,
+                          cocoeg.projects[k1]])
+      e[k2] = [c().effort() for _ in range(n)]
+      r[k2] = [c().risk()   for _ in range(n)]
+    print("\n" + k1, "effort")
+    group(e, width= 30, show="%6.0f",
+             chops= [.1, .3,  .5, .7,  .9])
+    print("\n" + k2, "risk")
+    group(r, width= 30, show="%6.0f",
+             chops= [.1, .3,  .5, .7,  .9])
+
+
 
 one()
     

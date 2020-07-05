@@ -43,7 +43,7 @@ class Cocomo(Thing):
     for k in Cocomo.defaults.sf  : sf += i.y[k]
     for k in Cocomo.defaults.pos : em *= i.y[k]
     for k in Cocomo.defaults.neg : em *= i.y[k]
-    return round(i.x.a() * em * (i.x.kloc()) ** (b + 0.01*sf), 1)
+    return round(i.x.a() * em * (i.x.goal()*i.x.kloc()) ** (b + 0.01*sf), 1)
  
   def risk(i, r=0):
     for k1,rules1 in rules.items():

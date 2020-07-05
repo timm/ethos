@@ -82,10 +82,11 @@ import random
 class Rx(Thing):
   dull  = [0.147,0.33, 0.474][0]
   b     = 500
-  conf  = 0.05
-  cohen = 0.3
+  conf  = 0.01
+  cohen = 0.2
   def __init__(i, rx="", all=[], lo=0,hi=1,  
                          width = 50,
+                         show  = "%5.0f",
                          chops = [0.1 ,0.3,0.5,0.7,0.9],
                          marks = [" " ,"-"," ","-"," "]):
     i.rx   = rx
@@ -96,7 +97,7 @@ class Rx(Thing):
     i.med  = i.all[int(i.n/2)]
     i.parts= [i]
     i.rank = 0
-    i.width, i.chops, i.marks = width, chops, marks
+    i.width,i.chops,i.marks,i.show = width,chops,marks,show
 ```
 Treatments are sorted on their `med` value.
 ```py
@@ -122,6 +123,7 @@ Treatments can be combined or printed.
     return k
   def __repr__(i):
     return '%10s %s' % (i.rx, xtile(i.all, i.lo, i.hi,
+                                    show = i.show,
                                     width = i.width,
                                     chops = i.chops,
                                     marks = i.marks))
@@ -217,6 +219,7 @@ then iteratively merge together adjacent similar items.
 ```py
 def group(d, cohen = 0.3, 
              width = 50,
+             show  = "%5.0f",
              chops = [0.1 ,0.3,0.5,0.7,0.9],
              marks = [" " ,"-"," ","-"," "]):
   def merge(lst, lvl=0):
@@ -254,6 +257,7 @@ Now the work begins:
   tiny = (p(.9) - p(.2))/2.56 * Rx.cohen
   return merge(sorted([Rx(rx    = k,    all = d[k], 
                           lo    = a[0], hi  = a[-1],
+                          show  = show,
                           width = width,
                           chops = chops,
                           marks = marks) 
