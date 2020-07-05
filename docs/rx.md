@@ -12,9 +12,10 @@ into sets of values with the same `rank`
 - [Statistical Tests](#statistical-tests) : 
   - [CliffsDelta](#cliffsdelta) : 
   - [Bootstrap](#bootstrap) : 
-  - [Bootstrap](#bootstrap) : 
 - [Output](#output) : 
   - [Group](#group) : 
+
+---------------
 
 
 ---------------
@@ -223,7 +224,6 @@ def group(d, cohen = 0.3,
              chops = [0.1 ,0.3,0.5,0.7,0.9],
              marks = [" " ,"-"," ","-"," "]):
   def merge(lst, lvl=0):
-    print(lvl, len(lst))
 ```
 Do one pass, see what we can combine.
 ```py
