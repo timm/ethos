@@ -24,8 +24,8 @@ into sets of values with the same `rank`
 - Things in the same rank are statistically 
   indistinguishable, as judged by all three of:
   - A very fast non-parametric `D` test 
-      - Sort the numns, use 30% of "spread"
-        (90th-10th percentile range); 
+      - Sort the numns, ignore divisions less that
+        30% of "spread" (90th-10th percentile range); 
   - A (slightly more thorough) non-parametric effect 
     size test (the Cliff's Delta);
       -  Twp lists are different if, usually, 
@@ -122,7 +122,12 @@ Treatments can be combined or printed.
 ```
 ## Statistical Tests
 ### CliffsDelta
-For every item in `lst1`, find its position in `lst2`
+For every item in `lst1`, find its position in `lst2` Two lists are
+different if, usually, things from one list do not fall into the
+middle of the other.
+
+This code employees a few tricks to make all this run fast (e..g
+pre-sort the lists, work over `runs` of same values).
 
 ```py
 def cliffsDelta(lst1, lst2, dull=Rx.dull):
@@ -151,8 +156,13 @@ Two  lists y0,z0 are the same if the same patterns can be seen in
 all of them, as well as in 100s to 1000s  sub-samples from each.
 From p220 to 223 of the Efron text  'introduction to the bootstrap'.
 
+This function checks for  different properties between (a) the two
+lists and (b) hundreds of sample-with-replacements sets.
+
+### Bootstrap
 ```py
 def bootstrap(y0,z0,conf=Rx.conf,b=Rx.b):
+  # A quick and dirty class to summarize sets of values.
   class Sum():
     def __init__(i,some=[]):
       i.sum = i.n = i.mu = 0 ; i.all=[]
@@ -161,6 +171,8 @@ def bootstrap(y0,z0,conf=Rx.conf,b=Rx.b):
       i.all.append(x);
       i.sum +=x; i.n += 1; i.mu = float(i.sum)/i.n
     def __add__(i1,i2): return Sum(i1.all + i2.all)
+  # ---------------------------
+  # Defines the property that we will check for,
   def testStatistic(y,z):
      tmp1 = tmp2 = 0
      for y1 in y.all: tmp1 += (y1 - y.mu)**2
@@ -171,8 +183,12 @@ def bootstrap(y0,z0,conf=Rx.conf,b=Rx.b):
      if s1+s2:
        delta =  delta/((s1/y.n + s2/z.n)**0.5)
      return delta
+  # ---------------------------
+  # sampling with replacement
   def one(lst): return lst[ int(any(len(lst))) ]
   def any(n)  : return random.uniform(0,n)
+  # --------------------------
+  # now the actual work begins
   y,z  = Sum(y0), Sum(z0)
   x    = y + z
   baseline = testStatistic(y,z)
@@ -202,7 +218,7 @@ def group(d, cohen = 0.3,
       if j < len(lst) - 1: 
         y = lst[j+1]
         if abs(x.med - y.med) <= tiny or x == y:
-          tmp += [x+y]
+          tmp += [x+y] # merge x and y
           j   += 2
           continue
       tmp += [x]
