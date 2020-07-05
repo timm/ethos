@@ -162,8 +162,8 @@ lists and (b) hundreds of sample-with-replacements sets.
 ### Bootstrap
 ```py
 def bootstrap(y0,z0,conf=Rx.conf,b=Rx.b):
-  # A quick and dirty class to summarize sets of values.
-  class Sum():
+  
+  class Sum(): # Quick & dirty class to summarize sets of values.
     def __init__(i,some=[]):
       i.sum = i.n = i.mu = 0 ; i.all=[]
       for one in some: i.put(one)
@@ -171,8 +171,9 @@ def bootstrap(y0,z0,conf=Rx.conf,b=Rx.b):
       i.all.append(x);
       i.sum +=x; i.n += 1; i.mu = float(i.sum)/i.n
     def __add__(i1,i2): return Sum(i1.all + i2.all)
-  # ---------------------------
-  # Defines the property that we will check for,
+```
+Define the property that we will check for.
+```py
   def testStatistic(y,z):
      tmp1 = tmp2 = 0
      for y1 in y.all: tmp1 += (y1 - y.mu)**2
@@ -183,12 +184,15 @@ def bootstrap(y0,z0,conf=Rx.conf,b=Rx.b):
      if s1+s2:
        delta =  delta/((s1/y.n + s2/z.n)**0.5)
      return delta
+```
+Sampling with replacement
+```py
   # ---------------------------
-  # sampling with replacement
   def one(lst): return lst[ int(any(len(lst))) ]
   def any(n)  : return random.uniform(0,n)
-  # --------------------------
-  # now the actual work begins
+```
+Now the actual work begins.
+```py
   y,z  = Sum(y0), Sum(z0)
   x    = y + z
   baseline = testStatistic(y,z)
