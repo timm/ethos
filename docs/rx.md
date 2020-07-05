@@ -54,7 +54,10 @@ This code is asking for an analysis of five treatments
            chops= [.25,  .5, .75],
            marks= ["-", "-", " "])
 
-Reports that these treatments divide into three  groups (`0,1,2`):
+In the above, note that the `chops` and `marks` tells the code
+to report the `25,50,75th` percentile.
+
+This code reports that these treatments divide into three  groups (`0,1,2`):
 
         0  x5 (   ----*---    |              ), 0.200,  0.300,  0.400
         0  x3 (    ----*      |              ), 0.230,  0.330,  0.350
