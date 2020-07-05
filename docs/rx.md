@@ -187,7 +187,6 @@ Define the property that we will check for.
 ```
 Sampling with replacement
 ```py
-  # ---------------------------
   def one(lst): return lst[ int(any(len(lst))) ]
   def any(n)  : return random.uniform(0,n)
 ```
@@ -217,6 +216,9 @@ def group(d, cohen = 0.3,
              marks = [" " ,"-"," ","-"," "]):
   def merge(lst, lvl=0):
     j,tmp = 0,[]
+```
+Do one pass, see what we can combine.
+```py
     while j < len(lst):
       x = lst[j]
       if j < len(lst) - 1: 
@@ -227,6 +229,9 @@ def group(d, cohen = 0.3,
           continue
       tmp += [x]
       j   += 1
+```
+Either recurse to find more merges, or print out the results.
+```py
     if len(tmp) < len(lst):
       return merge(tmp, lvl+1) 
     else:
@@ -235,7 +240,9 @@ def group(d, cohen = 0.3,
           rx.rank = n
           print(n, rx) 
       return lst
-  # ------------------------------------------
+```
+Now the work begins:
+```py
   p    = lambda n: a[ int( n*len(a) )]
   a    = sorted([x for k in d for x in d[k]])
   tiny = (p(.9) - p(.2))/2.56 * Rx.cohen
