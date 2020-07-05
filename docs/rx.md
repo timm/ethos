@@ -5,12 +5,17 @@ values (`i.all`).
 Similar treatments can be `group`ed together 
 into sets of values with the same `rank`
 
+- [Notes](#notes) : 
+  - [Overview](#overview) : 
+  - [Example](#example) : 
 - [Rx](#rx-class) : class
 - [Statistical Tests](#statistical-tests) : 
   - [CliffsDelta](#cliffsdelta) : 
   - [Bootstrap](#bootstrap) : 
 - [Output](#output) : 
   - [Group](#group) : 
+
+---------------
 
 
 ## Notes
