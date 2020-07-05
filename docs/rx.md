@@ -39,16 +39,17 @@ into sets of values with the same `rank`
 
 ### Example
 
-This code:
+This code is asking for an analysis of five treatments 
+`x1,x2,x3,x4,x5`:
 
         n = 256
         group(    
            dict(
-           x1 = [ 0.34, 0.49 ,0.51, 0.6]*n,
-           x2 = [0.6  ,0.7 , 0.8 , 0.89]*n,
-           x3 = [0.13 ,0.23, 0.33 , 0.35]*n,
-           x4 = [0.6  ,0.7,  0.8 , 0.9]*n,
-           x5 = [0.1  ,0.2,  0.3 , 0.4]*n),
+             x1 = [ 0.34, 0.49 ,0.51, 0.6]*n,
+             x2 = [0.6  ,0.7 , 0.8 , 0.89]*n,
+             x3 = [0.13 ,0.23, 0.33 , 0.35]*n,
+             x4 = [0.6  ,0.7,  0.8 , 0.9]*n,
+             x5 = [0.1  ,0.2,  0.3 , 0.4]*n),
            width= 30,
            chops= [.25,  .5, .75],
            marks= ["-", "-", " "])
