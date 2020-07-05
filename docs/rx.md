@@ -2,10 +2,22 @@
 A treatment "`Rx`" is a label (`i.rx`) and a set of 
 values (`i.all`).  
 
-- Similar treatments can be `group`ed together into
-sets of values with the same `rank`
-- Things in the same rank are 
-statistically indistinguishable, as judged by both a
+Similar treatments can be `group`ed together 
+into sets of values with the same `rank`
+
+- [Rx](#rx-class) : class
+- [Statistical Tests](#statistical-tests) : 
+  - [CliffsDelta](#cliffsdelta) : 
+  - [Bootstrap](#bootstrap) : 
+- [Output](#output) : 
+  - [Group](#group) : 
+
+
+## Notes
+### Overview
+
+- Things in the same rank are statistically 
+  indistinguishable, as judged by all three of:
   - A very fast non-parametric `D` test 
       - Sort the numns, use 30% of "spread"
         (90th-10th percentile range); 
@@ -20,7 +32,33 @@ statistically indistinguishable, as judged by both a
          sets from two lists and  different properties to 
          the overall list.
 
-## Class
+### Example
+
+This code:
+
+        n = 256
+        group(    
+           dict(
+           x1 = [ 0.34, 0.49 ,0.51, 0.6]*n,
+           x2 = [0.6  ,0.7 , 0.8 , 0.89]*n,
+           x3 = [0.13 ,0.23, 0.33 , 0.35]*n,
+           x4 = [0.6  ,0.7,  0.8 , 0.9]*n,
+           x5 = [0.1  ,0.2,  0.3 , 0.4]*n),
+           width= 30,
+           chops= [.25,  .5, .75],
+           marks= ["-", "-", " "])
+
+Reports that these treatments divide into three  groups (`0,1,2`):
+
+        0  x5 (   ----*---    |              ), 0.200,  0.300,  0.400
+        0  x3 (    ----*      |              ), 0.230,  0.330,  0.350
+        1  x1 (              -*--            ), 0.490,  0.510,  0.600
+        2  x2 (               |      ----*-- ), 0.700,  0.800,  0.890
+        2  x4 (               |      ----*-- ), 0.700,  0.800,  0.900
+
+---------------
+
+## Rx: class
 
 ```py
 from lib import Thing, xtile
@@ -30,8 +68,11 @@ class Rx(Thing):
   dull  = [0.147,0.33, 0.474][0]
   b     = 500
   conf  = 0.05
-  cohen = 0.3
-  def __init__(i, rx="",all=[], lo=0,hi=1):
+  cohen = 0.2
+  def __init__(i, rx="", all=[], lo=0,hi=1,  
+                         width = 50,
+                         chops = [0.1 ,0.3,0.5,0.7,0.9],
+                         marks = [" " ,"-"," ","-"," "]):
     i.rx   = rx
     i.all  = sorted([x for x in all if x != "?"])
     i.lo   = min(i.all[0],lo)
@@ -39,6 +80,8 @@ class Rx(Thing):
     i.n    = len(i.all)
     i.med  = i.all[int(i.n/2)]
     i.parts= [i]
+    i.rank = 0
+    i.width, i.chops, i.marks = width, chops, marks
 ```
 Treatments are sorted on their `med` value.
 ```py
@@ -54,7 +97,7 @@ say that there are no differences between them.
   def __eq__(i,j):
     return cliffsDelta(i.all,j.all) and bootstrap(i.all,j.all)
 ```
-Treatments can be combined and printed.
+Treatments can be combined or printed.
 ```py
   def __add__(i,j):
     k =  Rx(all = i.all + j.all,
@@ -63,7 +106,10 @@ Treatments can be combined and printed.
     k.parts = i.parts + j.parts
     return k
   def __repr__(i):
-    return '%10s %s' % (i.rx, xtile(i.all, i.lo, i.hi))
+    return '%10s %s' % (i.rx, xtile(i.all, i.lo, i.hi,
+                                    width = i.width,
+                                    chops = i.chops,
+                                    marks = i.marks))
 ```
 ## Statistical Tests
 ### CliffsDelta
@@ -131,12 +177,15 @@ def bootstrap(y0,z0,conf=Rx.conf,b=Rx.b):
   return bigger / b >= conf
 ```
 ## Output
-### Ranks
+### Group
 Given a dictionary of values, sort the values by their median
 then iterative merge together adjacent similar items.
 
 ```py
-def group(d, cohen=0.3):
+def group(d, cohen = 0.3, 
+             width = 50,
+             chops = [0.1 ,0.3,0.5,0.7,0.9],
+             marks = [" " ,"-"," ","-"," "]):
   def merge(lst, lvl=0):
     j,tmp = 0,[]
     while j < len(lst):
@@ -150,14 +199,27 @@ def group(d, cohen=0.3):
       tmp += [x]
       j   += 1
     if len(tmp) < len(lst):
-      merge(tmp, lvl+1) 
+      return merge(tmp, lvl+1) 
     else:
       for n,group in enumerate(lst):
-        [print(n, rx) for rx in group.parts]
+        for rx in group.parts:
+          rx.rank = n
+          print(n, rx) 
+      return lst
   # ------------------------------------------
   p    = lambda n: a[ int( n*len(a) )]
   a    = sorted([x for k in d for x in d[k]])
   tiny = (p(.9) - p(.2))/2.56 * Rx.cohen
-  merge(sorted([Rx(rx=k, all=d[k], lo=a[0], hi=a[-1]) 
+  return merge(sorted([Rx(rx    = k,    all = d[k], 
+                          lo    = a[0], hi  = a[-1],
+                          width = width,
+                          chops = chops,
+                          marks = marks) 
                for k in d]))
 ```
+
+
+
+
+
+
