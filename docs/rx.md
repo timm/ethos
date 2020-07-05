@@ -77,7 +77,7 @@ class Rx(Thing):
   dull  = [0.147,0.33, 0.474][0]
   b     = 500
   conf  = 0.05
-  cohen = 0.2
+  cohen = 0.3
   def __init__(i, rx="", all=[], lo=0,hi=1,  
                          width = 50,
                          chops = [0.1 ,0.3,0.5,0.7,0.9],
