@@ -35,9 +35,9 @@ if _more_ then exponential _more_ effort i
 |What| Notes|
 |----|------|
 | Flex | development flexibility|
+|Arch| architecture or risk resolution |
 |Pmat| process maturity |
 |Prec| precedentedness|
-|Arch| architecture or risk resolution |
 |Team|team cohesion|
 
 ### Positive Effort Multipliers
@@ -45,15 +45,14 @@ If more, then linearly more effort
 
 |What| Notes|
 |----|------|
-|rely| required reliability |
+|cplx | product complexity|
 |data| database size (DB bytes/SLOC) |
 |docu| documentation|
-|cplx | product complexity|
-|ruse |required reuse|
-|time |required % of available CPU
-|stor| required % of available RAM
 |pvol| platform volatility (frequency of major changes/ frequency of minor changes )|
-
+|rely| required reliability |
+|ruse |required reuse|
+|stor| required % of available RAM
+|time |required % of available CPU
 
 ### Negative Effort Multipliers
 If more, then linearly more effort 
@@ -75,14 +74,16 @@ If more, then linearly more effort
 of the [Cocomo manual](http://sunset.usc.edu/csse/affiliate/private/COCOMOII_2000/COCOMOII-040600/modelman.pdf).)
 
 ```py
+## Code
+### Imports
 from lib import Thing,o
 from copy import deepcopy as kopy
 from x import F,I
 from cocrisk import rules
 
+### Class Cocomo
 class Cocomo(Thing):
   __name__ = "Cocomo"
-
 ```
 Here's where we defined attributes to be floats _F_ or integers _I_.
 ```py
@@ -142,3 +143,10 @@ Risk model:
         r += z
     return round(100 * r / 104, 1)
 ```
+### Risk Model
+See [the risk model](cocorisk).
+
+### Project mitations
+See the _better_ variable within the [COCOMO examples file](cocoeg).
+
+For an example on how to use it, see the _one_ function of [cocomook](cocomook).
