@@ -144,7 +144,7 @@ Risk model:
     return round(100 * r / 104, 1)
 ```
 ### Risk Model
-See [the risk model](cocorisk).
+See [the risk model](cocrisk).
 
 ### Project mitations
 See the _better_ variable within the [COCOMO examples file](cocoeg).
