@@ -21,12 +21,13 @@ This code extends the standard COCOMO effort model as follows:
 - Many of the internal parameters of COCOMO are not known with any certainty.
   -  So this model represents all such internals as a range of options.
   - By running this estimated, say, 1000 times, you can get an estimate of the range of possible values.
-- This code also for the easy extesnion of the model.
-If you think
-that other factors do (or do not) influence effort in an exponential or liner manner, then it
-is simple to extend this code with your preferred set of attributes.
 
 ## Attributes
+
+This code also for the easy extension of the model.  If you think
+that other factors do (or do not) influence effort in an exponential
+or liner manner, then it is simple to extend this code with your
+preferred set of attributes.
 
 ### Scale Factors
 if _more_ then exponential _more_ effort i
