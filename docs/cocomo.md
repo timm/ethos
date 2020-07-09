@@ -1,18 +1,11 @@
 # Cocomo
-Predicts:
-- Time in months to complete a project (and a month is 152 hours of
+This code predicts:
+
+1. Time in months to complete a project (and a month is 152 hours of
 work and includes all management support tasks associated with the coding).
-- The risk associated with the current project decisions.
-
-The [risk model](cocrisk) is calculated from a set of rules that add a "risk value" for
+2. The risk associated with the current project decisions.
+   This [risk model](cocrisk) is calculated from a set of rules that add a "risk value" for
 every "bad smell" within the current project settings.
-
-This code extends the standard COCOMO effort model as follows:
-- Many of the internal parameters of COCOMO are not known with any certainty.
-- So this model
-represents all such internals as a range of options.
-- By running this estimated, say, 1000
-times, you can get an estimate of the range of possible values.
 
 The standard COCOMO effort model assumes that:
 -  Effort is exponential on size of code
@@ -20,7 +13,21 @@ The standard COCOMO effort model assumes that:
 - Outside the exponent there are set of effort multipliers that change effort in a linear manner
   - either linearly increasing  or linearly decreasing.
 
+This code extends the standard COCOMO effort model as follows:
+- This code comes with a set of mitigations that might improve a project.
+  It is a sample manner:
+  - To loop over all those mitigations, trying each for a particular project. 
+  - Define and test your own mitigations.
+- Many of the internal parameters of COCOMO are not known with any certainty.
+  -  So this model represents all such internals as a range of options.
+  - By running this estimated, say, 1000 times, you can get an estimate of the range of possible values.
+- This code also for the easy extesnion of the model.
+If you think
+that other factors do (or do not) influence effort in an exponential or liner manner, then it
+is simple to extend this code with your preferred set of attributes.
+
 ## Attributes
+
 ### Scale Factors
 if _more_ then exponential _more_ effort i
 
@@ -74,6 +81,10 @@ from cocrisk import rules
 
 class Cocomo(Thing):
   __name__ = "Cocomo"
+
+```
+Here's where we defined attributes to be floats _F_ or integers _I_.
+```py
   defaults = o(
       misc= o( kloc = F(2,1000),
                a    = F(2.2,9.8),
@@ -86,7 +97,11 @@ class Cocomo(Thing):
                tool = I(1,5),  site = I(1,6), sced = I(1,5)),
       sf  = o( prec = I(1,6),  flex = I(1,6), arch = I(1,6),
                team = I(1,6),  pmat = I(1,6)))
+```
+This code initializes the parameters then overrides then with values
+in `listofdicts` (if any are supplied).
 
+```py
   def __init__(i,listofdicts=[]):
     i.x, i.y, dd = o(), o(), kopy(Cocomo.defaults)
     # set up the defaults
@@ -104,7 +119,9 @@ class Cocomo(Thing):
     for k in dd.neg: i.y[k]= F(-.178, -.078)()  * (i.x[k]() -3) +1
     for k in dd.sf : i.y[k]= F(-1.56, -1.014)() * (i.x[k]() -6)
     # ----------------------------------------------------------
-
+```
+Effort model:
+```py
   def effort(i):
     em, sf = 1, 0
     b      = (0.85-1.1)/(9.18-2.2) * i.x.a() + 1.1+(1.1-0.8)*.5
@@ -112,7 +129,9 @@ class Cocomo(Thing):
     for k in Cocomo.defaults.pos : em *= i.y[k]
     for k in Cocomo.defaults.neg : em *= i.y[k]
     return round(i.x.a() * em * (i.x.goal()*i.x.kloc()) ** (b + 0.01*sf), 1)
-
+```
+Risk model:
+```py
   def risk(i, r=0):
     for k1,rules1 in rules.items():
       for k2,m in rules1.items():
