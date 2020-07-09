@@ -1,3 +1,53 @@
+# Cocomo
+Predicts:
+- Time in months to complete a project (and a month is 152 hours of
+work and includes all management support tasks associated with the coding).
+- The risk associated with the current project decisions.
+
+The [risk model](cocrisk) is calculated from a set of rules that add a "risk value" for
+every "bad smell" within the current project settings.
+
+This code extends the standard COCOMO effort model as follows:
+- Many of the internal parameters of COCOMO are not known with any certainty.
+- So this model
+represents all such internals as a range of options.
+- By running this estimated, say, 1000
+times, you can get an estimate of the range of possible values.
+
+The standard COCOMO effort model assumes that:
+-  Effort is exponential on size of code
+- Within the exponent there are set of scale factors that increase effort exponentially
+- Outside the exponent there are set of effort multipliers that change effort in a linear manner
+  - either linearly increasing  or linearly decreasing.
+
+|Group| What | Notes|
+|-----|------|------|
+|if more then exponential more effort | Flex | development flexibility|
+|Pmat| process maturity |
+|Prec| precedentedness|
+|Arch| architecture or risk resolution |
+|Team|team cohesion|
+|if more, then linearly more effort |rely| required reliability |
+||data| database size (DB bytes/SLOC) |
+|docu| documentation|
+||cplx | product complexity|
+||ruse |required reuse|
+||time |required % of available CPU
+||stor| required % of available RAM
+||pvol| platform volatility (frequency of major changes/ frequency of minor changes )|
+|if more then linearly less effort |acap|analyst capability|
+||aexp|applications experience |
+||ltex| language and tool-set experience |
+||pcap |programmer capability|
+||pcon| personnel continuity (% turnover per year) |
+||plex| platform experience|
+||sced| dictated development schedule|
+||site| multi-site development|
+||tool| use of software tools|
+
+(For guidance on how to score projects on these scales, see tables 11,12,13,etc
+of the [Cocomo manual](http://sunset.usc.edu/csse/affiliate/private/COCOMOII_2000/COCOMOII-040600/modelman.pdf).)
+
 ```py
 from lib import Thing,o
 from copy import deepcopy as kopy
@@ -7,7 +57,7 @@ from cocrisk import rules
 class Cocomo(Thing):
   __name__ = "Cocomo"
   defaults = o(
-      misc= o( kloc = F(2,1000), 
+      misc= o( kloc = F(2,1000),
                a    = F(2.2,9.8),
                goal = F(0.1, 2)),
       pos = o( rely = I(1,5),  data = I(2,5), cplx = I(1,6),
@@ -16,17 +66,17 @@ class Cocomo(Thing):
       neg = o( acap = I(1,5),  pcap = I(1,5), pcon = I(1,5),
                aexp = I(1,5),  plex = I(1,5), ltex = I(1,5),
                tool = I(1,5),  site = I(1,6), sced = I(1,5)),
-      sf  = o( prec = I(1,6),  flex = I(1,6), arch = I(1,6), 
+      sf  = o( prec = I(1,6),  flex = I(1,6), arch = I(1,6),
                team = I(1,6),  pmat = I(1,6)))
- 
+
   def __init__(i,listofdicts=[]):
     i.x, i.y, dd = o(), o(), kopy(Cocomo.defaults)
     # set up the defaults
-    for d in dd:  
-      for k in dd[d] : i.x[k]  = dd[d][k] # can't +=: no background info 
-    # apply any other constraints 
-    for dict1 in listofdicts:  
-      for k in dict1 : 
+    for d in dd:
+      for k in dd[d] : i.x[k]  = dd[d][k] # can't +=: no background info
+    # apply any other constraints
+    for dict1 in listofdicts:
+      for k in dict1 :
          try: i.x[k] += dict1[k] # now you can +=
          except Exception as e:
               print(k, e)
@@ -39,12 +89,12 @@ class Cocomo(Thing):
 
   def effort(i):
     em, sf = 1, 0
-    b      = (0.85-1.1)/(9.18-2.2) * i.x.a() + 1.1+(1.1-0.8)*.5 
+    b      = (0.85-1.1)/(9.18-2.2) * i.x.a() + 1.1+(1.1-0.8)*.5
     for k in Cocomo.defaults.sf  : sf += i.y[k]
     for k in Cocomo.defaults.pos : em *= i.y[k]
     for k in Cocomo.defaults.neg : em *= i.y[k]
     return round(i.x.a() * em * (i.x.goal()*i.x.kloc()) ** (b + 0.01*sf), 1)
- 
+
   def risk(i, r=0):
     for k1,rules1 in rules.items():
       for k2,m in rules1.items():
