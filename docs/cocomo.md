@@ -20,30 +20,48 @@ The standard COCOMO effort model assumes that:
 - Outside the exponent there are set of effort multipliers that change effort in a linear manner
   - either linearly increasing  or linearly decreasing.
 
-|Group| What | Notes|
-|-----|------|------|
-|if more then exponential more effort | Flex | development flexibility|
+## Attributes
+### Scale Factors
+if _more_ then exponential _more_ effort i
+
+|What| Notes|
+|----|------|
+| Flex | development flexibility|
 |Pmat| process maturity |
 |Prec| precedentedness|
 |Arch| architecture or risk resolution |
 |Team|team cohesion|
-|if more, then linearly more effort |rely| required reliability |
-||data| database size (DB bytes/SLOC) |
+
+### Positive Effort Multipliers
+If more, then linearly more effort 
+
+|What| Notes|
+|----|------|
+|rely| required reliability |
+|data| database size (DB bytes/SLOC) |
 |docu| documentation|
-||cplx | product complexity|
-||ruse |required reuse|
-||time |required % of available CPU
-||stor| required % of available RAM
-||pvol| platform volatility (frequency of major changes/ frequency of minor changes )|
-|if more then linearly less effort |acap|analyst capability|
-||aexp|applications experience |
-||ltex| language and tool-set experience |
-||pcap |programmer capability|
-||pcon| personnel continuity (% turnover per year) |
-||plex| platform experience|
-||sced| dictated development schedule|
-||site| multi-site development|
-||tool| use of software tools|
+|cplx | product complexity|
+|ruse |required reuse|
+|time |required % of available CPU
+|stor| required % of available RAM
+|pvol| platform volatility (frequency of major changes/ frequency of minor changes )|
+
+
+### Negative Effort Multipliers
+If more, then linearly more effort 
+
+
+|What| Notes|
+|----|------|
+|acap|analyst capability|
+|aexp|applications experience |
+|ltex| language and tool-set experience |
+|pcap |programmer capability|
+|pcon| personnel continuity (% turnover per year) |
+|plex| platform experience|
+|sced| dictated development schedule|
+|site| multi-site development|
+|tool| use of software tools|
 
 (For guidance on how to score projects on these scales, see tables 11,12,13,etc
 of the [Cocomo manual](http://sunset.usc.edu/csse/affiliate/private/COCOMOII_2000/COCOMOII-040600/modelman.pdf).)
