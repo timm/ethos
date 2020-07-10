@@ -2,11 +2,11 @@
 Duo=$(cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
 
 cd $Duo/docs
-sh ../o
-for i in *ok.py; do
+sh $Duo/u -c
+for f in *ok.py; do
     echo
-    echo "---- $g |---------------------------------"
+    echo "----| $f |---------------------------------"
     echo
-   python3 $i
+   pypy3 $f
 done
 

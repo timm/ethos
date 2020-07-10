@@ -1,6 +1,6 @@
 
 ```py
-from lib import o,ok,src,rows,cols,dprint,excursion,xtiles
+from lib import o,ok,src,rows,cols,dprint,excursion,xtile
 from random import random as r
 
 @ok
@@ -59,10 +59,10 @@ def _excursion():
 @ok
 def _xtiles():
   a,n = [], 10000
-  a  += [[r()**2   for _ in range(n)]]
-  a  += [[r()**0.5 for _ in range(n)]]
-  a  += [[r()      for _ in range(n)]]
-  xtiles(a,chops = [.3,.5,.7],
+  a  = [r()**2   for _ in range(n)]
+  a += [r()**0.5 for _ in range(n)]
+  a += [r()      for _ in range(n)]
+  xtile(a,chops = [.3,.5,.7],
            show  = '%5.2f',
            marks = ["-","-","-"])
 ```

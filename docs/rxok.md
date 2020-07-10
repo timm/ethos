@@ -18,7 +18,7 @@ def _rx1():
            rx1b=rx1b,
            rx1c=rx1c,
            rx2=rx2,
-           rx3=rx3))
+           rx3=rx3), show="%3.2f")
 @ok
 def _rx2():
   n = 256
@@ -30,14 +30,15 @@ def _rx2():
      x4 = [0.6  ,0.7,  0.8 , 0.9]*n,
      x5 = [0.1  ,0.2,  0.3 , 0.4]*n),
      width= 30,
+     show="%3.2f",
      chops= [.25,  .5, .75],
-     marks= ["-", "-", " "])
+     marks= [".", ".", " "])
 
 @ok
 def _rx3():
-  m,n = 256,1000
+  m,n = 50,100
   d= {}
   for x in range(1,m):
-   d[x]  = [r()**(1/x) for _ in range(n)]
-  group(d)
+    d[x]  = [r()**(x/10) for _ in range(n)]
+  group(d,show="%.2f",marks=[" ",".","."," "])
 ```

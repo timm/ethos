@@ -119,9 +119,9 @@ changed- see the optional flags of the function).
 def xtile(lst,lo=0,hi=1,
              width = 50,
              chops = [0.1 ,0.3,0.5,0.7,0.9],
-             marks = [" " ,"-"," ","-"," "],
-             bar   = "|",
-             star  = "*",
+             marks = [" " ,".","."," "," "],
+             bar   = "",
+             star  = "o",
              show  = " %5.3f"):
     def at(p): 
       return ordered[int(len(lst)*p)]
@@ -133,13 +133,14 @@ def xtile(lst,lo=0,hi=1,
     what    = [at(p)   for p in chops]
     where   = [norm(n) for n in  what]
     out     = [" "] * width
+    marks1 = marks[:]
     for one,two in pairs(where):
       for i in range(one,two):
-        out[i] = marks[0]
-      marks = marks[1:]
-    out[int(width/2)]  = bar
-    out[norm(at(0.5))] = star
-    return '('+''.join(out) +  ")," +  pretty(what)
+        out[i] = marks1[0]
+      marks1 = marks1[1:]
+    if bar:  out[int(width/2)]  = bar
+    if star: out[norm(at(0.5))] = star
+    return ''.join(out) +  "," +  pretty(what)
 
 ## Input 
 ### Src: read from strings or file or lists or zip files or standard input

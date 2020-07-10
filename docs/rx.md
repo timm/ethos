@@ -221,7 +221,7 @@ def group(d, cohen = 0.3,
              width = 50,
              show  = "%5.0f",
              chops = [0.1 ,0.3,0.5,0.7,0.9],
-             marks = [" " ,"-"," ","-"," "]):
+             marks = [" " ,".",".","."," "]):
   def merge(lst, lvl=0):
 ```
 Do one pass, see what we can combine.
@@ -238,7 +238,9 @@ Do one pass, see what we can combine.
       tmp += [x]
       j   += 1
 ```
-Now either recurse to find more merges, or print out the results.
+Now either:
+- recuse to find more merges;
+-  or print out the results.
 ```py
     if len(tmp) < len(lst):
       return merge(tmp, lvl+1) 

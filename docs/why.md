@@ -25,7 +25,8 @@ Build a tree
     if len(t.rows) <= Why.min:
       return o(t=t, yes=None, no=None)
     else:
-      return i.recurse(t, *i.split(t, Best(t)))
+      pos, lo, hi = i.split(t, Best(t))
+      return i.recurse(t, pos,lo,hi)
 
   def split(i, t, br):
     most, pos, lo, hi = 0, None, None, None
@@ -45,10 +46,10 @@ Build a tree
     for row in all.rows:
       x = row.cells[pos]
       if x != Col.no:
-        (yes if lo <= x and x<= hi else no).append(row)
+        (yes if lo <= x and x<= hi else no).row(row)
     return o(t = t, col=pos, lo=lo, hi=hi,
              yes = yes,
-             no  = i.div(ll, no))
+             no  = i.div(no))
 ```
 Split on symbolics.
 ```py

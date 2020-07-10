@@ -571,11 +571,11 @@ else
       esac
   done
 fi
-
+Run=pypy3
 if [ -f "$1" ]; then
   transpiles
   g=$(basename $1 .md).py
-  if [ -t 0 ]; then python3 $g
-  else      cat - | python3 $g
+  if [ -t 0 ]; then $Run $g
+  else      cat - | $Run $g
   fi
 fi
