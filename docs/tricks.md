@@ -45,6 +45,9 @@ def cols(src):
     yield [cells[n] for n in todo]
 ```
 ```py
+def o(i):
+  print print(i.__dict__,pre=i.__class__.__name__)
+
 def dprint(d, pre="",skip="_"):
   def q(z):
     if isinstance(z,float): return "%5.3f" % z
