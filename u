@@ -572,9 +572,11 @@ else
   done
 fi
 Run=pypy3
-if [ -f "$1" ]; then
+if [ -f "${1}.md" ]; then f=${1}.md; fi
+if [ -f "${1}"    ]; then f=${1}   ; fi
+if [ -f "$f" ]; then
   transpiles
-  g=$(basename $1 .md).py
+  g=$(basename $f .md).py
   shift
   if [ -t 0 ]; then $Run $g $*
   else      cat - | $Run $g $*

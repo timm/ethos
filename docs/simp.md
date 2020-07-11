@@ -28,90 +28,110 @@ my = args(*about())
 ```
 
 ```py
-def no(x) return x == "?"
+def no(s)     : return  s == "?"
+def nump(s)   : return "<" in s or "$" in s or ">" in s
+def goalp(s)  : return "<" in s or "!" in s or ">" in s
+def klassp(s) : return "!" in s
+def lessp(s)  : return "<" in s
 
-class Cols():
-   def __init__(i):
-     i.x,i.y,i.nums,i.syms,i.head, = {},{},{},{},[]
-     i.nums, i.lo, i.hi, i.w = {},{},{}
-     i._klass=0 
-  def nump(i,  s) : return "<" in s or "$" in s or ">" in s
-  def goalp(i, s) : return "<" in s or "!" in s or ">" in s
-  def klassp(i,s) : return "!" in s
-  def lessp(i, s) : return "<" in s
-   def header(i,txt):
-     i.head = lst
-     for n,s in enumerate(lst):
-       (i.y   if i.goalp(s) else i.x  )[n] = s
-       (i.num if i.nump(s)  else i.sym)[n] = s
-       if i.klassp(s): i._klass = n
-     for k in i.nums:
-       i.lo[k] =  10**32
-       i.hi[k] = -1*i.lo[k] 
-       i.w[k]  = -1 if i.less(s) else 1
-   def klass(i,lst): 
-     return lst[i._klass]
-   def row(i,lst):
-     for k  in i.nums: 
-       v = lst[k]
-       if no(v):
-       v = lst[k] = float(v)
-       if v> i.hi[k]: i.hi[k] = v
-       if v< i.lo[k]: i.lo[k] = v
-     return lst
+class Col(Thing):
+  def __init__(i,pos,txt):
+    i.n, i.pos, i.txt = 0, pos, txt
+    i.w = -1 if lessp(txt) else 1
+  def __add__(i,x):
+    if no(x): return x
+    i.n += 1
+    return i.add(x)
 
-class Tab():
+class Num(Col):
+  def __init__(i, *l):
+    super().__init__(*l)
+    i.mu, i.lo, i.hi = 0, 10**32, -10**32
+  def add(i,x):
+    x = float(x)
+    i.lo,i.hi = min(i.lo,x), max(i.hi,x)
+    i.mu      = i.mu + (x - i.mu)/i.n
+    return x
+  def norm(i,x):
+    if no(x) : return x
+    return (x - i.lo)  / (i.hi - i.lo + 0.000001)
+  def dist(i,x,y):
+    if no(x) and no(y): return 1
+    if no(x): x = i.lo if y > i.mu else i.hi
+    if no(y): y = i.lo if x > i.mu else i.hi
+    return abs(i.norm(x) - i.norm(y))
+
+class Sym(Col):
+  def __init__(i, *l):
+    super().__init__(*l)
+    i.seen, i.most, i.mode = {}, 0, None
+  def add(i,x):
+    tmp = i.seen[x] = i.seen.get(x,0) + 1
+    if tmp > i.most: i.most,i.mode = tmp,x
+    return x
+  def dist(i,x,y): 
+    return 1 if no(x) and no(y) else x != y
+ 
+class Cols(Thing):
+  def __init__(i) : 
+    i.x,i.y,i.nums,i.syms,i.all,i._klass = {},{},{},{},[],None
+  def add(i,lst): 
+    [ col.add( lst[col.pos] ) for col in i.all ]
+  def klass(i,lst): 
+    return lst[i._klass]
+  def header(i,lst):
+    for pos,txt in enumerate(lst):
+      tmp = (Num if nump(txt) else Sym)(pos,txt)
+      i.all += [tmp]
+      (i.y    if goalp(txt) else i.x)[pos] = tmp
+      (i.nums if nump(txt)  else i.syms)[pos] = tmp
+      if klassp(txt) : i._klass  = tmp
+
+class Tab(Thing):
   def __init__(i,rows=[]):
     i.rows, i.cols = [], Cols()
     [i.add(row) for row in rows]
   def clone(i,rows=[]):
-    t = Tab(data=[i.cols.head])
-    [t.add(row) for row in rows]
-    return t
-  def __add__(i,lst):
-    return i.row(lst) if i.cols else i.cols.header(lst)
-  def i.row(i,lst):
-    i.rows += [i.cols.row(lst)]
-  def read(i,data=None):
-    [i + row for row in csv(data)]
+    data = [[c.txt for c in i.cols.all]] + rows
+    return Tab(data = data)
+  def __add__(i,a): 
+    return i.add(a) if i.cols.all else i.cols.header(a)
+  def add(i,a): 
+    i.rows += [[c + a[c.pos] for c in i.cols.all]]
+  def read(i,data=None): 
+    [i + row for row in cols(rows(data))]
     return i
-  def norm(i,n,v):
-    if no(v) : return v
-    return (v - i.cols.lo[v])  / (
-            i.cols.hi[v] - i.cols.lo[v] + 0.000001)
-  def dist(i,lst1,lst2,cols=None):
-    cols  = cols or i.cols.x
-    d,n,p = 0, 0.001, my.p
-    for k in cols:
-      n += 1
-      x,y = lst1[k], lst2[k]
-      if no(x) and no(y):
-         d += 1
-      elif k in i.cols.sym:
-         d += x != y
-      else:
-         if no(x):
-           y = i.norm(k,y); x = 0 if y > 0.5 else 1
-         elif no(y):
-           x = i.norm(k,x); y = 0 if x > 0.5 else 1
-         else:
-           x,y = i.norm(k,x), i.norm(k,y)
-         d += abs(x-y)**p
-    return (d/n)**(1/p)
+  def dist(i,xs,ys,cols=None):
+    d,cols = 0, cols or i.cols.x
+    for col in cols.values():
+      inc = col.dist( xs[col.pos], ys[col.ps] )
+      d  += inc**my.p
+    return (d/len(cols))**(1/my.p)
   def pairs(i,col):
-    return Bins(col,i.rows, lambda z: z[col], 
-                            lambda z: i.cols.klass(z))
+    return Bins(col.pos,i.rows, lambda z: z[col.pos], 
+                                lambda z: i.cols.klass(z))
 
-class SBin:
-  def __init__(i, what, want):
+class Range(Thing):
+  def __init__(i,what,want):
     i.what,i.want = what, want
     i.n, i.yes, i.no = 0,0,0
+  def add(i,x,y):
+    i.n   += 1
+    if y==i.want: i.yes += 1
+    else        :  i.no += 1
+  def s(i, all):
+    yes   = i.yes/all.yes 
+    no    = i.no/all.no
+    return yes**2/(yes+no+0.0001) if yes > no else 0
+
+class SBin(Range):
+  def __init__(i, *lst):
+    super().__init__(*lst)
     i.lo, i.hi       = None,None
-  def add(i,x,y,goal):
+  def add(i,x,y):
+    super().add(x,y)
     i.lo = min(x,i.lo)
     i.hi = max(x,i.hi)
-    i.n   += 1
-    (i.yes += 1) if y==i.want else (i.no += 1)
   def merge(i,j):
     k     = SBin(i.what, i.want)
     k.lo  = min(i.lo, j.lo) 
@@ -120,15 +140,11 @@ class SBin:
     k.no  = i.no  + j.no
     k.yes = i.yes + j.yes
     return k
-  def s(i, all):
-    yes   = i.yes/all.yes 
-    no    = i.no/all.no
-    return yes**2/(yes+no+0.0001) if yes > no else 0
   def better(c,a,b,all):
     sa, sb, sc = a.s(all), b.s(all), c.s(all)
     return abs(sb - sa) < my.e or sc >= sb and sc >= sa
 
-class Bins:
+class Bins(Thing):
   def __init__(i,txt,a,x,y,goal=True, bin=SBin): 
     i.txt  = txt
     i.goal = goal
@@ -136,7 +152,7 @@ class Bins:
     i.all  = i.bin(txt, goal)  
     return i.merge( i.grow( i.pairs(x,y)))
   def pairs(i,x,y,lst):
-    lst = [(x(z), y(z) for z in a if not isinstance(x(z),str)]
+    lst = [(x(z), y(z)) for z in a if not isinstance(x(z),str)]
     return sorted(lst, key= lambda z:z[0])
   def grow(i,a):
     min  = len(a)**my.b
@@ -148,24 +164,24 @@ class Bins:
       bins[-1].add(x,y)
       i.all.add(x,y) 
     return bins
-   def merge(i,bins):
-     j, tmp = 0, []
-     while j < len(bins):
+  def merge(i,bins):
+    j, tmp = 0, []
+    while j < len(bins):
        a = bins[j]
        if j < len(bins) - 1:
-         b = bins[j+1]
-         c = a.merge(b)
-         if c.better(a,b,i.all):
-           a = c
-           j += 1
+          b = bins[j+1]
+          c = a.merge(b)
+          if c.better(a,b,i.all):
+             a = c
+             j += 1
        tmp += [a]
        j += 1
-     return i.merge(tmp) if len(tmp) < len(bins) else bins
+    return i.merge(tmp) if len(tmp) < len(bins) else bins
 ```
 
 ```py
-#@go
+@go
 def _tab():
-  t = Tab(i).read("data/weather4.csv")
-  o(t)
+  t = Tab().read("data/auto93.csv")
+  print(t)
 ```

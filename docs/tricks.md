@@ -1,5 +1,5 @@
 ```py
-import random,traceback,argparse
+import pprint,re,random,traceback,argparse
 
 def elp(txt,**d):
   for k in d:
@@ -25,28 +25,44 @@ def args(before, after, *lst):
     parser.add_argument("--"+key,**args)
   return parser.parse_args()
 
-def csv(x=None)
+def rows(x=None):
   prep=lambda z: re.sub(r'([\n\t\r ]|#.*)','',z.strip())
   if x:
     with open(x) as f:
       for y in f: 
          z = prep(y)
-         if z: yield cols(z.split(","))
+         if z: yield z.split(",")
   else:
    for y in sys.stdin: 
          z = prep(y)
-         if z: yield cols(z.split(","))
+         if z: yield z.split(",")
 
 def cols(src):
   todo = None
-  for cells in src:
-    todo = todo or [n for n, cell in enumerate(cells)
-                    if not "?"in cell]
-    yield [cells[n] for n in todo]
+  for a in src:
+    todo = todo or [n for n,s in enumerate(a) if not "?"in s]
+    yield [ a[n] for n in todo]
 ```
 ```py
+class Thing:
+  def __repr__(i):
+     s = pprint.pformat(has(i.__dict__),compact=True)
+     return  re.sub(r"'",' ',s)
+
+def has(i,seen=None):
+   seen = seen or {}
+   if isinstance(i,Thing)         : 
+      if i in seen: return "_"
+      seen[i]=i
+      return dict(klass=i.__class__.__name__, slots=has(i.__dict__,seen))
+   if isinstance(i,(tuple,list)): 
+      return [ has(v,seen) for v in i ]
+   if isinstance(i,dict): 
+      return { k:has(i[k], seen) for k in i if str(k)[0] !="_"}
+   return i
+
 def o(i):
-  print print(i.__dict__,pre=i.__class__.__name__)
+  dprint(i.__dict__)
 
 def dprint(d, pre="",skip="_"):
   def q(z):
@@ -59,17 +75,22 @@ def dprint(d, pre="",skip="_"):
 ```
 
 ```py
-t,f = 0,0
-def go(f):
-  score = lambda s: f"#TEST {s} passes = {t-f} fails = {f}"
-  try:
-      t += 1
-      print("### ",f.__name__)
-      random.seed(SEED)
-      f()
-      print(score("PASS"),':',f.__name__)
+class Test:
+  t,f = 0,0
+  def score(s): 
+    t,f = Test.t, Test.f
+    return f"#TEST {s} passes = {t-f} fails = {f}"
+  def go(fun):
+    try:
+      Test.t += 1
+      print("### ",fun.__name__)
+      random.seed(1)
+      fun()
+      print(Test.score("PASS"),':',fun.__name__)
     except Exception:
-      f += 1
+      Test.f += 1
       print(traceback.format_exc())
-      print(score("FAIL"),':',f.__name__)
+      print(Test.score("FAIL"),':',fun.__name__)
+
+go = Test.go
 ```
