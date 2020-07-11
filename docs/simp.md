@@ -111,10 +111,24 @@ class Tab(Thing):
     return Bins(col.pos,i.rows, lambda z: z[col.pos], 
                                 lambda z: i.cols.klass(z))
 
+def syms(i,txt,a,x,y,goal=True):
+  ranges={}
+  all = Range(txt,goal)
+  for one in a:
+    x1, y1 = x(one), y(one)
+    if no(x1): continue
+    if not x1 in ranges: ranges[x1] = Range(txt,goal)
+    r = ranges[x]
+    r.add(x1,y1)
+    all.add(x1,y1)
+    r.s(all)
+  return all
+
 class Range(Thing):
   def __init__(i,what,want):
     i.what,i.want = what, want
-    i.n, i.yes, i.no = 0,0,0
+    i.n, i.yes, i.no = 0,0.0001,0.0001
+    i._s = =0
   def add(i,x,y):
     i.n   += 1
     if y==i.want: i.yes += 1
@@ -122,7 +136,8 @@ class Range(Thing):
   def s(i, all):
     yes   = i.yes/all.yes 
     no    = i.no/all.no
-    return yes**2/(yes+no+0.0001) if yes > no else 0
+    i._s  =  yes**2/(yes+no+0.0001) if yes > no else 0
+    return i._s
 
 class SBin(Range):
   def __init__(i, *lst):
