@@ -15,14 +15,16 @@ def elp(txt,**d):
   if isinstance(val,list):
     return key,dict(help=txt, choices=val,          
                     default=default, metavar=m ,type=t)
-  return key,dict(help=txt + ("; e.g. %s" % val), 
+  eg = "; e.g. -%s %s"%(key,val) if val != "" else ""
+  return key,dict(help=txt + eg,
                  default=default, metavar=m, type=t)
 
 def args(before, after, *lst):
   parser = argparse.ArgumentParser(epilog=after, description = before,
                formatter_class = argparse.RawDescriptionHelpFormatter)
+
   for key, args in lst:
-    parser.add_argument("--"+key,**args)
+    parser.add_argument("-"+key,**args)
   return parser.parse_args()
 
 def rows(x=None):
@@ -44,6 +46,10 @@ def cols(src):
     yield [ a[n] for n in todo]
 ```
 ```py
+def shuffle(lst):
+  random.shuffle(lst)
+  return lst
+
 class Thing:
   def __repr__(i):
      s = pprint.pformat(has(i.__dict__),compact=True)
@@ -52,9 +58,12 @@ class Thing:
 def has(i,seen=None):
    seen = seen or {}
    if isinstance(i,Thing)         : 
-      if i in seen: return "_"
+      j =id(i) % 128021
+      if i in seen: return f"#:{j}"
       seen[i]=i
-      return dict(klass=i.__class__.__name__, slots=has(i.__dict__,seen))
+      d=has(i.__dict__,seen)
+      d["#"] = j
+      return d
    if isinstance(i,(tuple,list)): 
       return [ has(v,seen) for v in i ]
    if isinstance(i,dict): 
@@ -77,10 +86,18 @@ def dprint(d, pre="",skip="_"):
 ```py
 class Test:
   t,f = 0,0
+  all = []
   def score(s): 
     t,f = Test.t, Test.f
     return f"#TEST {s} passes = {t-f} fails = {f}"
-  def go(fun):
+  def go(fn=None, use=None):
+    if fn:
+      Test.all += [fn]
+    elif use:
+      [Test.run(fn) for fn in Test.all if use in fn.__name__]
+    else: 
+      [Test.run(fn) for fn in Test.all]
+  def run(fun):    
     try:
       Test.t += 1
       print("### ",fun.__name__)
@@ -92,5 +109,5 @@ class Test:
       print(traceback.format_exc())
       print(Test.score("FAIL"),':',fun.__name__)
 
-go = Test.go
+go  = Test.go
 ```

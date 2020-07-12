@@ -1,0 +1,12 @@
+Ell=$(cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
+
+echo  "$(tput bold) $(tput setaf 1) "; cat <<'EOF'
+    _           
+   _| |  _ _   ___ 
+  | . | | | | | . |
+  |___| |___| |___|  version 1.0
+EOF
+echo  "$(tput sgr0)"
+
+
+Ell="$Ell" bash --init-file $Ell/ellrc -i
