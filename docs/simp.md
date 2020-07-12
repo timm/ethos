@@ -1,12 +1,11 @@
 ```py
-import sys,math
-from tricks import *
+import pprint,rrandom,traceback,argparse,sys,math
 
-def about(): return [
-"""
-Optimizer, written as a data miner.  Break the data
-up into {colorful} regions of "bad" and "better". Find
-ways to jump "bad" to "better".
+def help(): 
+  """
+  Optimizer, written as a data miner.  Break the data
+  up into {colorful} regions of "bad" and "better". Find
+  ways to jump "bad" to "better".
 
   :-------:  
   | Ba    |  Bad ------.  to plan, find (better - bad)
@@ -15,11 +14,10 @@ ways to jump "bad" to "better".
           | Be    |    v  
           |     4 |  Better  
           :-------:  
-""","""
-Copyright (c) 2020, Tim Menzies.
-All rights reserved under the BSD 2-Clause license.
-""",
-  # sway
+
+  Copyright (c) 2020, Tim Menzies.
+  All rights reserved under the BSD 2-Clause license."""
+  return [
   elp("verbose mode for Tree",      treeVerbose= False),
   elp("bin min size =len**b",        b  = .5),
   elp("what columns to while tree building " ,   c  = ["x","y"]),
@@ -36,10 +34,34 @@ All rights reserved under the BSD 2-Clause license.
   elp("Run all tests. ", T = False)
 ]
 
-my = args(*about())
+def elp(txt,**d):
+  for k in d:
+    key = k
+    val = d[k]
+    break
+  default = val[0] if isinstance(val,list)  else val
+  if val is False :
+    return key,dict(help=txt, action="store_true")
+  m,t = "S",str
+  if isinstance(default,int)  : m,t= "I",int
+  if isinstance(default,float): m,t= "F",float
+  if isinstance(val,list):
+    return key,dict(help=txt, choices=val,          
+                    default=default, metavar=m ,type=t)
+  eg = "; e.g. -%s %s"%(key,val) if val != "" else ""
+  return key,dict(help=txt + eg,
+                 default=default, metavar=m, type=t)
 
-@go
-def hello(): print(about()[0])
+def args(f):
+  lst = f()
+  before = re.sub(r"\n  ","\n",f.__doc__)
+  parser = argparse.ArgumentParser(description = before,
+             formatter_class = argparse.RawDescriptionHelpFormatter)
+  for key, args in lst:
+    parser.add_argument("-"+key,**args)
+  return parser.parse_args()
+
+my  = args(help)
 
 ```
 
@@ -49,6 +71,11 @@ def nump(s)   : return "<" in s or "$" in s or ">" in s
 def goalp(s)  : return "<" in s or "!" in s or ">" in s
 def klassp(s) : return "!" in s
 def lessp(s)  : return "<" in s
+
+class Thing:
+  def __repr__(i):
+     return re.sub(r"'",' ',
+              pprint.pformat(has(i.__dict__),compact=True)
 
 class Col(Thing):
   def __init__(i,pos,txt):
@@ -288,6 +315,84 @@ class Ranges(Thing):
 ```
 
 ```py
+def rows(x=None):
+  prep=lambda z: re.sub(r'([\n\t\r ]|#.*)','',z.strip())
+  if x:
+    with open(x) as f:
+      for y in f: 
+         z = prep(y)
+         if z: yield z.split(",")
+  else:
+   for y in sys.stdin: 
+         z = prep(y)
+         if z: yield z.split(",")
+
+def cols(src):
+  todo = None
+  for a in src:
+    todo = todo or [n for n,s in enumerate(a) if not "?"in s]
+    yield [ a[n] for n in todo]
+```
+```py
+def shuffle(lst):
+  random.shuffle(lst)
+  return lst
+
+def has(i,seen=None):
+   seen = seen or {}
+   if isinstance(i,Thing)         : 
+      j =id(i) % 128021
+      if i in seen: return f"#:{j}"
+      seen[i]=i
+      d=has(i.__dict__,seen)
+      d["#"] = j
+      return d
+   if isinstance(i,(tuple,list)): 
+      return [ has(v,seen) for v in i ]
+   if isinstance(i,dict): 
+      return { k:has(i[k], seen) for k in i if str(k)[0] !="_"}
+   return i
+
+def o(i):
+  dprint(i.__dict__)
+
+def dprint(d, pre="",skip="_"):
+  def q(z):
+    if isinstance(z,float): return "%5.3f" % z
+    if callable(z): return "f(%s)" % z.__name__
+    return str(z)
+  l = sorted([(k,d[k]) for k in d if k[0] != skip])
+  return pre+'{'+", ".join([('%s=%s' % (k,q(v))) 
+ 
+class Test:
+  t,f = 0,0
+  all = []
+  def score(s): 
+    t,f = Test.t, Test.f
+    return f"#TEST {s} passes = {t-f} fails = {f}"
+  def go(fn=None, use=None):
+    if fn:
+      Test.all += [fn]
+    elif use:
+      [Test.run(fn) for fn in Test.all if use in fn.__name__]
+    else: 
+      [Test.run(fn) for fn in Test.all]
+  def run(fun):    
+    try:
+      Test.t += 1
+      print("### ",fun.__name__)
+      random.seed(1)
+      fun()
+      print(Test.score("PASS"),':',fun.__name__)
+    except Exception:
+      Test.f += 1
+      print(traceback.format_exc())
+      print(Test.score("FAIL"),':',fun.__name__)
+
+go  = Test.go
+@go
+def hello(): print(about()[0])
+
 @go
 def _hetab1():
   t = Tab().read("data/weather4.csv")

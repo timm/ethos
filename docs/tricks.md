@@ -1,31 +1,5 @@
 ```py
-import pprint,re,random,traceback,argparse
-
-def elp(txt,**d):
-  for k in d:
-    key = k
-    val = d[k]
-    break
-  default = val[0] if isinstance(val,list)  else val
-  if val is False :
-    return key,dict(help=txt, action="store_true")
-  m,t = "S",str
-  if isinstance(default,int)  : m,t= "I",int
-  if isinstance(default,float): m,t= "F",float
-  if isinstance(val,list):
-    return key,dict(help=txt, choices=val,          
-                    default=default, metavar=m ,type=t)
-  eg = "; e.g. -%s %s"%(key,val) if val != "" else ""
-  return key,dict(help=txt + eg,
-                 default=default, metavar=m, type=t)
-
-def args(before, after, *lst):
-  parser = argparse.ArgumentParser(epilog=after, description = before,
-               formatter_class = argparse.RawDescriptionHelpFormatter)
-
-  for key, args in lst:
-    parser.add_argument("-"+key,**args)
-  return parser.parse_args()
+import pprint,rrandom,traceback,argparse
 
 def rows(x=None):
   prep=lambda z: re.sub(r'([\n\t\r ]|#.*)','',z.strip())
@@ -49,11 +23,6 @@ def cols(src):
 def shuffle(lst):
   random.shuffle(lst)
   return lst
-
-class Thing:
-  def __repr__(i):
-     s = pprint.pformat(has(i.__dict__),compact=True)
-     return  re.sub(r"'",' ',s)
 
 def has(i,seen=None):
    seen = seen or {}
@@ -81,33 +50,4 @@ def dprint(d, pre="",skip="_"):
   l = sorted([(k,d[k]) for k in d if k[0] != skip])
   return pre+'{'+", ".join([('%s=%s' % (k,q(v))) 
                              for k,v in l]) +'}'
-```
-
-```py
-class Test:
-  t,f = 0,0
-  all = []
-  def score(s): 
-    t,f = Test.t, Test.f
-    return f"#TEST {s} passes = {t-f} fails = {f}"
-  def go(fn=None, use=None):
-    if fn:
-      Test.all += [fn]
-    elif use:
-      [Test.run(fn) for fn in Test.all if use in fn.__name__]
-    else: 
-      [Test.run(fn) for fn in Test.all]
-  def run(fun):    
-    try:
-      Test.t += 1
-      print("### ",fun.__name__)
-      random.seed(1)
-      fun()
-      print(Test.score("PASS"),':',fun.__name__)
-    except Exception:
-      Test.f += 1
-      print(traceback.format_exc())
-      print(Test.score("FAIL"),':',fun.__name__)
-
-go  = Test.go
 ```
