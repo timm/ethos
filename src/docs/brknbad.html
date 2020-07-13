@@ -17,8 +17,7 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p><center><img src="letscook.png" width=150></center></p>
-<p>Optimizer, written as a data miner.  Break the data
+      <p>Optimizer, written as a data miner.  Break the data
 up into regions of &lsquo;bad&rsquo; and &lsquo;better&rsquo;. Find
 ways to jump from &lsquo;bad&rsquo; to &lsquo;better&rsquo;.</p>
 <pre><code>:-------:  
@@ -29,19 +28,8 @@ ways to jump from &lsquo;bad&rsquo; to &lsquo;better&rsquo;.</p>
         |     4 |  Better  
         :-------:
 </code></pre>
+<p>$$a=b^2$$</p>
 <p>Copyright (c) 2020, Tim Menzies. All rights (BSD 2-Clause license).</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span><span class="nn">argparse</span><span class="o">,</span><span class="nn">random</span><span class="o">,</span><span class="nn">pprint</span><span class="o">,</span><span class="nn">math</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">os</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-1'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-1'>#</a>
-      </div>
-      <hr />
 <h2>Overview</h2>
 <p>Is your software ethical?
 Does its own source code  holds a representation of
@@ -119,8 +107,18 @@ which can be categoriesed into</p>
 <li><code>x</code> values:</li>
 <li>which can be numeric or symbolic.</li>
 </ul>
-<hr />
-<h2>Command-line Options</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span><span class="nn">argparse</span><span class="o">,</span><span class="nn">random</span><span class="o">,</span><span class="nn">pprint</span><span class="o">,</span><span class="nn">math</span><span class="o">,</span><span class="nn">sys</span><span class="o">,</span><span class="nn">re</span><span class="o">,</span><span class="nn">os</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>Command-line Options</h2>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -193,17 +191,17 @@ Different types then lead to different kinds of options.</p>
     <span class="k">break</span>
   <span class="n">default</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="nb">list</span><span class="p">)</span>  <span class="k">else</span> <span class="n">val</span>
   <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">False</span> <span class="p">:</span>
-    <span class="k">return</span> <span class="n">key</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="n">txt</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">key</span><span class="p">,</span><span class="n">default</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="n">txt</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
   <span class="k">else</span><span class="p">:</span>
     <span class="n">m</span><span class="p">,</span><span class="n">t</span> <span class="o">=</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span><span class="nb">str</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default</span><span class="p">,</span><span class="nb">int</span><span class="p">)</span>  <span class="p">:</span> <span class="n">m</span><span class="p">,</span><span class="n">t</span><span class="o">=</span> <span class="s2">&quot;I&quot;</span><span class="p">,</span><span class="nb">int</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default</span><span class="p">,</span><span class="nb">float</span><span class="p">):</span> <span class="n">m</span><span class="p">,</span><span class="n">t</span><span class="o">=</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span><span class="nb">float</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="nb">list</span><span class="p">):</span>
-      <span class="k">return</span> <span class="n">key</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="n">txt</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">val</span><span class="p">,</span>          
+      <span class="k">return</span> <span class="n">key</span><span class="p">,</span><span class="n">default</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="n">txt</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="n">val</span><span class="p">,</span>          
                       <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="n">m</span> <span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">t</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
       <span class="n">eg</span> <span class="o">=</span> <span class="s2">&quot;; e.g. -</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="n">val</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-      <span class="k">return</span> <span class="n">key</span><span class="p">,</span><span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="n">txt</span> <span class="o">+</span> <span class="n">eg</span><span class="p">,</span>
+      <span class="k">return</span> <span class="n">key</span><span class="p">,</span><span class="n">default</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="n">txt</span> <span class="o">+</span> <span class="n">eg</span><span class="p">,</span>
                       <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="n">m</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">t</span><span class="p">)</span></pre></div>
     </div>
   </div>
@@ -232,7 +230,7 @@ Different types then lead to different kinds of options.</p>
   <span class="n">before</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n  &quot;</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span><span class="vm">__doc__</span><span class="p">)</span>
   <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span> <span class="o">=</span> <span class="n">before</span><span class="p">,</span>
              <span class="n">formatter_class</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawDescriptionHelpFormatter</span><span class="p">)</span>
-  <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
+  <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span><span class="n">args</span> <span class="ow">in</span> <span class="n">lst</span><span class="p">:</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">key</span><span class="p">,</span><span class="o">**</span><span class="n">args</span><span class="p">)</span>
   <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></pre></div>
     </div>
@@ -243,10 +241,12 @@ Different types then lead to different kinds of options.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-8'>#</a>
       </div>
-      <p>Store command-line options in the global <code>my</code>.</p>
+      <hr />
+<h2>Define magic characters</h2>
+<p>Used in column headers or column cells.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">my</span>  <span class="o">=</span> <span class="n">args</span><span class="p">(</span><span class="n">help</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -255,12 +255,12 @@ Different types then lead to different kinds of options.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-9'>#</a>
       </div>
-      <hr />
-<h2>Define magic characters</h2>
-<p>Used in column headers or column cells.</p>
+      
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">no</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
+  <span class="s2">&quot;Things to skip.&quot;</span>
+  <span class="k">return</span>  <span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -272,9 +272,9 @@ Different types then lead to different kinds of options.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">no</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
-  <span class="s2">&quot;Things to skip.&quot;</span>
-  <span class="k">return</span>  <span class="n">s</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">nump</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
+  <span class="s2">&quot;Numbers.&quot;</span>
+  <span class="k">return</span> <span class="s2">&quot;&lt;&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;$&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;&gt;&quot;</span> <span class="ow">in</span> <span class="n">s</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -286,9 +286,9 @@ Different types then lead to different kinds of options.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">nump</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
-  <span class="s2">&quot;Numbers.&quot;</span>
-  <span class="k">return</span> <span class="s2">&quot;&lt;&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;$&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;&gt;&quot;</span> <span class="ow">in</span> <span class="n">s</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">goalp</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
+  <span class="s2">&quot;Goals&quot;</span>
+  <span class="k">return</span> <span class="s2">&quot;&lt;&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;!&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;&gt;&quot;</span> <span class="ow">in</span> <span class="n">s</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -300,9 +300,9 @@ Different types then lead to different kinds of options.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">goalp</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
-  <span class="s2">&quot;Goals&quot;</span>
-  <span class="k">return</span> <span class="s2">&quot;&lt;&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;!&quot;</span> <span class="ow">in</span> <span class="n">s</span> <span class="ow">or</span> <span class="s2">&quot;&gt;&quot;</span> <span class="ow">in</span> <span class="n">s</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">klassp</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
+  <span class="s2">&quot;Non-numeric goals.&quot;</span>
+  <span class="k">return</span> <span class="s2">&quot;!&quot;</span> <span class="ow">in</span> <span class="n">s</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -314,9 +314,9 @@ Different types then lead to different kinds of options.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">klassp</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
-  <span class="s2">&quot;Non-numeric goals.&quot;</span>
-  <span class="k">return</span> <span class="s2">&quot;!&quot;</span> <span class="ow">in</span> <span class="n">s</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">lessp</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
+  <span class="s2">&quot;Thing to minimize&quot;</span>
+  <span class="k">return</span> <span class="s2">&quot;&lt;&quot;</span> <span class="ow">in</span> <span class="n">s</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -324,20 +324,6 @@ Different types then lead to different kinds of options.</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-14'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">lessp</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> 
-  <span class="s2">&quot;Thing to minimize&quot;</span>
-  <span class="k">return</span> <span class="s2">&quot;&lt;&quot;</span> <span class="ow">in</span> <span class="n">s</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-15'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
       </div>
       <hr />
 <h2>Thing</h2>
@@ -349,10 +335,10 @@ Different types then lead to different kinds of options.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-16'>
+  <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
+        <a class='octothorpe' href='#section-15'>#</a>
       </div>
       <p>All my classes are Things that pretty print themselves
 by reporting themselves as nested dictionaries then 
@@ -365,12 +351,12 @@ pprint-ing that dictionary.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-17'>
+  <div class='section' id='section-16'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
+        <a class='octothorpe' href='#section-16'>#</a>
       </div>
-      <p>This is a tool used by <code>Thing.__repr__</code>.
+      <p>This is a tool used by <code>Thing</code>.
 Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
     <div class='code'>
@@ -378,10 +364,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-18'>
+  <div class='section' id='section-17'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-18'>#</a>
+        <a class='octothorpe' href='#section-17'>#</a>
       </div>
       
     </div>
@@ -403,6 +389,18 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">o</span><span class="p">(</span><span class="n">Thing</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
   <div class='section' id='section-19'>
     <div class='docs'>
       <div class='octowrap'>
@@ -411,7 +409,11 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Col</span><span class="p">(</span><span class="n">Thing</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="o">**</span><span class="n">d</span><span class="p">)</span> <span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">)</span>
+
+<span class="n">my</span>  <span class="o">=</span> <span class="n">o</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">d</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">_</span> <span class="ow">in</span> <span class="n">help</span><span class="p">()})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">my</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -423,9 +425,7 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">pos</span><span class="p">,</span><span class="n">txt</span><span class="p">):</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">txt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">txt</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">lessp</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span></pre></div>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Col</span><span class="p">(</span><span class="n">Thing</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -437,10 +437,9 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">no</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">pos</span><span class="p">,</span><span class="n">txt</span><span class="p">):</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">txt</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">txt</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="n">lessp</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -452,7 +451,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Num</span><span class="p">(</span><span class="n">Col</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">no</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="n">x</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -464,9 +466,7 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">)</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">lo</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">hi</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="o">**</span><span class="mi">32</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="o">**</span><span class="mi">32</span></pre></div>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Num</span><span class="p">(</span><span class="n">Col</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -478,7 +478,9 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">mu</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">)</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">lo</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">hi</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="o">**</span><span class="mi">32</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="o">**</span><span class="mi">32</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -486,6 +488,18 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">mu</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
       </div>
       
     </div>
@@ -498,10 +512,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-26'>
+  <div class='section' id='section-27'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
+        <a class='octothorpe' href='#section-27'>#</a>
       </div>
       
     </div>
@@ -512,10 +526,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-27'>
+  <div class='section' id='section-28'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
+        <a class='octothorpe' href='#section-28'>#</a>
       </div>
       
     </div>
@@ -528,18 +542,6 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-28'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-28'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Sym</span><span class="p">(</span><span class="n">Col</span><span class="p">):</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
   <div class='section' id='section-29'>
     <div class='docs'>
       <div class='octowrap'>
@@ -548,9 +550,7 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">)</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">seen</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">most</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="p">{},</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span></pre></div>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Sym</span><span class="p">(</span><span class="n">Col</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -562,7 +562,9 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">mode</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">l</span><span class="p">)</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">seen</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">most</span><span class="p">,</span> <span class="n">i</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="p">{},</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -574,10 +576,7 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
-    <span class="n">tmp</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">seen</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">seen</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">tmp</span> <span class="o">&gt;</span> <span class="n">i</span><span class="o">.</span><span class="n">most</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">most</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">,</span><span class="n">x</span>
-    <span class="k">return</span> <span class="n">x</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">mode</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -589,8 +588,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span> 
-    <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">no</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">no</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">y</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">seen</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">seen</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">tmp</span> <span class="o">&gt;</span> <span class="n">i</span><span class="o">.</span><span class="n">most</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">most</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">tmp</span><span class="p">,</span><span class="n">x</span>
+    <span class="k">return</span> <span class="n">x</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -602,7 +603,8 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Cols</span><span class="p">(</span><span class="n">Thing</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span> 
+    <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">no</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="n">no</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">y</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -614,8 +616,7 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">:</span> 
-    <span class="n">i</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">nums</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">syms</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">all</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">klas</span> <span class="o">=</span> <span class="p">{},{},{},{},[],</span><span class="kc">None</span></pre></div>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Cols</span><span class="p">(</span><span class="n">Thing</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -627,8 +628,8 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">lst</span><span class="p">):</span> 
-    <span class="p">[</span> <span class="n">col</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="n">lst</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">pos</span><span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">all</span> <span class="p">]</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="p">:</span> 
+    <span class="n">i</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">nums</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">syms</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">all</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">klas</span> <span class="o">=</span> <span class="p">{},{},{},{},[],</span><span class="kc">None</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -640,8 +641,8 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">klass</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">lst</span><span class="p">):</span> 
-    <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">klas</span><span class="p">]</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">lst</span><span class="p">):</span> 
+    <span class="p">[</span> <span class="n">col</span><span class="o">.</span><span class="n">add</span><span class="p">(</span> <span class="n">lst</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">pos</span><span class="p">]</span> <span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">all</span> <span class="p">]</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -649,6 +650,19 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">klass</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">lst</span><span class="p">):</span> 
+    <span class="k">return</span> <span class="n">lst</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">klas</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
       </div>
       
     </div>
@@ -663,10 +677,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-38'>
+  <div class='section' id='section-39'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-38'>#</a>
+        <a class='octothorpe' href='#section-39'>#</a>
       </div>
       
     </div>
@@ -675,10 +689,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-39'>
+  <div class='section' id='section-40'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-39'>#</a>
+        <a class='octothorpe' href='#section-40'>#</a>
       </div>
       
     </div>
@@ -689,10 +703,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-40'>
+  <div class='section' id='section-41'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-40'>#</a>
+        <a class='octothorpe' href='#section-41'>#</a>
       </div>
       
     </div>
@@ -705,19 +719,6 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-41'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">):</span> 
-    <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">all</span> <span class="k">else</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
   <div class='section' id='section-42'>
     <div class='docs'>
       <div class='octowrap'>
@@ -726,8 +727,8 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">):</span> 
-    <span class="n">i</span><span class="o">.</span><span class="n">rows</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">c</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">pos</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">all</span><span class="p">]]</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">):</span> 
+    <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">all</span> <span class="k">else</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">header</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -739,9 +740,8 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
-    <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">(</span><span class="n">rows</span><span class="p">(</span><span class="n">data</span><span class="p">))]</span>
-    <span class="k">return</span> <span class="n">i</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">):</span> 
+    <span class="n">i</span><span class="o">.</span><span class="n">rows</span> <span class="o">+=</span> <span class="p">[[</span><span class="n">c</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">pos</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">all</span><span class="p">]]</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -753,9 +753,9 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">col</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">Bins</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">z</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">pos</span><span class="p">],</span> 
-                                <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">klass</span><span class="p">(</span><span class="n">z</span><span class="p">))</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span> 
+    <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">row</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">(</span><span class="n">rows</span><span class="p">(</span><span class="n">data</span><span class="p">))]</span>
+    <span class="k">return</span> <span class="n">i</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -767,9 +767,9 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s1">&#39;{&#39;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([(</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">mid</span><span class="p">())</span> 
-                     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">col</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Bins</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span><span class="n">i</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">z</span><span class="p">[</span><span class="n">col</span><span class="o">.</span><span class="n">pos</span><span class="p">],</span> 
+                                <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">klass</span><span class="p">(</span><span class="n">z</span><span class="p">))</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -781,8 +781,9 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">[</span> <span class="n">col</span><span class="o">.</span><span class="n">mid</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">all</span> <span class="p">]</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;{&#39;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([(</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">c</span><span class="o">.</span><span class="n">mid</span><span class="p">())</span> 
+                     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -790,6 +791,19 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-47'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">[</span> <span class="n">col</span><span class="o">.</span><span class="n">mid</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">all</span> <span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-48'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-48'>#</a>
       </div>
       
     </div>
@@ -805,10 +819,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-48'>
+  <div class='section' id='section-49'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-48'>#</a>
+        <a class='octothorpe' href='#section-49'>#</a>
       </div>
       
     </div>
@@ -817,10 +831,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-49'>
+  <div class='section' id='section-50'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-49'>#</a>
+        <a class='octothorpe' href='#section-50'>#</a>
       </div>
       
     </div>
@@ -833,10 +847,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-50'>
+  <div class='section' id='section-51'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-50'>#</a>
+        <a class='octothorpe' href='#section-51'>#</a>
       </div>
       
     </div>
@@ -850,10 +864,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-51'>
+  <div class='section' id='section-52'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-51'>#</a>
+        <a class='octothorpe' href='#section-52'>#</a>
       </div>
       
     </div>
@@ -864,10 +878,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-52'>
+  <div class='section' id='section-53'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-52'>#</a>
+        <a class='octothorpe' href='#section-53'>#</a>
       </div>
       
     </div>
@@ -878,10 +892,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-53'>
+  <div class='section' id='section-54'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-53'>#</a>
+        <a class='octothorpe' href='#section-54'>#</a>
       </div>
       
     </div>
@@ -894,10 +908,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-54'>
+  <div class='section' id='section-55'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-54'>#</a>
+        <a class='octothorpe' href='#section-55'>#</a>
       </div>
       
     </div>
@@ -912,10 +926,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-55'>
+  <div class='section' id='section-56'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-55'>#</a>
+        <a class='octothorpe' href='#section-56'>#</a>
       </div>
       
     </div>
@@ -924,10 +938,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-56'>
+  <div class='section' id='section-57'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-56'>#</a>
+        <a class='octothorpe' href='#section-57'>#</a>
       </div>
       
     </div>
@@ -953,10 +967,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-57'>
+  <div class='section' id='section-58'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-57'>#</a>
+        <a class='octothorpe' href='#section-58'>#</a>
       </div>
       
     </div>
@@ -965,10 +979,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-58'>
+  <div class='section' id='section-59'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-58'>#</a>
+        <a class='octothorpe' href='#section-59'>#</a>
       </div>
       
     </div>
@@ -979,10 +993,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-59'>
+  <div class='section' id='section-60'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-59'>#</a>
+        <a class='octothorpe' href='#section-60'>#</a>
       </div>
       
     </div>
@@ -1004,10 +1018,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-60'>
+  <div class='section' id='section-61'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-60'>#</a>
+        <a class='octothorpe' href='#section-61'>#</a>
       </div>
       
     </div>
@@ -1016,10 +1030,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-61'>
+  <div class='section' id='section-62'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-61'>#</a>
+        <a class='octothorpe' href='#section-62'>#</a>
       </div>
       
     </div>
@@ -1039,10 +1053,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-62'>
+  <div class='section' id='section-63'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-62'>#</a>
+        <a class='octothorpe' href='#section-63'>#</a>
       </div>
       
     </div>
@@ -1051,10 +1065,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-63'>
+  <div class='section' id='section-64'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-63'>#</a>
+        <a class='octothorpe' href='#section-64'>#</a>
       </div>
       
     </div>
@@ -1066,10 +1080,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-64'>
+  <div class='section' id='section-65'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-64'>#</a>
+        <a class='octothorpe' href='#section-65'>#</a>
       </div>
       
     </div>
@@ -1083,10 +1097,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-65'>
+  <div class='section' id='section-66'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-65'>#</a>
+        <a class='octothorpe' href='#section-66'>#</a>
       </div>
       
     </div>
@@ -1102,20 +1116,6 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-66'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-66'>#</a>
-      </div>
-      
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">better</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
-    <span class="n">sa</span><span class="p">,</span> <span class="n">sb</span><span class="p">,</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">s</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">s</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">s</span><span class="p">()</span>
-    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sb</span> <span class="o">-</span> <span class="n">sa</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">my</span><span class="o">.</span><span class="n">e</span> <span class="ow">or</span> <span class="n">sc</span> <span class="o">&gt;=</span> <span class="n">sb</span> <span class="ow">and</span> <span class="n">sc</span> <span class="o">&gt;=</span> <span class="n">sa</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
   <div class='section' id='section-67'>
     <div class='docs'>
       <div class='octowrap'>
@@ -1124,10 +1124,9 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">s</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
-    <span class="n">yes</span>   <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">yes</span><span class="o">/</span><span class="n">i</span><span class="o">.</span><span class="n">ranges</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">yes</span> 
-    <span class="n">no</span>    <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">no</span> <span class="o">/</span><span class="n">i</span><span class="o">.</span><span class="n">ranges</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">no</span>
-    <span class="k">return</span>  <span class="n">yes</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">yes</span><span class="o">+</span><span class="n">no</span><span class="o">+</span><span class="mf">0.0001</span><span class="p">)</span> <span class="k">if</span> <span class="n">yes</span> <span class="o">&gt;</span> <span class="n">no</span> <span class="k">else</span> <span class="mi">0</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">better</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">):</span>
+    <span class="n">sa</span><span class="p">,</span> <span class="n">sb</span><span class="p">,</span> <span class="n">sc</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">s</span><span class="p">(),</span> <span class="n">b</span><span class="o">.</span><span class="n">s</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">s</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sb</span> <span class="o">-</span> <span class="n">sa</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">my</span><span class="o">.</span><span class="n">e</span> <span class="ow">or</span> <span class="n">sc</span> <span class="o">&gt;=</span> <span class="n">sb</span> <span class="ow">and</span> <span class="n">sc</span> <span class="o">&gt;=</span> <span class="n">sa</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1139,7 +1138,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Ranges</span><span class="p">(</span><span class="n">Thing</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">s</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="n">yes</span>   <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">yes</span><span class="o">/</span><span class="n">i</span><span class="o">.</span><span class="n">ranges</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">yes</span> 
+    <span class="n">no</span>    <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">no</span> <span class="o">/</span><span class="n">i</span><span class="o">.</span><span class="n">ranges</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">no</span>
+    <span class="k">return</span>  <span class="n">yes</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">yes</span><span class="o">+</span><span class="n">no</span><span class="o">+</span><span class="mf">0.0001</span><span class="p">)</span> <span class="k">if</span> <span class="n">yes</span> <span class="o">&gt;</span> <span class="n">no</span> <span class="k">else</span> <span class="mi">0</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1151,12 +1153,7 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">txt</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">goal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">txt</span>  <span class="o">=</span> <span class="n">txt</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">goal</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">bin</span>  <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">Range</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">i</span><span class="p">),</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">all</span>  <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">bin</span><span class="p">()</span>
-    <span class="n">i</span><span class="o">.</span><span class="n">ranges</span><span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span> <span class="n">i</span><span class="o">.</span><span class="n">grow</span><span class="p">(</span> <span class="n">i</span><span class="o">.</span><span class="n">pairs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)))</span></pre></div>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">Ranges</span><span class="p">(</span><span class="n">Thing</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1168,9 +1165,13 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">lst</span><span class="p">):</span>
-    <span class="n">lst</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">y</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="p">),</span><span class="nb">str</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></pre></div>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">txt</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">x</span><span class="o">=</span><span class="k">lambda</span> <span class="n">z</span><span class="p">:</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="n">y</span><span class="o">=</span><span class="k">lambda</span> <span class="n">z</span><span class="p">:</span><span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">goal</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">txt</span>  <span class="o">=</span> <span class="n">txt</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">goal</span> <span class="o">=</span> <span class="n">goal</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">bin</span>  <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">Range</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">all</span>  <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">bin</span><span class="p">()</span>
+    <span class="n">i</span><span class="o">.</span><span class="n">ranges</span><span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span> <span class="n">i</span><span class="o">.</span><span class="n">grow</span><span class="p">(</span> <span class="n">i</span><span class="o">.</span><span class="n">pairs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span><span class="p">)))</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1178,6 +1179,20 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-71'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">pairs</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">a</span><span class="p">):</span>
+    <span class="n">lst</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">y</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">a</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">(</span><span class="n">z</span><span class="p">),</span><span class="nb">str</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">lst</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-72'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-72'>#</a>
       </div>
       
     </div>
@@ -1195,10 +1210,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-72'>
+  <div class='section' id='section-73'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-72'>#</a>
+        <a class='octothorpe' href='#section-73'>#</a>
       </div>
       
     </div>
@@ -1219,10 +1234,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-73'>
+  <div class='section' id='section-74'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-73'>#</a>
+        <a class='octothorpe' href='#section-74'>#</a>
       </div>
       <hr />
 <h2>Utilities</h2>
@@ -1233,10 +1248,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-74'>
+  <div class='section' id='section-75'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-74'>#</a>
+        <a class='octothorpe' href='#section-75'>#</a>
       </div>
       
     </div>
@@ -1256,10 +1271,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-75'>
+  <div class='section' id='section-76'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-75'>#</a>
+        <a class='octothorpe' href='#section-76'>#</a>
       </div>
       
     </div>
@@ -1273,10 +1288,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-76'>
+  <div class='section' id='section-77'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-76'>#</a>
+        <a class='octothorpe' href='#section-77'>#</a>
       </div>
       <h3>List Utilities</h3>
     </div>
@@ -1288,10 +1303,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-77'>
+  <div class='section' id='section-78'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-77'>#</a>
+        <a class='octothorpe' href='#section-78'>#</a>
       </div>
       <h3>Meta Utilities</h3>
     </div>
@@ -1300,10 +1315,10 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-78'>
+  <div class='section' id='section-79'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-78'>#</a>
+        <a class='octothorpe' href='#section-79'>#</a>
       </div>
       <p>Report a nested object as a set of nested lists.
 If we see the same <code>Thing</code> twice, then show it the 
@@ -1328,26 +1343,12 @@ i.e. anything whose name starts with &ldquo;_&rdquo;.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-79'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-79'>#</a>
-      </div>
-      <h3>Print Utilities</h3>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span> <span class="nf">o</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> 
-  <span class="n">dprint</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
   <div class='section' id='section-80'>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-80'>#</a>
       </div>
-      <p>Pretty print a dictionary, sorted by keys, ignoring 
-private slots (those that start with &lsquo;<em>&lsquo;</em>).</p>
+      <h3>Print Utilities</h3>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span> <span class="nf">dprint</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">skip</span><span class="o">=</span><span class="s2">&quot;_&quot;</span><span class="p">):</span></pre></div>
@@ -1359,7 +1360,8 @@ private slots (those that start with &lsquo;<em>&lsquo;</em>).</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-81'>#</a>
       </div>
-      
+      <p>Pretty print a dictionary, sorted by keys, ignoring 
+private slots (those that start with &lsquo;<em>&lsquo;</em>).</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">q</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
@@ -1571,7 +1573,18 @@ See how that goes.</p>
   <span class="nb">print</span><span class="p">([</span><span class="n">col</span><span class="o">.</span><span class="n">txt</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;best&quot;</span><span class="p">,</span><span class="n">b</span><span class="o">.</span><span class="n">best</span><span class="o">.</span><span class="n">status</span><span class="p">())</span>
   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">,</span><span class="n">b</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">status</span><span class="p">())</span>
-  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">status</span><span class="p">())</span></pre></div>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">status</span><span class="p">())</span>
+
+<span class="k">def</span> <span class="nf">_range0</span><span class="p">(</span><span class="n">xy</span><span class="p">):</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Ranges</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">,</span><span class="n">xy</span><span class="p">)</span><span class="o">.</span><span class="n">ranges</span><span class="p">():</span> 
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+
+<span class="nd">@go</span>
+<span class="k">def</span> <span class="nf">_range1</span><span class="p">():</span>
+  <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
+  <span class="n">_range0</span><span class="p">([[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">&gt;</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">)])</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1586,6 +1599,8 @@ See how that goes.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+  <span class="n">my</span> <span class="o">=</span> <span class="n">args</span><span class="p">(</span><span class="n">help</span><span class="p">)</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">my</span><span class="p">)</span>
   <span class="k">if</span> <span class="n">my</span><span class="o">.</span><span class="n">T</span><span class="p">:</span> <span class="n">go</span><span class="p">()</span>
   <span class="k">if</span> <span class="n">my</span><span class="o">.</span><span class="n">t</span><span class="p">:</span> <span class="n">go</span><span class="p">(</span><span class="n">use</span><span class="o">=</span><span class="n">my</span><span class="o">.</span><span class="n">t</span><span class="p">)</span>
   <span class="k">if</span> <span class="n">my</span><span class="o">.</span><span class="n">L</span><span class="p">:</span> <span class="n">Test</span><span class="o">.</span><span class="n">list</span><span class="p">()</span></pre></div>

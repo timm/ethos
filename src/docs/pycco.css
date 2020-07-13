@@ -115,8 +115,7 @@ div.code {
     font-size: 12px;
   }
     pre, tt, code {
-      font-size:11px;
-      line-height: 14px;
+      line-height: 18px;
       font-family: Monaco, Consolas, "Lucida Console", monospace;
       margin: 0; padding: 0;
     }
