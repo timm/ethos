@@ -31,14 +31,13 @@ Break the data
 up into regions of 'bad' and 'better'. Find
 ways to jump from 'bad' to 'better'.</p>
 <pre><code>:-------:  
-| Ba    |  Bad ------.  to plan, do (better - bad)
-|    56 |            |  to monitor, watch our for (bad - better)
-:-------:-------:    |  to trust, check if in bad or better
-        | Be    |    v  
-        |     4 |  Better  
-        :-------:
+| Ba    | Bad &lt;----.  planning= (better - bad)
+|    56 |          |  monitor = (bad - better)
+:-------:------:   |  
+        | B    |   v  
+        |    5 | Better  
+        :------:
 </code></pre>
-<p><span><span class="MathJax_Preview">a=b^2</span><script type="math/tex; mode=display">a=b^2</script></span></p>
 <p>Copyright (c) 2020, Tim Menzies. All rights (BSD 2-Clause license).</p>
 <h2 id="overview">Overview</h2>
 <p>Is your software ethical?
@@ -50,11 +49,13 @@ Can that software
 report how well the user goals
 are being achieved and can it suggest how to adjust the system, to better
 achieve those goals? </p>
-<p>BRKNBAD is a collection of data structures that support ethical software.
+<p>Do you want to make your software more ethical?
+BRKNBAD is a collection of data structures that support ethical
+the kind of ethical reasoning listed above.
 It is a multi-objective optimizer that reasons by breaking up problems into regions
 of <code>bad</code> and <code>better</code>, then looks for ways on how to jump between
 those regions.</p>
-<p>BRKNBAD might be useful in domains:</p>
+<p>BRKNBAD might be an ethical choice in domains:</p>
 <ul>
 <li>when users have to trade-off competing
 goals, </li>
@@ -75,11 +76,11 @@ continuous domination predicate. </li>
 <li>Examples are clustered in goal
 space and the <code>better</code> cluster is the one that dominates all the
 other <code>bad</code> clusters.</li>
-<li>Numerics are then descretized
+<li>Numerics are then broken up into just a few ranges
 using a bottom-up merging process
 guided by the ratio of <code>better</code> to <code>bad</code>
-in each range. T</li>
-<li>hese numeric ranges,
+in each range. </li>
+<li>These numeric ranges,
 and the symbolic ranges are then used to build a succinct decision list
 that can explain what constitutes <code>better</code> behavior.
 This decision list has many uses:<ul>
@@ -135,14 +136,12 @@ up into regions of &#39;bad&#39; and &#39;better&#39;. Find
 ways to jump from &#39;bad&#39; to &#39;better&#39;.
 
     :-------:  
-    | Ba    |  Bad ------.  to plan, do (better - bad)
-    |    56 |            |  to monitor, watch our for (bad - better)
-    :-------:-------:    |  to trust, check if in bad or better
-            | Be    |    v  
-            |     4 |  Better  
-            :-------:  
-
-$$a=b^2$$
+    | Ba    | Bad &lt;----.  planning= (better - bad)
+    |    56 |          |  monitor = (bad - better)
+    :-------:------:   |  
+            | B    |   v  
+            |    5 | Better  
+            :------:  
 
 Copyright (c) 2020, Tim Menzies. All rights (BSD 2-Clause license).
 
@@ -155,12 +154,14 @@ report how well the user goals
 are being achieved and can it suggest how to adjust the system, to better
 achieve those goals? 
 
-BRKNBAD is a collection of data structures that support ethical software.
+Do you want to make your software more ethical?
+BRKNBAD is a collection of data structures that support ethical 
+the kind of ethical reasoning listed above.
 It is a multi-objective optimizer that reasons by breaking up problems into regions
 of `bad` and `better`, then looks for ways on how to jump between
 those regions.
 
-BRKNBAD might be useful in domains:
+BRKNBAD might be an ethical choice in domains:
 
 - when users have to trade-off competing
 goals, 
@@ -180,9 +181,10 @@ continuous domination predicate.
 - Examples are clustered in goal
 space and the `better` cluster is the one that dominates all the
 other `bad` clusters.
-- Numerics are then descretized  using a bottom-up merging process
-guided by the ratio of `better` to `bad`  in each range. T
-- hese numeric ranges,
+- Numerics are then broken up into just a few ranges
+using a bottom-up merging process
+guided by the ratio of `better` to `bad`  in each range. 
+- These numeric ranges,
 and the symbolic ranges are then used to build a succinct decision list
 that can explain what constitutes `better` behavior. 
 This decision list has many uses:
@@ -344,8 +346,6 @@ class o(Thing):
   def __init__(i,**d) : i.__dict__.update(**d)
 
 my  = o(**{k:d for k,d,_ in help()})
-
-print(my)
 
 class Col(Thing):
   def __init__(i,pos,txt):
@@ -680,21 +680,22 @@ class Test:
   def list():
     print(&#34;&#34;)
     for fun in Test.all:
+      name = re.sub(r&#34;test_&#34;,&#34;&#34;,fun.__name__)
       doc = fun.__doc__ or &#34;&#34;
       doc = re.sub(r&#34;\n[ ]*&#34;,&#34;&#34;,doc)
-      print(f&#34;{__file__} -t {fun.__name__:10s} : {doc}&#34;)
+      print(f&#34;{__file__} -t {name:10s} : {doc}&#34;)
 
 #----------------------------------------------
 ### Unit Tests
-go  = Test.go
+def go(fn=None,use=None):  Test.go(fn=fn,use=use); return fn
 
 @go
-def tests():
+def test_tests():
   &#34;List all tests.&#34;
   Test.list()
 
 @go
-def bye():    
+def test_bye():    
   &#34;Commit and push Github files.&#34;
   def run(s): print(s); os.system(s)
   run(&#34;git commit -am commit&#34;)
@@ -702,17 +703,16 @@ def bye():
   run(&#34;git status&#34;)
 
 @go
-def hello(): 
+def test_hello(): 
   &#34;Simple test1.&#34;
   print(about()[0])
 
 @go
-def _hetab1():
+def test_hetab1():
   &#34;&#34;&#34;
   Read a small table from disk. 
-  See how that goes.
   &#34;&#34;&#34;
-  t = Tab().read(&#34;data/weather4.csv&#34;)
+  t = Tab().read(&#34;../docs/data/weather4.csv&#34;)
   assert( 4 == t.cols.x[0].seen[&#34;overcast&#34;])
   assert(14 == t.cols.x[0].n)
   assert(14 == len(t.rows))
@@ -721,15 +721,15 @@ def _hetab1():
   print(t)
 
 @go
-def _tab2():
+def test_tab2():
   &#34;Read a larger table from disk.&#34;
   t = Tab().read(&#34;data/auto93.csv&#34;)
   assert(398 == len(t.rows))
 
 @go
-def _dist():
+def test_dist():
   &#34;Check the distance calculations.&#34;
-  t = Tab().read(&#34;data/auto93.csv&#34;)
+  t = Tab().read(&#34;../docs/data/auto93.csv&#34;)
   d = Dist(t)
   for r1 in shuffle(t.rows)[:10]:
     if not &#34;?&#34; in r1:
@@ -746,16 +746,16 @@ def _dist():
     print(*d.poles())
 
 @go
-def _tree():
+def test_tree():
   &#34;Recursively divide the data in two.&#34;
-  t = Tab().read(&#34;data/auto93.csv&#34;)
+  t = Tab().read(&#34;../docs/data/auto93.csv&#34;)
   my.treeVerbose = True
   Tree(t,cols=&#34;y&#34;)
 
 @go
-def _bore():
+def test_bore():
   &#34;Recursively prune half the data.&#34;
-  t = Tab().read(&#34;data/auto93.csv&#34;)
+  t = Tab().read(&#34;../docs/data/auto93.csv&#34;)
   b = Bore(t)
   print([col.txt for col in t.cols.y.values()])
   print(&#34;best&#34;,b.best.status())
@@ -769,7 +769,7 @@ def _range0(xy):
 
 
 @go
-def _range1():
+def test_range1():
   n = 10
   _range0([[i,i&gt;n] for i in range(n*2)])
 
@@ -930,13 +930,7 @@ private slots (those that start with '<em>'</em>).</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def go(fn=None, use=None):
-  if fn:
-    Test.all += [fn]
-  elif use:
-    [Test.run(fn) for fn in Test.all if use in fn.__name__]
-  else: 
-    [Test.run(fn) for fn in Test.all]</code></pre>
+<pre><code class="python">def go(fn=None,use=None):  Test.go(fn=fn,use=use); return fn</code></pre>
 </details>
 </dd>
 <dt id="brknbad.goalp"><code class="name flex">
@@ -1148,6 +1142,174 @@ Different types then lead to different kinds of options.</p></div>
   &#34;Return a shuffled list.&#34;
   random.shuffle(lst)
   return lst</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_bore"><code class="name flex">
+<span>def <span class="ident">test_bore</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Recursively prune half the data.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_bore():
+  &#34;Recursively prune half the data.&#34;
+  t = Tab().read(&#34;../docs/data/auto93.csv&#34;)
+  b = Bore(t)
+  print([col.txt for col in t.cols.y.values()])
+  print(&#34;best&#34;,b.best.status())
+  print(&#34;rest&#34;,b.rest.status())
+  print(&#34;all&#34;,t.status())</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_bye"><code class="name flex">
+<span>def <span class="ident">test_bye</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Commit and push Github files.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_bye():    
+  &#34;Commit and push Github files.&#34;
+  def run(s): print(s); os.system(s)
+  run(&#34;git commit -am commit&#34;)
+  run(&#34;git push&#34;)
+  run(&#34;git status&#34;)</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_dist"><code class="name flex">
+<span>def <span class="ident">test_dist</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check the distance calculations.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_dist():
+  &#34;Check the distance calculations.&#34;
+  t = Tab().read(&#34;../docs/data/auto93.csv&#34;)
+  d = Dist(t)
+  for r1 in shuffle(t.rows)[:10]:
+    if not &#34;?&#34; in r1:
+       assert(d.dist(r1,r1) == 0)
+    n = d.neighbors(r1)
+    r2 = n[ 0][1]
+    r3 = n[-1][1]
+    r4 = d.faraway(r1)
+    print(&#34;&#34;)
+    print(r1)
+    print(r2, f&#39;{d.dist(r1,r2):.3f}&#39;)
+    print(r4, f&#39;{d.dist(r1,r4):.3f}&#39;)
+    print(r3, f&#39;{d.dist(r1,r3):.3f}&#39;)
+    print(*d.poles())</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_hello"><code class="name flex">
+<span>def <span class="ident">test_hello</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Simple test1.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_hello(): 
+  &#34;Simple test1.&#34;
+  print(about()[0])</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_hetab1"><code class="name flex">
+<span>def <span class="ident">test_hetab1</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read a small table from disk.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_hetab1():
+  &#34;&#34;&#34;
+  Read a small table from disk. 
+  &#34;&#34;&#34;
+  t = Tab().read(&#34;../docs/data/weather4.csv&#34;)
+  assert( 4 == t.cols.x[0].seen[&#34;overcast&#34;])
+  assert(14 == t.cols.x[0].n)
+  assert(14 == len(t.rows))
+  assert( 4 == len(t.cols.all))
+  assert( 3 == len(t.cols.syms))
+  print(t)</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_range1"><code class="name flex">
+<span>def <span class="ident">test_range1</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_range1():
+  n = 10
+  _range0([[i,i&gt;n] for i in range(n*2)])</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_tab2"><code class="name flex">
+<span>def <span class="ident">test_tab2</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read a larger table from disk.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_tab2():
+  &#34;Read a larger table from disk.&#34;
+  t = Tab().read(&#34;data/auto93.csv&#34;)
+  assert(398 == len(t.rows))</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_tests"><code class="name flex">
+<span>def <span class="ident">test_tests</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>List all tests.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_tests():
+  &#34;List all tests.&#34;
+  Test.list()</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_tree"><code class="name flex">
+<span>def <span class="ident">test_tree</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Recursively divide the data in two.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_tree():
+  &#34;Recursively divide the data in two.&#34;
+  t = Tab().read(&#34;../docs/data/auto93.csv&#34;)
+  my.treeVerbose = True
+  Tree(t,cols=&#34;y&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -2063,9 +2225,10 @@ pprint-ing that dictionary.</p></div>
   def list():
     print(&#34;&#34;)
     for fun in Test.all:
+      name = re.sub(r&#34;test_&#34;,&#34;&#34;,fun.__name__)
       doc = fun.__doc__ or &#34;&#34;
       doc = re.sub(r&#34;\n[ ]*&#34;,&#34;&#34;,doc)
-      print(f&#34;{__file__} -t {fun.__name__:10s} : {doc}&#34;)</code></pre>
+      print(f&#34;{__file__} -t {name:10s} : {doc}&#34;)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -2114,9 +2277,10 @@ pprint-ing that dictionary.</p></div>
 <pre><code class="python">def list():
   print(&#34;&#34;)
   for fun in Test.all:
+    name = re.sub(r&#34;test_&#34;,&#34;&#34;,fun.__name__)
     doc = fun.__doc__ or &#34;&#34;
     doc = re.sub(r&#34;\n[ ]*&#34;,&#34;&#34;,doc)
-    print(f&#34;{__file__} -t {fun.__name__:10s} : {doc}&#34;)</code></pre>
+    print(f&#34;{__file__} -t {name:10s} : {doc}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="brknbad.Test.run"><code class="name flex">
@@ -2246,7 +2410,7 @@ pprint-ing that dictionary.</p></div>
 </section>
 </article>
 <nav id="sidebar">
-<center><img src="letscook.png" width=200></center>
+<center><img src="letscook.png" width=400></center>
 <h1>Index</h1>
 <div class="toc">
 <ul>
@@ -2272,6 +2436,15 @@ pprint-ing that dictionary.</p></div>
 <li><code><a title="brknbad.nump" href="#brknbad.nump">nump</a></code></li>
 <li><code><a title="brknbad.rows" href="#brknbad.rows">rows</a></code></li>
 <li><code><a title="brknbad.shuffle" href="#brknbad.shuffle">shuffle</a></code></li>
+<li><code><a title="brknbad.test_bore" href="#brknbad.test_bore">test_bore</a></code></li>
+<li><code><a title="brknbad.test_bye" href="#brknbad.test_bye">test_bye</a></code></li>
+<li><code><a title="brknbad.test_dist" href="#brknbad.test_dist">test_dist</a></code></li>
+<li><code><a title="brknbad.test_hello" href="#brknbad.test_hello">test_hello</a></code></li>
+<li><code><a title="brknbad.test_hetab1" href="#brknbad.test_hetab1">test_hetab1</a></code></li>
+<li><code><a title="brknbad.test_range1" href="#brknbad.test_range1">test_range1</a></code></li>
+<li><code><a title="brknbad.test_tab2" href="#brknbad.test_tab2">test_tab2</a></code></li>
+<li><code><a title="brknbad.test_tests" href="#brknbad.test_tests">test_tests</a></code></li>
+<li><code><a title="brknbad.test_tree" href="#brknbad.test_tree">test_tree</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

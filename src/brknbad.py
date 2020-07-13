@@ -1,19 +1,15 @@
 #!/usr/bin/env pypy3
 """
-
-Optimizer, written as a data miner.  Break the data
-up into regions of 'bad' and 'better'. Find
-ways to jump from 'bad' to 'better'.
+Optimizer, written as a data miner.  Break the data up into regions
+of 'bad' and 'better'. Find ways to jump from 'bad' to 'better'.
 
     :-------:  
-    | Ba    |  Bad ------.  to plan, do (better - bad)
-    |    56 |            |  to monitor, watch our for (bad - better)
-    :-------:-------:    |  to trust, check if in bad or better
-            | Be    |    v  
-            |     4 |  Better  
-            :-------:  
-
-$$a=b^2$$
+    | Ba    | Bad <----.  planning= (better - bad)
+    |    56 |          |  monitor = (bad - better)
+    :-------:------:   |  
+            | B    |   v  
+            |    5 | Better  
+            :------:  
 
 Copyright (c) 2020, Tim Menzies. All rights (BSD 2-Clause license).
 
@@ -26,12 +22,14 @@ report how well the user goals
 are being achieved and can it suggest how to adjust the system, to better
 achieve those goals? 
 
-BRKNBAD is a collection of data structures that support ethical software.
+Do you want to make your software more ethical?
+BRKNBAD is a collection of data structures that support ethical 
+the kind of ethical reasoning listed above.
 It is a multi-objective optimizer that reasons by breaking up problems into regions
 of `bad` and `better`, then looks for ways on how to jump between
 those regions.
 
-BRKNBAD might be useful in domains:
+BRKNBAD might be an ethical choice in domains:
 
 - when users have to trade-off competing
 goals, 
@@ -51,9 +49,10 @@ continuous domination predicate.
 - Examples are clustered in goal
 space and the `better` cluster is the one that dominates all the
 other `bad` clusters.
-- Numerics are then descretized  using a bottom-up merging process
-guided by the ratio of `better` to `bad`  in each range. T
-- hese numeric ranges,
+- Numerics are then broken up into just a few ranges
+using a bottom-up merging process
+guided by the ratio of `better` to `bad`  in each range. 
+- These numeric ranges,
 and the symbolic ranges are then used to build a succinct decision list
 that can explain what constitutes `better` behavior. 
 This decision list has many uses:
@@ -150,7 +149,8 @@ def args(f):
   Link to Python's command line option processor.
   """
   lst = f()
-  before = re.sub(r"\n  ","\n",__doc__)
+  before = re.sub(r"\n  ","\n", __doc__)
+  before = before.split('\n\n')[0]
   parser = argparse.ArgumentParser(description = before,
              formatter_class = argparse.RawDescriptionHelpFormatter)
   for key, _,args in lst:
@@ -215,8 +215,6 @@ class o(Thing):
   def __init__(i,**d) : i.__dict__.update(**d)
 
 my  = o(**{k:d for k,d,_ in help()})
-
-print(my)
 
 class Col(Thing):
   def __init__(i,pos,txt):
@@ -550,22 +548,25 @@ class Test:
       print(Test.score("FAIL"),':',fun.__name__)
   def list():
     print("")
+    print(__file__ + " -t [NAME]") 
+    print("\nKnown test names:")
     for fun in Test.all:
+      name = re.sub(r"test_","",fun.__name__)
       doc = fun.__doc__ or ""
       doc = re.sub(r"\n[ ]*","",doc)
-      print(f"{__file__} -t {fun.__name__:10s} : {doc}")
+      print(f"  {name:10s} : {doc}")
 
 #----------------------------------------------
 ### Unit Tests
-go  = Test.go
+def go(fn=None,use=None):  Test.go(fn=fn,use=use); return fn
 
 @go
-def tests():
+def test_tests():
   "List all tests."
   Test.list()
 
 @go
-def bye():    
+def test_bye():    
   "Commit and push Github files."
   def run(s): print(s); os.system(s)
   run("git commit -am commit")
@@ -573,17 +574,16 @@ def bye():
   run("git status")
 
 @go
-def hello(): 
+def test_hello(): 
   "Simple test1."
   print(about()[0])
 
 @go
-def _hetab1():
+def test_hetab1():
   """
   Read a small table from disk. 
-  See how that goes.
   """
-  t = Tab().read("data/weather4.csv")
+  t = Tab().read("../docs/data/weather4.csv")
   assert( 4 == t.cols.x[0].seen["overcast"])
   assert(14 == t.cols.x[0].n)
   assert(14 == len(t.rows))
@@ -592,15 +592,15 @@ def _hetab1():
   print(t)
 
 @go
-def _tab2():
+def test_tab2():
   "Read a larger table from disk."
   t = Tab().read("data/auto93.csv")
   assert(398 == len(t.rows))
 
 @go
-def _dist():
+def test_dist():
   "Check the distance calculations."
-  t = Tab().read("data/auto93.csv")
+  t = Tab().read("../docs/data/auto93.csv")
   d = Dist(t)
   for r1 in shuffle(t.rows)[:10]:
     if not "?" in r1:
@@ -617,16 +617,16 @@ def _dist():
     print(*d.poles())
 
 @go
-def _tree():
+def test_tree():
   "Recursively divide the data in two."
-  t = Tab().read("data/auto93.csv")
+  t = Tab().read("../docs/data/auto93.csv")
   my.treeVerbose = True
   Tree(t,cols="y")
 
 @go
-def _bore():
+def test_bore():
   "Recursively prune half the data."
-  t = Tab().read("data/auto93.csv")
+  t = Tab().read("../docs/data/auto93.csv")
   b = Bore(t)
   print([col.txt for col in t.cols.y.values()])
   print("best",b.best.status())
@@ -640,7 +640,7 @@ def _range0(xy):
 
 
 @go
-def _range1():
+def test_range1():
   n = 10
   _range0([[i,i>n] for i in range(n*2)])
 
@@ -651,41 +651,40 @@ def _range1():
 
 if __name__ == "__main__":
   my = args(help)
-  print(my)
   if my.T: go()
   if my.t: go(use=my.t)
   if my.L: Test.list()
 
-#----------------------------------------------
-### License
-# 
-# Copyright (c) 2020, Tim Menzies
-# All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or
-# without modification, are permitted provided that the
-# following conditions are met:
-# 
-# 1. Redistributions of source code must retain the above
-#    copyright notice, this
-#    list of conditions and the following disclaimer.
-# 
-# 2. Redistributions in binary form must reproduce the above
-#    copyright notice,
-#    this list of conditions and the following disclaimer in
-#    the documentation and/or other materials provided with
-#    the distribution.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+class License:
+  """ 
+  Copyright (c) 2020, Tim Menzies
+  All rights reserved.
+  
+  Redistribution and use in source and binary forms, with or
+  without modification, are permitted provided that the
+  following conditions are met:
+  
+  1. Redistributions of source code must retain the above
+     copyright notice, this
+     list of conditions and the following disclaimer.
+  
+  2. Redistributions in binary form must reproduce the above
+     copyright notice,
+     this list of conditions and the following disclaimer in
+     the documentation and/or other materials provided with
+     the distribution.
+  
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  """

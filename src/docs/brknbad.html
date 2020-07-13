@@ -21,14 +21,13 @@
 up into regions of &lsquo;bad&rsquo; and &lsquo;better&rsquo;. Find
 ways to jump from &lsquo;bad&rsquo; to &lsquo;better&rsquo;.</p>
 <pre><code>:-------:  
-| Ba    |  Bad ------.  to plan, do (better - bad)
-|    56 |            |  to monitor, watch our for (bad - better)
-:-------:-------:    |  to trust, check if in bad or better
-        | Be    |    v  
-        |     4 |  Better  
-        :-------:
+| Ba    | Bad &lt;----.  planning= (better - bad)
+|    56 |          |  monitor = (bad - better)
+:-------:------:   |  
+        | B    |   v  
+        |    5 | Better  
+        :------:
 </code></pre>
-<p>$$a=b^2$$</p>
 <p>Copyright (c) 2020, Tim Menzies. All rights (BSD 2-Clause license).</p>
 <h2>Overview</h2>
 <p>Is your software ethical?
@@ -38,11 +37,13 @@ Can that software
 report how well the user goals
 are being achieved and can it suggest how to adjust the system, to better
 achieve those goals? </p>
-<p>BRKNBAD is a collection of data structures that support ethical software.
+<p>Do you want to make your software more ethical?
+BRKNBAD is a collection of data structures that support ethical 
+the kind of ethical reasoning listed above.
 It is a multi-objective optimizer that reasons by breaking up problems into regions
 of <code>bad</code> and <code>better</code>, then looks for ways on how to jump between
 those regions.</p>
-<p>BRKNBAD might be useful in domains:</p>
+<p>BRKNBAD might be an ethical choice in domains:</p>
 <ul>
 <li>when users have to trade-off competing
 goals, </li>
@@ -62,9 +63,10 @@ continuous domination predicate. </li>
 <li>Examples are clustered in goal
 space and the <code>better</code> cluster is the one that dominates all the
 other <code>bad</code> clusters.</li>
-<li>Numerics are then descretized  using a bottom-up merging process
-guided by the ratio of <code>better</code> to <code>bad</code>  in each range. T</li>
-<li>hese numeric ranges,
+<li>Numerics are then broken up into just a few ranges
+using a bottom-up merging process
+guided by the ratio of <code>better</code> to <code>bad</code>  in each range. </li>
+<li>These numeric ranges,
 and the symbolic ranges are then used to build a succinct decision list
 that can explain what constitutes <code>better</code> behavior. 
 This decision list has many uses:<ul>
@@ -411,9 +413,7 @@ Converts <code>i</code> into a nested dictionary, then pretty-prints that.</p>
     <div class='code'>
       <div class="highlight"><pre>  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="o">**</span><span class="n">d</span><span class="p">)</span> <span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">)</span>
 
-<span class="n">my</span>  <span class="o">=</span> <span class="n">o</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">d</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">_</span> <span class="ow">in</span> <span class="n">help</span><span class="p">()})</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="n">my</span><span class="p">)</span></pre></div>
+<span class="n">my</span>  <span class="o">=</span> <span class="n">o</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">d</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">_</span> <span class="ow">in</span> <span class="n">help</span><span class="p">()})</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1456,9 +1456,10 @@ private slots (those that start with &lsquo;<em>&lsquo;</em>).</p>
       <div class="highlight"><pre>  <span class="k">def</span> <span class="nf">list</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">fun</span> <span class="ow">in</span> <span class="n">Test</span><span class="o">.</span><span class="n">all</span><span class="p">:</span>
+      <span class="n">name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;test_&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
       <span class="n">doc</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__doc__</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
       <span class="n">doc</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\n[ ]*&quot;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">doc</span><span class="p">)</span>
-      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="vm">__file__</span><span class="si">}</span><span class="s2"> -t </span><span class="si">{</span><span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="si">:</span><span class="s2">10s</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">doc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></pre></div>
+      <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="vm">__file__</span><span class="si">}</span><span class="s2"> -t </span><span class="si">{</span><span class="n">name</span><span class="si">:</span><span class="s2">10s</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">doc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1471,7 +1472,7 @@ private slots (those that start with &lsquo;<em>&lsquo;</em>).</p>
 <h2>Unit Tests</h2>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">go</span>  <span class="o">=</span> <span class="n">Test</span><span class="o">.</span><span class="n">go</span></pre></div>
+      <div class="highlight"><pre><span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">use</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>  <span class="n">Test</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span><span class="n">use</span><span class="o">=</span><span class="n">use</span><span class="p">);</span> <span class="k">return</span> <span class="n">fn</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1480,17 +1481,16 @@ private slots (those that start with &lsquo;<em>&lsquo;</em>).</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-88'>#</a>
       </div>
-      <p>Read a small table from disk. 
-See how that goes.</p>
+      <p>Read a small table from disk. </p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">tests</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">test_tests</span><span class="p">():</span>
   <span class="s2">&quot;List all tests.&quot;</span>
   <span class="n">Test</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
 
 <span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">bye</span><span class="p">():</span>    
+<span class="k">def</span> <span class="nf">test_bye</span><span class="p">():</span>    
   <span class="s2">&quot;Commit and push Github files.&quot;</span>
   <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">s</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">);</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
   <span class="n">run</span><span class="p">(</span><span class="s2">&quot;git commit -am commit&quot;</span><span class="p">)</span>
@@ -1498,12 +1498,12 @@ See how that goes.</p>
   <span class="n">run</span><span class="p">(</span><span class="s2">&quot;git status&quot;</span><span class="p">)</span>
 
 <span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">hello</span><span class="p">():</span> 
+<span class="k">def</span> <span class="nf">test_hello</span><span class="p">():</span> 
   <span class="s2">&quot;Simple test1.&quot;</span>
   <span class="nb">print</span><span class="p">(</span><span class="n">about</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
 
 <span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">_hetab1</span><span class="p">():</span></pre></div>
+<span class="k">def</span> <span class="nf">test_hetab1</span><span class="p">():</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1515,7 +1515,7 @@ See how that goes.</p>
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>  <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data/weather4.csv&quot;</span><span class="p">)</span>
+      <div class="highlight"><pre>  <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;../docs/data/weather4.csv&quot;</span><span class="p">)</span>
   <span class="k">assert</span><span class="p">(</span> <span class="mi">4</span> <span class="o">==</span> <span class="n">t</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">seen</span><span class="p">[</span><span class="s2">&quot;overcast&quot;</span><span class="p">])</span>
   <span class="k">assert</span><span class="p">(</span><span class="mi">14</span> <span class="o">==</span> <span class="n">t</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
   <span class="k">assert</span><span class="p">(</span><span class="mi">14</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">rows</span><span class="p">))</span>
@@ -1534,15 +1534,15 @@ See how that goes.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">_tab2</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">test_tab2</span><span class="p">():</span>
   <span class="s2">&quot;Read a larger table from disk.&quot;</span>
   <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data/auto93.csv&quot;</span><span class="p">)</span>
   <span class="k">assert</span><span class="p">(</span><span class="mi">398</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">rows</span><span class="p">))</span>
 
 <span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">_dist</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">test_dist</span><span class="p">():</span>
   <span class="s2">&quot;Check the distance calculations.&quot;</span>
-  <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data/auto93.csv&quot;</span><span class="p">)</span>
+  <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;../docs/data/auto93.csv&quot;</span><span class="p">)</span>
   <span class="n">d</span> <span class="o">=</span> <span class="n">Dist</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
   <span class="k">for</span> <span class="n">r1</span> <span class="ow">in</span> <span class="n">shuffle</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">rows</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="s2">&quot;?&quot;</span> <span class="ow">in</span> <span class="n">r1</span><span class="p">:</span>
@@ -1559,16 +1559,16 @@ See how that goes.</p>
     <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">d</span><span class="o">.</span><span class="n">poles</span><span class="p">())</span>
 
 <span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">_tree</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">test_tree</span><span class="p">():</span>
   <span class="s2">&quot;Recursively divide the data in two.&quot;</span>
-  <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data/auto93.csv&quot;</span><span class="p">)</span>
+  <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;../docs/data/auto93.csv&quot;</span><span class="p">)</span>
   <span class="n">my</span><span class="o">.</span><span class="n">treeVerbose</span> <span class="o">=</span> <span class="kc">True</span>
   <span class="n">Tree</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">cols</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
 
 <span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">_bore</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">test_bore</span><span class="p">():</span>
   <span class="s2">&quot;Recursively prune half the data.&quot;</span>
-  <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;data/auto93.csv&quot;</span><span class="p">)</span>
+  <span class="n">t</span> <span class="o">=</span> <span class="n">Tab</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;../docs/data/auto93.csv&quot;</span><span class="p">)</span>
   <span class="n">b</span> <span class="o">=</span> <span class="n">Bore</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
   <span class="nb">print</span><span class="p">([</span><span class="n">col</span><span class="o">.</span><span class="n">txt</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">cols</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;best&quot;</span><span class="p">,</span><span class="n">b</span><span class="o">.</span><span class="n">best</span><span class="o">.</span><span class="n">status</span><span class="p">())</span>
@@ -1582,7 +1582,7 @@ See how that goes.</p>
 
 
 <span class="nd">@go</span>
-<span class="k">def</span> <span class="nf">_range1</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">test_range1</span><span class="p">():</span>
   <span class="n">n</span> <span class="o">=</span> <span class="mi">10</span>
   <span class="n">_range0</span><span class="p">([[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">&gt;</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="p">)])</span></pre></div>
     </div>
