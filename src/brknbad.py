@@ -196,10 +196,7 @@ class Thing:
 def dicts(i,seen=None):
    """
    This is a tool used by `Thing.__repr__`.
-   Converts `i` into a nested dictionary.  If we see the
-   same `Thing` twice, then show it the first time, after which,
-   just show its id. Do not return anything that is private;
-   i.e. anything whose name starts with "_".
+   Converts `i` into a nested dictionary, then pretty-prints that.
    """
    if isinstance(i,(tuple,list)): 
      return [ dicts(v,seen) for v in i ]
@@ -450,7 +447,12 @@ class Ranges(Thing):
        j += 1
     return i.merge(tmp) if len(tmp) < len(bins) else bins
 
+#--------------------------------------------------------
+### Utilities
+#### Reading CSV files
+
 def rows(x=None):
+  "Read a csv file from disk."
   prep=lambda z: re.sub(r'([\n\t\r ]|#.*)','',z.strip())
   if x:
     with open(x) as f:
@@ -463,33 +465,50 @@ def rows(x=None):
          if z: yield z.split(",")
 
 def cols(src):
+  "Ignore columns if, on line one, the name contains '?'."
   todo = None
   for a in src:
     todo = todo or [n for n,s in enumerate(a) if not "?"in s]
     yield [ a[n] for n in todo]
 
+#### List Utilities
 def shuffle(lst):
+  "Return a shuffled list."
   random.shuffle(lst)
   return lst
 
+#### Meta Utilities
 def has(i,seen=None):
-   seen = seen or {}
-   if isinstance(i,Thing): 
-      j =id(i) % 128021
-      if i in seen: return f"#:{j}"
-      seen[i]=i
-      d=has(i.__dict__,seen)
-      d["#"] = j
-      return d
-   if isinstance(i,(tuple,list)): 
-      return [ has(v,seen) for v in i ]
-   if isinstance(i,dict): 
-      return { k:has(i[k], seen) for k in i if str(k)[0] !="_"}
-   return i
+  """
+  Report a nested object as a set of nested lists.
+  If we see the same `Thing` twice, then show it the 
+  first time, after which, just show its id. Do not 
+  return anything that is private;
+  i.e. anything whose name starts with "_".
+  """
+  seen = seen or {}
+  if isinstance(i,Thing): 
+     j =id(i) % 128021
+     if i in seen: return f"#:{j}"
+     seen[i]=i
+     d=has(i.__dict__,seen)
+     d["#"] = j
+     return d
+  if isinstance(i,(tuple,list)): 
+     return [ has(v,seen) for v in i ]
+  if isinstance(i,dict): 
+     return { k:has(i[k], seen) for k in i if str(k)[0] !="_"}
+  return i
 
-def o(i): dprint(i.__dict__)
+#### Print Utilities
+def o(i): 
+  dprint(i.__dict__)
 
 def dprint(d, pre="",skip="_"):
+  """
+  Pretty print a dictionary, sorted by keys, ignoring 
+  private slots (those that start with '_'_).
+  """
   def q(z):
     if isinstance(z,float): return "%5.3f" % z
     if callable(z): return "f(%s)" % z.__name__
@@ -498,6 +517,7 @@ def dprint(d, pre="",skip="_"):
   return pre+'{'+", ".join([('%s=%s' % (k,q(v))) 
                              for k,v in l]) +'}'
 
+#### Unit Test Manager
 class Test:
   t,f = 0,0
   all = []
@@ -532,6 +552,7 @@ go  = Test.go
 
 @go
 def bye():    
+  "Bye."
   def run(s): print(s); os.system(s)
   run("git commit -am commit")
   run("git push")
@@ -544,8 +565,10 @@ def hello():
 
 @go
 def _hetab1():
-  """Read a small table from disk.
-   See how that goes."""
+  """
+  Read a small table from disk.
+  See how that goes.
+  """
   t = Tab().read("data/weather4.csv")
   assert( 4 == t.cols.x[0].seen["overcast"])
   assert(14 == t.cols.x[0].n)
@@ -585,7 +608,6 @@ def _tree():
   t = Tab().read("data/auto93.csv")
   my.treeVerbose = True
   Tree(t,cols="y")
- #go()
 
 @go
 def _bore():
@@ -596,8 +618,45 @@ def _bore():
   print("best",b.best.status())
   print("rest",b.rest.status())
   print("all",t.status())
- #go()
+
+#----------------------------------------------
+### Main
+# Start-up commands.
 
 if __name__ == "__main__":
-   if my.T: go()
-   if my.t: go(use=my.t)
+  if my.T: go()
+  if my.t: go(use=my.t)
+
+#----------------------------------------------
+### License
+# 
+# Copyright (c) 2020, Tim Menzies
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the
+# following conditions are met:
+# 
+# 1. Redistributions of source code must retain the above
+#    copyright notice, this
+#    list of conditions and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice,
+#    this list of conditions and the following disclaimer in
+#    the documentation and/or other materials provided with
+#    the distribution.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+# CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
