@@ -1,19 +1,20 @@
 #!/usr/bin/env pypy3
 """
+<center><img src="letscook.png" width=150></center>
+
 Optimizer, written as a data miner.  Break the data
 up into regions of 'bad' and 'better'. Find
 ways to jump from 'bad' to 'better'.
 
-        :-------:  
-        | Ba    |  Bad ------.  to plan, find (better - bad)
-        |    56 |            |  to monitor, find (bad - better)
-        :-------:-------:    |  to trust, check if if bad or better
-                | Be    |    v  
-                |     4 |  Better  
-                :-------:  
+    :-------:  
+    | Ba    |  Bad ------.  to plan, do (better - bad)
+    |    56 |            |  to monitor, watch our for (bad - better)
+    :-------:-------:    |  to trust, check if in bad or better
+            | Be    |    v  
+            |     4 |  Better  
+            :-------:  
 
-Copyright (c) 2020, Tim Menzies.   
-All rights reserved under the BSD 2-Clause license.
+Copyright (c) 2020, Tim Menzies. All rights (BSD 2-Clause license).
 """
 
 import traceback,argparse,random,pprint,math,sys,re,os
@@ -115,8 +116,9 @@ def help():
     h("tree leaves must be at least n**s in size" ,     s= 0.5),
     h("training data (arff format",                     train= "train.csv"),
     h("testing data (csv format)",                      test=  "test.csv"),
-    h("Run just the tests with names matching 'S'",     t= ""),
-    h("Run all tests. ",                                T = False)
+    h("List all tests.",                                L = False),
+    h("Run all tests.",                                 T = False),
+    h("Run just the tests with names matching 'S'",     t= "")
   ]
 
 def makeArgParseOption(txt,**d):
@@ -131,17 +133,17 @@ def makeArgParseOption(txt,**d):
     break
   default = val[0] if isinstance(val,list)  else val
   if val is False :
-    return key,dict(help=txt, action="store_true")
+    return key,default,dict(help=txt, action="store_true")
   else:
     m,t = "S",str
     if isinstance(default,int)  : m,t= "I",int
     if isinstance(default,float): m,t= "F",float
     if isinstance(val,list):
-      return key,dict(help=txt, choices=val,          
+      return key,default,dict(help=txt, choices=val,          
                       default=default, metavar=m ,type=t)
     else:
       eg = "; e.g. -%s %s"%(key,val) if val != "" else ""
-      return key,dict(help=txt + eg,
+      return key,default, dict(help=txt + eg,
                       default=default, metavar=m, type=t)
   
 def args(f):
@@ -152,12 +154,9 @@ def args(f):
   before = re.sub(r"\n  ","\n",__doc__)
   parser = argparse.ArgumentParser(description = before,
              formatter_class = argparse.RawDescriptionHelpFormatter)
-  for key, args in lst:
+  for key, _,args in lst:
     parser.add_argument("-"+key,**args)
   return parser.parse_args()
-
-# Store command-line options in the global `my`.
-my  = args(help)
 
 #---------------------------------------------------------
 ### Define magic characters
@@ -181,37 +180,44 @@ def lessp(s):
 
 #---------------------------------------------------------
 ### Thing
-#Python objects have *very* uninformative print strings.
-#`Thing`s know how to present themselves.
+# Python objects have *very* uninformative print strings.
+# `Thing`s know how to present themselves.
 class Thing:
   """
   All my classes are Things that pretty print themselves
   by reporting themselves as nested dictionaries then 
-  pprinting that dictionary.
+  pprint-ing that dictionary.
   """
   def __repr__(i):
      return re.sub(r"'",' ', 
                    pprint.pformat(dicts(i.__dict__),compact=True))
 
 def dicts(i,seen=None):
-   """
-   This is a tool used by `Thing.__repr__`.
-   Converts `i` into a nested dictionary, then pretty-prints that.
-   """
-   if isinstance(i,(tuple,list)): 
-     return [ dicts(v,seen) for v in i ]
-   elif isinstance(i,dict): 
-     return { k:dicts(i[k], seen) for k in i if str(k)[0] !="_"}
-   elif isinstance(i,Thing): 
-     seen = seen or {}
-     j =id(i) % 128021 # ids are LONG; show them shorter.
-     if i in seen: return f"#:{j}"
-     seen[i]=i
-     d=dicts(i.__dict__,seen)
-     d["#"] = j
-     return d
-   else:
-     return i
+  """
+  This is a tool used by `Thing.__repr__`.
+  Converts `i` into a nested dictionary, then pretty-prints that.
+  """
+  if isinstance(i,(tuple,list)): 
+    return [ dicts(v,seen) for v in i ]
+  elif isinstance(i,dict): 
+    return { k:dicts(i[k], seen) for k in i if str(k)[0] !="_"}
+  elif isinstance(i,Thing): 
+    seen = seen or {}
+    j =id(i) % 128021 # ids are LONG; show them shorter.
+    if i in seen: return f"#:{j}"
+    seen[i]=i
+    d=dicts(i.__dict__,seen)
+    d["#"] = j
+    return d
+  else:
+    return i
+
+class o(Thing):
+  def __init__(i,**d) : i.__dict__.update(**d)
+
+my  = o(**{k:d for k,d,_ in help()})
+
+print(my)
 
 class Col(Thing):
   def __init__(i,pos,txt):
@@ -414,13 +420,14 @@ class Range:
 
 
 class Ranges(Thing):
-  def __init__(i,txt,a,x,y,goal=True):
+  def __init__(i,txt,a,x=lambda z:z[0],
+                       y=lambda z:z[1], goal=True):
     i.txt  = txt
     i.goal = goal
-    i.bin  = lambda: Range(txt,x,i),
+    i.bin  = lambda: Range(txt,x,i)
     i.all  = i.bin()
-    i.ranges= i.merge( i.grow( i.pairs(x,y)))
-  def pairs(i,x,y,lst):
+    i.ranges= i.merge( i.grow( i.pairs(x,y,a)))
+  def pairs(i,x,y,a):
     lst = [(x(z), y(z)) for z in a if not isinstance(x(z),str)]
     return sorted(lst, key= lambda z:z[0])
   def grow(i,a):
@@ -501,9 +508,6 @@ def has(i,seen=None):
   return i
 
 #### Print Utilities
-def o(i): 
-  dprint(i.__dict__)
-
 def dprint(d, pre="",skip="_"):
   """
   Pretty print a dictionary, sorted by keys, ignoring 
@@ -545,14 +549,25 @@ class Test:
       Test.f += 1
       print(traceback.format_exc())
       print(Test.score("FAIL"),':',fun.__name__)
+  def list():
+    print("")
+    for fun in Test.all:
+      doc = fun.__doc__ or ""
+      doc = re.sub(r"\n[ ]*","",doc)
+      print(f"{__file__} -t {fun.__name__:10s} : {doc}")
 
 #----------------------------------------------
 ### Unit Tests
 go  = Test.go
 
 @go
+def tests():
+  "List all tests."
+  Test.list()
+
+@go
 def bye():    
-  "Bye."
+  "Commit and push Github files."
   def run(s): print(s); os.system(s)
   run("git commit -am commit")
   run("git push")
@@ -566,7 +581,7 @@ def hello():
 @go
 def _hetab1():
   """
-  Read a small table from disk.
+  Read a small table from disk. 
   See how that goes.
   """
   t = Tab().read("data/weather4.csv")
@@ -619,13 +634,28 @@ def _bore():
   print("rest",b.rest.status())
   print("all",t.status())
 
+def _range0(xy):
+  print("")
+  for x in Ranges("t",xy).ranges(): 
+    print(x)
+
+
+@go
+def _range1():
+  n = 10
+  _range0([[i,i>n] for i in range(n*2)])
+
+
 #----------------------------------------------
 ### Main
 # Start-up commands.
 
 if __name__ == "__main__":
+  my = args(help)
+  print(my)
   if my.T: go()
   if my.t: go(use=my.t)
+  if my.L: Test.list()
 
 #----------------------------------------------
 ### License
