@@ -1,0 +1,6 @@
+alias bnb="pypy3 brknbad.py"
+
+doc() {
+  pycco brknbad.py
+  cp pycco.css docs
+}
