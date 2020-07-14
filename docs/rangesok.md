@@ -39,4 +39,4 @@ def _range5():
 def _range6():
   n = 10**3
   _range0( [[i, i> .4*n and i < .6*n] for i in range(n)] )
-```
+```:e

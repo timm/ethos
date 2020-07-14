@@ -137,9 +137,10 @@ def help():
     h("bin min size =len**b",                           b= .5),
     h("what columns to while tree building " ,          c= ["x","y"]),
     h("use at most 'd' rows for distance calcs",        d= 256),
-    h("merge ranges whose scores differ by less that F",e= 0.01),
+    h("merge ranges whose scores differ by less that F",e= 0.05),
     h("separation of poles (f=1 means 'max distance')", f= .9),
     h("coefficient for distance" ,                      p= 2),
+    h("random number seed" ,                            r = 1),
     h("tree leaves must be at least n**s in size" ,     s= 0.5),
     h("training data (arff format",                     train= "train.csv"),
     h("testing data (csv format)",                      test=  "test.csv"),
@@ -389,6 +390,22 @@ class Tree:
          print(('| '*lvl) + str(len(t.rows)),t.status())
       
 class Bore:
+   """
+   Multi-objective clustering to find `best` rows;
+   i.e. those that tend to dominate everything else.
+
+   To do this, perform a top-down recursive division 
+   of data, based on their
+   `y` values, as follows:
+    
+   - Find two distant rows .
+   - Check which one is best.
+   - Divide the rows into those nearer `best` or `rest`
+   - Add the `rest` to `i.rest`, recurse on the `best`.
+   - Stop when less than `N**.s` rows.
+     Send shriving rows to `i.best`.
+
+   """
    def __init__(i, t) :
      i.rest = t.clone()
      i.best = i.div(t, 2*len(t.rows)**my.s)
@@ -426,6 +443,7 @@ class Range(Thing):
     i.what,i.xf,i._ranges = what, xf, ranges
     i.n, i.yes, i.no = 0,0.0001,0.0001
     i.lo, i.hi = 10**32, -10**32
+    i.gen=1
   def add(i,x,y):
     i.n += 1
     if y==i._ranges.goal: i.yes += 1
@@ -434,6 +452,7 @@ class Range(Thing):
     i.hi = max(x,i.hi)
   def merge(i,j):
     k     = i._ranges.bin()
+    k.gen = max(i.gen,j.gen) + 1
     k.lo  = min(i.lo, j.lo) 
     k.hi  = max(i.hi, j.hi) 
     k.n   = i.n + j.n
@@ -571,7 +590,8 @@ class Test:
       doc = fun.__doc__ or ""
       print( "# "+ re.sub(r"\n[ ]*","\n# ",doc) )
       print("")
-      random.seed(1)
+      random.seed(my.r)
+      print(my.r, random.random())
       fun()
       print(Test.score("PASS"),':',fun.__name__)
     except Exception:
@@ -672,7 +692,7 @@ def test_bore():
 
 def _range0(xy):
   for r in Ranges("t",xy).ranges:
-     print (r.lo, r.hi, r.n)
+     print ("::",r.gen, 2**r.gen, r.lo, r.hi, r.n,r.s())
 
 
 @go
@@ -696,7 +716,7 @@ def test_range3():
 @go
 def test_range4():
   "random noise: only 1 range"
-  n = 10**4
+  n = 10**3
   _range0( [[i, 0 if random.random() < 0.5 else 1] for i in range(n)])
 
 @go

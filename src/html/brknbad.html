@@ -299,8 +299,10 @@ def help():
     h(&#34;bin min size =len**b&#34;,                           b= .5),
     h(&#34;what columns to while tree building &#34; ,          c= [&#34;x&#34;,&#34;y&#34;]),
     h(&#34;use at most &#39;d&#39; rows for distance calcs&#34;,        d= 256),
+    h(&#34;merge ranges whose scores differ by less that F&#34;,e= 0.05),
     h(&#34;separation of poles (f=1 means &#39;max distance&#39;)&#34;, f= .9),
     h(&#34;coefficient for distance&#34; ,                      p= 2),
+    h(&#34;random number seed&#34; ,                            r = 1),
     h(&#34;tree leaves must be at least n**s in size&#34; ,     s= 0.5),
     h(&#34;training data (arff format&#34;,                     train= &#34;train.csv&#34;),
     h(&#34;testing data (csv format)&#34;,                      test=  &#34;test.csv&#34;),
@@ -550,6 +552,22 @@ class Tree:
          print((&#39;| &#39;*lvl) + str(len(t.rows)),t.status())
       
 class Bore:
+   &#34;&#34;&#34;
+   Multi-objective clustering to find `best` rows;
+   i.e. those that tend to dominate everything else.
+
+   To do this, perform a top-down recursive division 
+   of data, based on their
+   `y` values, as follows:
+    
+   - Find two distant rows .
+   - Check which one is best.
+   - Divide the rows into those nearer `best` or `rest`
+   - Add the `rest` to `i.rest`, recurse on the `best`.
+   - Stop when less than `N**.s` rows.
+     Send shriving rows to `i.best`.
+
+   &#34;&#34;&#34;
    def __init__(i, t) :
      i.rest = t.clone()
      i.best = i.div(t, 2*len(t.rows)**my.s)
@@ -582,19 +600,21 @@ class SRanges(Thing):
       i.all.add(x1,y1)
     i.ranges =  d.values()
 
-class Range:
+class Range(Thing):
   def __init__(i,what,xf,ranges):
-    i.what,i.xf,i.ranges = what, xf, ranges
+    i.what,i.xf,i._ranges = what, xf, ranges
     i.n, i.yes, i.no = 0,0.0001,0.0001
-    i.lo, i.hi = None,None
+    i.lo, i.hi = 10**32, -10**32
+    i.gen=1
   def add(i,x,y):
     i.n += 1
-    if y==i.ranges.goal: i.yes += 1
+    if y==i._ranges.goal: i.yes += 1
     else               : i.no += 1
     i.lo = min(x,i.lo)
     i.hi = max(x,i.hi)
   def merge(i,j):
-    k     = i.ranges.bin()
+    k     = i._ranges.bin()
+    k.gen = max(i.gen,j.gen) + 1
     k.lo  = min(i.lo, j.lo) 
     k.hi  = max(i.hi, j.hi) 
     k.n   = i.n + j.n
@@ -605,8 +625,8 @@ class Range:
     sa, sb, sc = a.s(), b.s(), c.s()
     return abs(sb - sa) &lt; my.e or sc &gt;= sb and sc &gt;= sa
   def s(i):
-    yes   = i.yes/i.ranges.all.yes 
-    no    = i.no /i.ranges.all.no
+    yes   = i.yes/i._ranges.all.yes 
+    no    = i.no /i._ranges.all.no
     return  yes**2/(yes+no+0.0001) if yes &gt; no else 0
 
 
@@ -638,7 +658,7 @@ class Ranges(Thing):
        if j &lt; len(bins) - 1:
           b = bins[j+1]
           c = a.merge(b)
-          if c.better(a,b,i.all):
+          if c.better(a,b):
              a = c
              j += 1
        tmp += [a]
@@ -732,7 +752,8 @@ class Test:
       doc = fun.__doc__ or &#34;&#34;
       print( &#34;# &#34;+ re.sub(r&#34;\n[ ]*&#34;,&#34;\n# &#34;,doc) )
       print(&#34;&#34;)
-      random.seed(1)
+      random.seed(my.r)
+      print(my.r, random.random())
       fun()
       print(Test.score(&#34;PASS&#34;),&#39;:&#39;,fun.__name__)
     except Exception:
@@ -832,15 +853,51 @@ def test_bore():
   print(&#34;all&#34;,t.status())
 
 def _range0(xy):
-  print(&#34;&#34;)
-  for x in Ranges(&#34;t&#34;,xy).ranges(): 
-    print(x)
+  for r in Ranges(&#34;t&#34;,xy).ranges:
+     print (&#34;::&#34;,r.gen, 2**r.gen, r.lo, r.hi, r.n,r.s())
 
 
 @go
 def test_range1():
+  &#34;Two ranges, equal size&#34;
   n = 10
   _range0([[i,i&gt;n] for i in range(n*2)])
+
+@go
+def test_range2():
+  &#34;4 ranges&#34;
+  n = 10**4
+  _range0( [[i, i &gt; .1*n and i&lt;.2*n or i&gt;.7*n ] for i in range(n)])
+
+@go
+def test_range3():
+  &#34;5 ranges&#34;
+  n = 10**4
+  _range0( [[i, i &gt; .1*n and i&lt;.2*n or i&gt;.6*n and i&lt;.7*n] for i in range(n)])
+
+@go
+def test_range4():
+  &#34;random noise: only 1 range&#34;
+  n = 10**3
+  _range0( [[i, 0 if random.random() &lt; 0.5 else 1] for i in range(n)])
+
+@go
+def test_range5():
+  &#34;random noise: only 1 range&#34;
+  n = 10**3
+  _range0( [[i, 0] for i in range(n)])
+
+@go
+def test_range6():
+  &#34;3 ranges&#34;
+  n = 10**3
+  _range0( [[i, i&gt; .4*n and i &lt; .6*n] for i in range(n)] )
+
+@go
+def test_range7():
+  &#34;singletons: 1 range&#34;
+  n = 10**2
+  _range0( [[1, 0] for i in range(n)] )
 
 
 #----------------------------------------------
@@ -1025,8 +1082,10 @@ i.e. anything whose name starts with "_".</p></div>
     h(&#34;bin min size =len**b&#34;,                           b= .5),
     h(&#34;what columns to while tree building &#34; ,          c= [&#34;x&#34;,&#34;y&#34;]),
     h(&#34;use at most &#39;d&#39; rows for distance calcs&#34;,        d= 256),
+    h(&#34;merge ranges whose scores differ by less that F&#34;,e= 0.05),
     h(&#34;separation of poles (f=1 means &#39;max distance&#39;)&#34;, f= .9),
     h(&#34;coefficient for distance&#34; ,                      p= 2),
+    h(&#34;random number seed&#34; ,                            r = 1),
     h(&#34;tree leaves must be at least n**s in size&#34; ,     s= 0.5),
     h(&#34;training data (arff format&#34;,                     train= &#34;train.csv&#34;),
     h(&#34;testing data (csv format)&#34;,                      test=  &#34;test.csv&#34;),
@@ -1224,15 +1283,112 @@ def test_hetab1():
 <span>def <span class="ident">test_range1</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Two ranges, equal size</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@go
 def test_range1():
+  &#34;Two ranges, equal size&#34;
   n = 10
   _range0([[i,i&gt;n] for i in range(n*2)])</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_range2"><code class="name flex">
+<span>def <span class="ident">test_range2</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>4 ranges</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_range2():
+  &#34;4 ranges&#34;
+  n = 10**4
+  _range0( [[i, i &gt; .1*n and i&lt;.2*n or i&gt;.7*n ] for i in range(n)])</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_range3"><code class="name flex">
+<span>def <span class="ident">test_range3</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>5 ranges</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_range3():
+  &#34;5 ranges&#34;
+  n = 10**4
+  _range0( [[i, i &gt; .1*n and i&lt;.2*n or i&gt;.6*n and i&lt;.7*n] for i in range(n)])</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_range4"><code class="name flex">
+<span>def <span class="ident">test_range4</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>random noise: only 1 range</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_range4():
+  &#34;random noise: only 1 range&#34;
+  n = 10**3
+  _range0( [[i, 0 if random.random() &lt; 0.5 else 1] for i in range(n)])</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_range5"><code class="name flex">
+<span>def <span class="ident">test_range5</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>random noise: only 1 range</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_range5():
+  &#34;random noise: only 1 range&#34;
+  n = 10**3
+  _range0( [[i, 0] for i in range(n)])</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_range6"><code class="name flex">
+<span>def <span class="ident">test_range6</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>3 ranges</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_range6():
+  &#34;3 ranges&#34;
+  n = 10**3
+  _range0( [[i, i&gt; .4*n and i &lt; .6*n] for i in range(n)] )</code></pre>
+</details>
+</dd>
+<dt id="brknbad.test_range7"><code class="name flex">
+<span>def <span class="ident">test_range7</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>singletons: 1 range</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@go
+def test_range7():
+  &#34;singletons: 1 range&#34;
+  n = 10**2
+  _range0( [[1, 0] for i in range(n)] )</code></pre>
 </details>
 </dd>
 <dt id="brknbad.test_tab2"><code class="name flex">
@@ -1293,12 +1449,40 @@ def test_tree():
 <span>(</span><span>t)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Multi-objective clustering to find <code>best</code> rows;
+i.e. those that tend to dominate everything else.</p>
+<p>To do this, perform a top-down recursive division
+of data, based on their
+<code>y</code> values, as follows:</p>
+<ul>
+<li>Find two distant rows .</li>
+<li>Check which one is best.</li>
+<li>Divide the rows into those nearer <code>best</code> or <code>rest</code></li>
+<li>Add the <code>rest</code> to <code>i.rest</code>, recurse on the <code>best</code>.</li>
+<li>Stop when less than <code>N**.s</code> rows.
+Send shriving rows to <code>i.best</code>.</li>
+</ul></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Bore:
+   &#34;&#34;&#34;
+   Multi-objective clustering to find `best` rows;
+   i.e. those that tend to dominate everything else.
+
+   To do this, perform a top-down recursive division 
+   of data, based on their
+   `y` values, as follows:
+    
+   - Find two distant rows .
+   - Check which one is best.
+   - Divide the rows into those nearer `best` or `rest`
+   - Add the `rest` to `i.rest`, recurse on the `best`.
+   - Stop when less than `N**.s` rows.
+     Send shriving rows to `i.best`.
+
+   &#34;&#34;&#34;
    def __init__(i, t) :
      i.rest = t.clone()
      i.best = i.div(t, 2*len(t.rows)**my.s)
@@ -1789,24 +1973,28 @@ pprint-ing that dictionary.</p></div>
 <span>(</span><span>what, xf, ranges)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>All my classes are Things that pretty print themselves
+by reporting themselves as nested dictionaries then
+pprint-ing that dictionary.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Range:
+<pre><code class="python">class Range(Thing):
   def __init__(i,what,xf,ranges):
-    i.what,i.xf,i.ranges = what, xf, ranges
+    i.what,i.xf,i._ranges = what, xf, ranges
     i.n, i.yes, i.no = 0,0.0001,0.0001
-    i.lo, i.hi = None,None
+    i.lo, i.hi = 10**32, -10**32
+    i.gen=1
   def add(i,x,y):
     i.n += 1
-    if y==i.ranges.goal: i.yes += 1
+    if y==i._ranges.goal: i.yes += 1
     else               : i.no += 1
     i.lo = min(x,i.lo)
     i.hi = max(x,i.hi)
   def merge(i,j):
-    k     = i.ranges.bin()
+    k     = i._ranges.bin()
+    k.gen = max(i.gen,j.gen) + 1
     k.lo  = min(i.lo, j.lo) 
     k.hi  = max(i.hi, j.hi) 
     k.n   = i.n + j.n
@@ -1817,10 +2005,14 @@ pprint-ing that dictionary.</p></div>
     sa, sb, sc = a.s(), b.s(), c.s()
     return abs(sb - sa) &lt; my.e or sc &gt;= sb and sc &gt;= sa
   def s(i):
-    yes   = i.yes/i.ranges.all.yes 
-    no    = i.no /i.ranges.all.no
+    yes   = i.yes/i._ranges.all.yes 
+    no    = i.no /i._ranges.all.no
     return  yes**2/(yes+no+0.0001) if yes &gt; no else 0</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="brknbad.Thing" href="#brknbad.Thing">Thing</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="brknbad.Range.add"><code class="name flex">
@@ -1834,7 +2026,7 @@ pprint-ing that dictionary.</p></div>
 </summary>
 <pre><code class="python">def add(i,x,y):
   i.n += 1
-  if y==i.ranges.goal: i.yes += 1
+  if y==i._ranges.goal: i.yes += 1
   else               : i.no += 1
   i.lo = min(x,i.lo)
   i.hi = max(x,i.hi)</code></pre>
@@ -1864,7 +2056,8 @@ pprint-ing that dictionary.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def merge(i,j):
-  k     = i.ranges.bin()
+  k     = i._ranges.bin()
+  k.gen = max(i.gen,j.gen) + 1
   k.lo  = min(i.lo, j.lo) 
   k.hi  = max(i.hi, j.hi) 
   k.n   = i.n + j.n
@@ -1883,8 +2076,8 @@ pprint-ing that dictionary.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def s(i):
-  yes   = i.yes/i.ranges.all.yes 
-  no    = i.no /i.ranges.all.no
+  yes   = i.yes/i._ranges.all.yes 
+  no    = i.no /i._ranges.all.no
   return  yes**2/(yes+no+0.0001) if yes &gt; no else 0</code></pre>
 </details>
 </dd>
@@ -1930,7 +2123,7 @@ pprint-ing that dictionary.</p></div>
        if j &lt; len(bins) - 1:
           b = bins[j+1]
           c = a.merge(b)
-          if c.better(a,b,i.all):
+          if c.better(a,b):
              a = c
              j += 1
        tmp += [a]
@@ -1980,7 +2173,7 @@ pprint-ing that dictionary.</p></div>
      if j &lt; len(bins) - 1:
         b = bins[j+1]
         c = a.merge(b)
-        if c.better(a,b,i.all):
+        if c.better(a,b):
            a = c
            j += 1
      tmp += [a]
@@ -2298,7 +2491,8 @@ Lets you list the tests, run some of them, or all.</p></div>
       doc = fun.__doc__ or &#34;&#34;
       print( &#34;# &#34;+ re.sub(r&#34;\n[ ]*&#34;,&#34;\n# &#34;,doc) )
       print(&#34;&#34;)
-      random.seed(1)
+      random.seed(my.r)
+      print(my.r, random.random())
       fun()
       print(Test.score(&#34;PASS&#34;),&#39;:&#39;,fun.__name__)
     except Exception:
@@ -2386,7 +2580,8 @@ Lets you list the tests, run some of them, or all.</p></div>
     doc = fun.__doc__ or &#34;&#34;
     print( &#34;# &#34;+ re.sub(r&#34;\n[ ]*&#34;,&#34;\n# &#34;,doc) )
     print(&#34;&#34;)
-    random.seed(1)
+    random.seed(my.r)
+    print(my.r, random.random())
     fun()
     print(Test.score(&#34;PASS&#34;),&#39;:&#39;,fun.__name__)
   except Exception:
@@ -2436,6 +2631,7 @@ pprint-ing that dictionary.</p></div>
 <ul class="hlist">
 <li><a title="brknbad.Col" href="#brknbad.Col">Col</a></li>
 <li><a title="brknbad.Cols" href="#brknbad.Cols">Cols</a></li>
+<li><a title="brknbad.Range" href="#brknbad.Range">Range</a></li>
 <li><a title="brknbad.Ranges" href="#brknbad.Ranges">Ranges</a></li>
 <li><a title="brknbad.SRanges" href="#brknbad.SRanges">SRanges</a></li>
 <li><a title="brknbad.Tab" href="#brknbad.Tab">Tab</a></li>
@@ -2525,6 +2721,12 @@ pprint-ing that dictionary.</p></div>
 <li><code><a title="brknbad.test_hello" href="#brknbad.test_hello">test_hello</a></code></li>
 <li><code><a title="brknbad.test_hetab1" href="#brknbad.test_hetab1">test_hetab1</a></code></li>
 <li><code><a title="brknbad.test_range1" href="#brknbad.test_range1">test_range1</a></code></li>
+<li><code><a title="brknbad.test_range2" href="#brknbad.test_range2">test_range2</a></code></li>
+<li><code><a title="brknbad.test_range3" href="#brknbad.test_range3">test_range3</a></code></li>
+<li><code><a title="brknbad.test_range4" href="#brknbad.test_range4">test_range4</a></code></li>
+<li><code><a title="brknbad.test_range5" href="#brknbad.test_range5">test_range5</a></code></li>
+<li><code><a title="brknbad.test_range6" href="#brknbad.test_range6">test_range6</a></code></li>
+<li><code><a title="brknbad.test_range7" href="#brknbad.test_range7">test_range7</a></code></li>
 <li><code><a title="brknbad.test_tab2" href="#brknbad.test_tab2">test_tab2</a></code></li>
 <li><code><a title="brknbad.test_tests" href="#brknbad.test_tests">test_tests</a></code></li>
 <li><code><a title="brknbad.test_tree" href="#brknbad.test_tree">test_tree</a></code></li>
