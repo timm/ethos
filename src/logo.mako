@@ -1,1 +1,1 @@
-<center><img src="letscook.png" width=400></center>
+<center><img src="letscook.png" width=500></center>

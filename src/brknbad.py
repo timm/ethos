@@ -1,7 +1,8 @@
 #!/usr/bin/env pypy3
 """
 Optimizer, written as a data miner.  Break the data up into regions
-of 'bad' and 'better'. Find ways to jump from 'bad' to 'better'.
+of 'bad' and 'better'. Find ways to jump from 'bad' to 'better'. 
+Nearly all this processing takes loglinear time.
 
     :-------:  
     | Ba    | Bad <----.  planning= (better - bad)
@@ -14,50 +15,46 @@ of 'bad' and 'better'. Find ways to jump from 'bad' to 'better'.
 Copyright (c) 2020, Tim Menzies. All rights (BSD 2-Clause license).
 
 ## Overview
-Is your software ethical?
-Does its own source code  holds a representation of
-user goals and  uses those at runtime to guide its own behavior?
-Can that software
-report how well the user goals
-are being achieved and can it suggest how to adjust the system, to better
-achieve those goals? 
 
-Do you want to make your software more ethical?
-BRKNBAD is a collection of data structures that support ethical 
-the kind of ethical reasoning listed above.
-It is a multi-objective optimizer that reasons by breaking up problems into regions
-of `bad` and `better`, then looks for ways on how to jump between
-those regions.
+Is your software ethical?  Does its own source code  holds a
+representation of user goals and  uses those at runtime to guide
+its own behavior?  Can that software report how well the user goals
+are being achieved and can it suggest how to adjust the system, to
+better achieve those goals?
+
+Do you want to make your software more ethical?  BRKNBAD is a
+collection of data structures that support ethical the kind of
+ethical reasoning listed above.  It is a multi-objective optimizer
+that reasons by breaking up problems into regions of `bad` and
+`better`, then looks for ways on how to jump between those regions.
 
 BRKNBAD might be an ethical choice in domains:
 
-- when users have to trade-off competing
-goals, 
- - when succinct explanations are needed about what the system is doing,
+- when users have to trade-off competing goals, 
+- when succinct explanations are needed about what the system is doing,
 - when  those explanations have to include ranges within which it is safe
-to change the system, 
+  to change the system, 
 - when guidance is needed for how to improve things
-(or know what might make things worse); 
+  (or know what might make things worse); 
 - when thing being studied is constantly changing so:
    - we have to perpetually check if the current system is still trustworthy
    - and, if not, we need to update our models
 
 Technical notes: 
 
-- `bad` and `better` are score via Zitler's
-continuous domination predicate. 
+- `bad` and `better` are score via 
+  [Zitler's continuous domination predicate](#brknbad.Tab.dom).
 - Examples are clustered in goal
-space and the `better` cluster is the one that dominates all the
-other `bad` clusters.
+  space and the `better` cluster is the one that dominates all the
+  other `bad` clusters.
 - Numerics are then broken up into just a few ranges
-using a bottom-up merging process
-guided by the ratio of `better` to `bad`  in each range. 
+  using a bottom-up merging process
+  guided by the ratio of `better` to `bad`  in each range. 
 - These numeric ranges,
-and the symbolic ranges are then used to build a succinct decision list
-that can explain what constitutes `better` behavior. 
-This decision list has many uses:
-    - _Planning_: The deltas in the
-      conditions that lead to the leaves of that decision list can
+  and the symbolic ranges are then used to build a succinct decision list
+  that can explain what constitutes `better` behavior. 
+  This decision list has many uses:
+    - _Planning_: The deltas in the conditions that lead to the leaves of that decision list can
       offer guidance on how to change
       `bad` to `better`. 
     - _Monitoring_: The opposite of planning. Learn what can change `better`
@@ -95,9 +92,40 @@ which can be categoriesed into
  - symbolic gaols (that are also called `klass`es)
 - `x` values:
  - which can be numeric or symbolic.
-"""
+
+## License
+
+Copyright (c) 2020, Tim Menzies
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the
+following conditions are met:
+
+1. Redistributions of source code must retain the above
+   copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above
+   copyright notice,
+   this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with
+   the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."""
 import traceback,argparse,random,pprint,math,sys,re,os
-### Command-line Options
 
 def help(): 
   """
@@ -109,6 +137,7 @@ def help():
     h("bin min size =len**b",                           b= .5),
     h("what columns to while tree building " ,          c= ["x","y"]),
     h("use at most 'd' rows for distance calcs",        d= 256),
+    h("merge ranges whose scores differ by less that F",e= 0.01),
     h("separation of poles (f=1 means 'max distance')", f= .9),
     h("coefficient for distance" ,                      p= 2),
     h("tree leaves must be at least n**s in size" ,     s= 0.5),
@@ -158,25 +187,29 @@ def args(f):
   return parser.parse_args()
 
 #---------------------------------------------------------
-### Define magic characters
-#Used in column headers or column cells.
 
-def no(s): 
-  "Things to skip."
-  return  s == "?"
-def nump(s): 
-  "Numbers."
-  return "<" in s or "$" in s or ">" in s
-def goalp(s): 
-  "Goals"
-  return "<" in s or "!" in s or ">" in s
-def klassp(s): 
-  "Non-numeric goals."
-  return "!" in s
-def lessp(s): 
-  "Thing to minimize"
-  return "<" in s
-
+class Magic:
+  """
+  Define magic characterss. 
+  Used in column headers to denote goals, klasses, numbers.
+  Used also to denote things to skip (columns, specific cells).
+  """
+  def no(s): 
+    "Things to skip."
+    return  s == "?"
+  def nump(s): 
+    "Numbers."
+    return "<" in s or "$" in s or ">" in s
+  def goalp(s): 
+    "Goals"
+    return "<" in s or "!" in s or ">" in s
+  def klassp(s): 
+    "Non-numeric goals."
+    return "!" in s
+  def lessp(s): 
+    "Thing to minimize"
+    return "<" in s
+  
 #---------------------------------------------------------
 ### Thing
 # Python objects have *very* uninformative print strings.
@@ -219,9 +252,9 @@ my  = o(**{k:d for k,d,_ in help()})
 class Col(Thing):
   def __init__(i,pos,txt):
     i.n, i.pos, i.txt = 0, pos, txt
-    i.w = -1 if lessp(txt) else 1
+    i.w = -1 if Magic.lessp(txt) else 1
   def __add__(i,x):
-    if no(x): return x
+    if Magic.no(x): return x
     i.n += 1
     return i.add(x)
 
@@ -236,12 +269,12 @@ class Num(Col):
     i.mu      = i.mu + (x - i.mu)/i.n
     return x
   def norm(i,x):
-    if no(x) : return x
+    if Magic.no(x) : return x
     return (x - i.lo)  / (i.hi - i.lo + 0.000001)
   def dist(i,x,y):
-    if no(x) and no(y): return 1
-    if no(x): x = i.lo if y > i.mu else i.hi
-    if no(y): y = i.lo if x > i.mu else i.hi
+    if Magic.no(x) and Magic.no(y): return 1
+    if Magic.no(x): x = i.lo if y > i.mu else i.hi
+    if Magic.no(y): y = i.lo if x > i.mu else i.hi
     return abs(i.norm(x) - i.norm(y))
 
 class Sym(Col):
@@ -254,7 +287,7 @@ class Sym(Col):
     if tmp > i.most: i.most,i.mode = tmp,x
     return x
   def dist(i,x,y): 
-    return 1 if no(x) and no(y) else x != y
+    return 1 if Magic.no(x) and Magic.no(y) else x != y
  
 class Cols(Thing):
   def __init__(i) : 
@@ -265,11 +298,11 @@ class Cols(Thing):
     return lst[i.klas]
   def header(i,lst):
     for pos,txt in enumerate(lst):
-      tmp = (Num if nump(txt) else Sym)(pos,txt)
+      tmp = (Num if Magic.nump(txt) else Sym)(pos,txt)
       i.all += [tmp]
-      (i.y    if goalp(txt) else i.x)[pos] = tmp
-      (i.nums if nump(txt)  else i.syms)[pos] = tmp
-      if klassp(txt) : i.klas  = tmp
+      (i.y    if Magic.goalp(txt) else i.x)[pos] = tmp
+      (i.nums if Magic.nump(txt)  else i.syms)[pos] = tmp
+      if Magic.klassp(txt) : i.klas  = tmp
 
 class Tab(Thing):
   def __init__(i,rows=[]):
@@ -382,25 +415,25 @@ class SRanges(Thing):
     d      = {}
     for one in a:
       x1, y1 = x(one), y(one)
-      if no(x1): continue
+      if Magic.no(x1): continue
       if not x1 in d: d[x1] = Range(txt,x,i)
       d[x].add(x1,y1)
       i.all.add(x1,y1)
     i.ranges =  d.values()
 
-class Range:
+class Range(Thing):
   def __init__(i,what,xf,ranges):
-    i.what,i.xf,i.ranges = what, xf, ranges
+    i.what,i.xf,i._ranges = what, xf, ranges
     i.n, i.yes, i.no = 0,0.0001,0.0001
-    i.lo, i.hi = None,None
+    i.lo, i.hi = 10**32, -10**32
   def add(i,x,y):
     i.n += 1
-    if y==i.ranges.goal: i.yes += 1
+    if y==i._ranges.goal: i.yes += 1
     else               : i.no += 1
     i.lo = min(x,i.lo)
     i.hi = max(x,i.hi)
   def merge(i,j):
-    k     = i.ranges.bin()
+    k     = i._ranges.bin()
     k.lo  = min(i.lo, j.lo) 
     k.hi  = max(i.hi, j.hi) 
     k.n   = i.n + j.n
@@ -411,8 +444,8 @@ class Range:
     sa, sb, sc = a.s(), b.s(), c.s()
     return abs(sb - sa) < my.e or sc >= sb and sc >= sa
   def s(i):
-    yes   = i.yes/i.ranges.all.yes 
-    no    = i.no /i.ranges.all.no
+    yes   = i.yes/i._ranges.all.yes 
+    no    = i.no /i._ranges.all.no
     return  yes**2/(yes+no+0.0001) if yes > no else 0
 
 
@@ -444,7 +477,7 @@ class Ranges(Thing):
        if j < len(bins) - 1:
           b = bins[j+1]
           c = a.merge(b)
-          if c.better(a,b,i.all):
+          if c.better(a,b):
              a = c
              j += 1
        tmp += [a]
@@ -452,8 +485,7 @@ class Ranges(Thing):
     return i.merge(tmp) if len(tmp) < len(bins) else bins
 
 #--------------------------------------------------------
-### Utilities
-#### Reading CSV files
+# Utils
 
 def rows(x=None):
   "Read a csv file from disk."
@@ -475,13 +507,11 @@ def cols(src):
     todo = todo or [n for n,s in enumerate(a) if not "?"in s]
     yield [ a[n] for n in todo]
 
-#### List Utilities
 def shuffle(lst):
   "Return a shuffled list."
   random.shuffle(lst)
   return lst
 
-#### Meta Utilities
 def has(i,seen=None):
   """
   Report a nested object as a set of nested lists.
@@ -504,7 +534,6 @@ def has(i,seen=None):
      return { k:has(i[k], seen) for k in i if str(k)[0] !="_"}
   return i
 
-#### Print Utilities
 def dprint(d, pre="",skip="_"):
   """
   Pretty print a dictionary, sorted by keys, ignoring 
@@ -518,8 +547,11 @@ def dprint(d, pre="",skip="_"):
   return pre+'{'+", ".join([('%s=%s' % (k,q(v))) 
                              for k,v in l]) +'}'
 
-#### Unit Test Manager
 class Test:
+  """
+  Unit test manager. Stores all the tests in `Test.all`. 
+  Lets you list the tests, run some of them, or all.
+  """
   t,f = 0,0
   all = []
   def score(s): 
@@ -558,7 +590,9 @@ class Test:
 
 #----------------------------------------------
 ### Unit Tests
-def go(fn=None,use=None):  Test.go(fn=fn,use=use); return fn
+def go(fn=None,use=None):  
+  "Decorator for test functions. Adds the function to `Test.all`"
+  Test.go(fn=fn,use=use); return fn
 
 @go
 def test_tests():
@@ -625,7 +659,10 @@ def test_tree():
 
 @go
 def test_bore():
-  "Recursively prune half the data."
+  """
+  Recursively prune worst half the data 
+  (down to sqrt(N) of original data).
+  """
   t = Tab().read("../docs/data/auto93.csv")
   b = Bore(t)
   print([col.txt for col in t.cols.y.values()])
@@ -634,15 +671,51 @@ def test_bore():
   print("all",t.status())
 
 def _range0(xy):
-  print("")
-  for x in Ranges("t",xy).ranges(): 
-    print(x)
+  for r in Ranges("t",xy).ranges:
+     print (r.lo, r.hi, r.n)
 
 
 @go
 def test_range1():
+  "Two ranges, equal size"
   n = 10
   _range0([[i,i>n] for i in range(n*2)])
+
+@go
+def test_range2():
+  "4 ranges"
+  n = 10**4
+  _range0( [[i, i > .1*n and i<.2*n or i>.7*n ] for i in range(n)])
+
+@go
+def test_range3():
+  "5 ranges"
+  n = 10**4
+  _range0( [[i, i > .1*n and i<.2*n or i>.6*n and i<.7*n] for i in range(n)])
+
+@go
+def test_range4():
+  "random noise: only 1 range"
+  n = 10**4
+  _range0( [[i, 0 if random.random() < 0.5 else 1] for i in range(n)])
+
+@go
+def test_range5():
+  "random noise: only 1 range"
+  n = 10**3
+  _range0( [[i, 0] for i in range(n)])
+
+@go
+def test_range6():
+  "3 ranges"
+  n = 10**3
+  _range0( [[i, i> .4*n and i < .6*n] for i in range(n)] )
+
+@go
+def test_range7():
+  "singletons: 1 range"
+  n = 10**2
+  _range0( [[1, 0] for i in range(n)] )
 
 
 #----------------------------------------------
@@ -655,36 +728,3 @@ if __name__ == "__main__":
   if my.t: go(use=my.t)
   if my.L: Test.list()
 
-class License:
-  """ 
-  Copyright (c) 2020, Tim Menzies
-  All rights reserved.
-  
-  Redistribution and use in source and binary forms, with or
-  without modification, are permitted provided that the
-  following conditions are met:
-  
-  1. Redistributions of source code must retain the above
-     copyright notice, this
-     list of conditions and the following disclaimer.
-  
-  2. Redistributions in binary form must reproduce the above
-     copyright notice,
-     this list of conditions and the following disclaimer in
-     the documentation and/or other materials provided with
-     the distribution.
-  
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  """

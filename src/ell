@@ -1,6 +1,5 @@
-alias bnb="pypy3 brknbad.py"
+alias b="pypy3 brknbad.py"
 
 doc() {
-  pycco brknbad.py
-  cp pycco.css docs
+  pdoc3 --template-dir=./ --html --force  -c latex_math=True  brknbad.py 
 }

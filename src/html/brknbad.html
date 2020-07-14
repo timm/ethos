@@ -6,9 +6,9 @@
 <meta name="generator" content="pdoc 0.8.3" />
 <title>brknbad API documentation</title>
 <meta name="description" content="Optimizer, written as a data miner.
-Break the data
-up into regions of &#39;bad&#39; and &#39;better&#39;. Find
-ways to jump from &#39;bad&#39; to &#39;better&#39; …" />
+Break the data up into regions
+of &#39;bad&#39; and &#39;better&#39;. Find ways to jump from &#39;bad&#39; to &#39;better&#39;.
+Nearly all this …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -27,9 +27,9 @@ ways to jump from &#39;bad&#39; to &#39;better&#39; …" />
 </header>
 <section id="section-intro">
 <p>Optimizer, written as a data miner.
-Break the data
-up into regions of 'bad' and 'better'. Find
-ways to jump from 'bad' to 'better'.</p>
+Break the data up into regions
+of 'bad' and 'better'. Find ways to jump from 'bad' to 'better'.
+Nearly all this processing takes loglinear time.</p>
 <pre><code>:-------:  
 | Ba    | Bad &lt;----.  planning= (better - bad)
 |    56 |          |  monitor = (bad - better)
@@ -42,23 +42,23 @@ ways to jump from 'bad' to 'better'.</p>
 <h2 id="overview">Overview</h2>
 <p>Is your software ethical?
 Does its own source code
-holds a representation of
-user goals and
-uses those at runtime to guide its own behavior?
-Can that software
-report how well the user goals
-are being achieved and can it suggest how to adjust the system, to better
-achieve those goals? </p>
+holds a
+representation of user goals and
+uses those at runtime to guide
+its own behavior?
+Can that software report how well the user goals
+are being achieved and can it suggest how to adjust the system, to
+better achieve those goals?</p>
 <p>Do you want to make your software more ethical?
-BRKNBAD is a collection of data structures that support ethical
-the kind of ethical reasoning listed above.
-It is a multi-objective optimizer that reasons by breaking up problems into regions
-of <code>bad</code> and <code>better</code>, then looks for ways on how to jump between
-those regions.</p>
+BRKNBAD is a
+collection of data structures that support ethical the kind of
+ethical reasoning listed above.
+It is a multi-objective optimizer
+that reasons by breaking up problems into regions of <code>bad</code> and
+<code>better</code>, then looks for ways on how to jump between those regions.</p>
 <p>BRKNBAD might be an ethical choice in domains:</p>
 <ul>
-<li>when users have to trade-off competing
-goals, </li>
+<li>when users have to trade-off competing goals, </li>
 <li>when succinct explanations are needed about what the system is doing,</li>
 <li>when
 those explanations have to include ranges within which it is safe
@@ -71,8 +71,8 @@ to change the system, </li>
 </ul>
 <p>Technical notes: </p>
 <ul>
-<li><code>bad</code> and <code>better</code> are score via Zitler's
-continuous domination predicate. </li>
+<li><code>bad</code> and <code>better</code> are score via
+<a href="#brknbad.Tab.dom">Zitler's continuous domination predicate</a>.</li>
 <li>Examples are clustered in goal
 space and the <code>better</code> cluster is the one that dominates all the
 other <code>bad</code> clusters.</li>
@@ -84,8 +84,7 @@ in each range. </li>
 and the symbolic ranges are then used to build a succinct decision list
 that can explain what constitutes <code>better</code> behavior.
 This decision list has many uses:<ul>
-<li><em>Planning</em>: The deltas in the
-conditions that lead to the leaves of that decision list can
+<li><em>Planning</em>: The deltas in the conditions that lead to the leaves of that decision list can
 offer guidance on how to change
 <code>bad</code> to <code>better</code>. </li>
 <li><em>Monitoring</em>: The opposite of planning. Learn what can change <code>better</code>
@@ -124,16 +123,48 @@ which can be categoriesed into</p>
 <li><code>x</code> values:</li>
 <li>which can be numeric or symbolic.</li>
 </ul>
+<h2 id="license">License</h2>
+<p>Copyright (c) 2020, Tim Menzies
+All rights reserved.</p>
+<p>Redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the
+following conditions are met:</p>
+<ol>
+<li>
+<p>Redistributions of source code must retain the above
+copyright notice, this
+list of conditions and the following disclaimer.</p>
+</li>
+<li>
+<p>Redistributions in binary form must reproduce the above
+copyright notice,
+this list of conditions and the following disclaimer in
+the documentation and/or other materials provided with
+the distribution.</p>
+</li>
+</ol>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">#!/usr/bin/env pypy3
 &#34;&#34;&#34;
-
-Optimizer, written as a data miner.  Break the data
-up into regions of &#39;bad&#39; and &#39;better&#39;. Find
-ways to jump from &#39;bad&#39; to &#39;better&#39;.
+Optimizer, written as a data miner.  Break the data up into regions
+of &#39;bad&#39; and &#39;better&#39;. Find ways to jump from &#39;bad&#39; to &#39;better&#39;. 
+Nearly all this processing takes loglinear time.
 
     :-------:  
     | Ba    | Bad &lt;----.  planning= (better - bad)
@@ -146,50 +177,46 @@ ways to jump from &#39;bad&#39; to &#39;better&#39;.
 Copyright (c) 2020, Tim Menzies. All rights (BSD 2-Clause license).
 
 ## Overview
-Is your software ethical?
-Does its own source code  holds a representation of
-user goals and  uses those at runtime to guide its own behavior?
-Can that software
-report how well the user goals
-are being achieved and can it suggest how to adjust the system, to better
-achieve those goals? 
 
-Do you want to make your software more ethical?
-BRKNBAD is a collection of data structures that support ethical 
-the kind of ethical reasoning listed above.
-It is a multi-objective optimizer that reasons by breaking up problems into regions
-of `bad` and `better`, then looks for ways on how to jump between
-those regions.
+Is your software ethical?  Does its own source code  holds a
+representation of user goals and  uses those at runtime to guide
+its own behavior?  Can that software report how well the user goals
+are being achieved and can it suggest how to adjust the system, to
+better achieve those goals?
+
+Do you want to make your software more ethical?  BRKNBAD is a
+collection of data structures that support ethical the kind of
+ethical reasoning listed above.  It is a multi-objective optimizer
+that reasons by breaking up problems into regions of `bad` and
+`better`, then looks for ways on how to jump between those regions.
 
 BRKNBAD might be an ethical choice in domains:
 
-- when users have to trade-off competing
-goals, 
- - when succinct explanations are needed about what the system is doing,
+- when users have to trade-off competing goals, 
+- when succinct explanations are needed about what the system is doing,
 - when  those explanations have to include ranges within which it is safe
-to change the system, 
+  to change the system, 
 - when guidance is needed for how to improve things
-(or know what might make things worse); 
+  (or know what might make things worse); 
 - when thing being studied is constantly changing so:
    - we have to perpetually check if the current system is still trustworthy
    - and, if not, we need to update our models
 
 Technical notes: 
 
-- `bad` and `better` are score via Zitler&#39;s
-continuous domination predicate. 
+- `bad` and `better` are score via 
+  [Zitler&#39;s continuous domination predicate](#brknbad.Tab.dom).
 - Examples are clustered in goal
-space and the `better` cluster is the one that dominates all the
-other `bad` clusters.
+  space and the `better` cluster is the one that dominates all the
+  other `bad` clusters.
 - Numerics are then broken up into just a few ranges
-using a bottom-up merging process
-guided by the ratio of `better` to `bad`  in each range. 
+  using a bottom-up merging process
+  guided by the ratio of `better` to `bad`  in each range. 
 - These numeric ranges,
-and the symbolic ranges are then used to build a succinct decision list
-that can explain what constitutes `better` behavior. 
-This decision list has many uses:
-    - _Planning_: The deltas in the
-      conditions that lead to the leaves of that decision list can
+  and the symbolic ranges are then used to build a succinct decision list
+  that can explain what constitutes `better` behavior. 
+  This decision list has many uses:
+    - _Planning_: The deltas in the conditions that lead to the leaves of that decision list can
       offer guidance on how to change
       `bad` to `better`. 
     - _Monitoring_: The opposite of planning. Learn what can change `better`
@@ -227,9 +254,40 @@ which can be categoriesed into
  - symbolic gaols (that are also called `klass`es)
 - `x` values:
  - which can be numeric or symbolic.
-&#34;&#34;&#34;
+
+## License
+
+Copyright (c) 2020, Tim Menzies
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or
+without modification, are permitted provided that the
+following conditions are met:
+
+1. Redistributions of source code must retain the above
+   copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above
+   copyright notice,
+   this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with
+   the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS &#34;AS IS&#34; AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.&#34;&#34;&#34;
 import traceback,argparse,random,pprint,math,sys,re,os
-### Command-line Options
 
 def help(): 
   &#34;&#34;&#34;
@@ -281,7 +339,8 @@ def args(f):
   Link to Python&#39;s command line option processor.
   &#34;&#34;&#34;
   lst = f()
-  before = re.sub(r&#34;\n  &#34;,&#34;\n&#34;,__doc__)
+  before = re.sub(r&#34;\n  &#34;,&#34;\n&#34;, __doc__)
+  before = before.split(&#39;\n\n&#39;)[0]
   parser = argparse.ArgumentParser(description = before,
              formatter_class = argparse.RawDescriptionHelpFormatter)
   for key, _,args in lst:
@@ -289,25 +348,29 @@ def args(f):
   return parser.parse_args()
 
 #---------------------------------------------------------
-### Define magic characters
-#Used in column headers or column cells.
 
-def no(s): 
-  &#34;Things to skip.&#34;
-  return  s == &#34;?&#34;
-def nump(s): 
-  &#34;Numbers.&#34;
-  return &#34;&lt;&#34; in s or &#34;$&#34; in s or &#34;&gt;&#34; in s
-def goalp(s): 
-  &#34;Goals&#34;
-  return &#34;&lt;&#34; in s or &#34;!&#34; in s or &#34;&gt;&#34; in s
-def klassp(s): 
-  &#34;Non-numeric goals.&#34;
-  return &#34;!&#34; in s
-def lessp(s): 
-  &#34;Thing to minimize&#34;
-  return &#34;&lt;&#34; in s
-
+class Magic:
+  &#34;&#34;&#34;
+  Define magic characterss. 
+  Used in column headers to denote goals, klasses, numbers.
+  Used also to denote things to skip (columns, specific cells).
+  &#34;&#34;&#34;
+  def no(s): 
+    &#34;Things to skip.&#34;
+    return  s == &#34;?&#34;
+  def nump(s): 
+    &#34;Numbers.&#34;
+    return &#34;&lt;&#34; in s or &#34;$&#34; in s or &#34;&gt;&#34; in s
+  def goalp(s): 
+    &#34;Goals&#34;
+    return &#34;&lt;&#34; in s or &#34;!&#34; in s or &#34;&gt;&#34; in s
+  def klassp(s): 
+    &#34;Non-numeric goals.&#34;
+    return &#34;!&#34; in s
+  def lessp(s): 
+    &#34;Thing to minimize&#34;
+    return &#34;&lt;&#34; in s
+  
 #---------------------------------------------------------
 ### Thing
 # Python objects have *very* uninformative print strings.
@@ -350,9 +413,9 @@ my  = o(**{k:d for k,d,_ in help()})
 class Col(Thing):
   def __init__(i,pos,txt):
     i.n, i.pos, i.txt = 0, pos, txt
-    i.w = -1 if lessp(txt) else 1
+    i.w = -1 if Magic.lessp(txt) else 1
   def __add__(i,x):
-    if no(x): return x
+    if Magic.no(x): return x
     i.n += 1
     return i.add(x)
 
@@ -367,12 +430,12 @@ class Num(Col):
     i.mu      = i.mu + (x - i.mu)/i.n
     return x
   def norm(i,x):
-    if no(x) : return x
+    if Magic.no(x) : return x
     return (x - i.lo)  / (i.hi - i.lo + 0.000001)
   def dist(i,x,y):
-    if no(x) and no(y): return 1
-    if no(x): x = i.lo if y &gt; i.mu else i.hi
-    if no(y): y = i.lo if x &gt; i.mu else i.hi
+    if Magic.no(x) and Magic.no(y): return 1
+    if Magic.no(x): x = i.lo if y &gt; i.mu else i.hi
+    if Magic.no(y): y = i.lo if x &gt; i.mu else i.hi
     return abs(i.norm(x) - i.norm(y))
 
 class Sym(Col):
@@ -385,7 +448,7 @@ class Sym(Col):
     if tmp &gt; i.most: i.most,i.mode = tmp,x
     return x
   def dist(i,x,y): 
-    return 1 if no(x) and no(y) else x != y
+    return 1 if Magic.no(x) and Magic.no(y) else x != y
  
 class Cols(Thing):
   def __init__(i) : 
@@ -396,11 +459,11 @@ class Cols(Thing):
     return lst[i.klas]
   def header(i,lst):
     for pos,txt in enumerate(lst):
-      tmp = (Num if nump(txt) else Sym)(pos,txt)
+      tmp = (Num if Magic.nump(txt) else Sym)(pos,txt)
       i.all += [tmp]
-      (i.y    if goalp(txt) else i.x)[pos] = tmp
-      (i.nums if nump(txt)  else i.syms)[pos] = tmp
-      if klassp(txt) : i.klas  = tmp
+      (i.y    if Magic.goalp(txt) else i.x)[pos] = tmp
+      (i.nums if Magic.nump(txt)  else i.syms)[pos] = tmp
+      if Magic.klassp(txt) : i.klas  = tmp
 
 class Tab(Thing):
   def __init__(i,rows=[]):
@@ -513,7 +576,7 @@ class SRanges(Thing):
     d      = {}
     for one in a:
       x1, y1 = x(one), y(one)
-      if no(x1): continue
+      if Magic.no(x1): continue
       if not x1 in d: d[x1] = Range(txt,x,i)
       d[x].add(x1,y1)
       i.all.add(x1,y1)
@@ -583,8 +646,7 @@ class Ranges(Thing):
     return i.merge(tmp) if len(tmp) &lt; len(bins) else bins
 
 #--------------------------------------------------------
-### Utilities
-#### Reading CSV files
+# Utils
 
 def rows(x=None):
   &#34;Read a csv file from disk.&#34;
@@ -606,13 +668,11 @@ def cols(src):
     todo = todo or [n for n,s in enumerate(a) if not &#34;?&#34;in s]
     yield [ a[n] for n in todo]
 
-#### List Utilities
 def shuffle(lst):
   &#34;Return a shuffled list.&#34;
   random.shuffle(lst)
   return lst
 
-#### Meta Utilities
 def has(i,seen=None):
   &#34;&#34;&#34;
   Report a nested object as a set of nested lists.
@@ -635,7 +695,6 @@ def has(i,seen=None):
      return { k:has(i[k], seen) for k in i if str(k)[0] !=&#34;_&#34;}
   return i
 
-#### Print Utilities
 def dprint(d, pre=&#34;&#34;,skip=&#34;_&#34;):
   &#34;&#34;&#34;
   Pretty print a dictionary, sorted by keys, ignoring 
@@ -649,8 +708,11 @@ def dprint(d, pre=&#34;&#34;,skip=&#34;_&#34;):
   return pre+&#39;{&#39;+&#34;, &#34;.join([(&#39;%s=%s&#39; % (k,q(v))) 
                              for k,v in l]) +&#39;}&#39;
 
-#### Unit Test Manager
 class Test:
+  &#34;&#34;&#34;
+  Unit test manager. Stores all the tests in `Test.all`. 
+  Lets you list the tests, run some of them, or all.
+  &#34;&#34;&#34;
   t,f = 0,0
   all = []
   def score(s): 
@@ -679,15 +741,19 @@ class Test:
       print(Test.score(&#34;FAIL&#34;),&#39;:&#39;,fun.__name__)
   def list():
     print(&#34;&#34;)
+    print(__file__ + &#34; -t [NAME]&#34;) 
+    print(&#34;\nKnown test names:&#34;)
     for fun in Test.all:
       name = re.sub(r&#34;test_&#34;,&#34;&#34;,fun.__name__)
       doc = fun.__doc__ or &#34;&#34;
       doc = re.sub(r&#34;\n[ ]*&#34;,&#34;&#34;,doc)
-      print(f&#34;{__file__} -t {name:10s} : {doc}&#34;)
+      print(f&#34;  {name:10s} : {doc}&#34;)
 
 #----------------------------------------------
 ### Unit Tests
-def go(fn=None,use=None):  Test.go(fn=fn,use=use); return fn
+def go(fn=None,use=None):  
+  &#34;Decorator for test functions. Adds the function to `Test.all`&#34;
+  Test.go(fn=fn,use=use); return fn
 
 @go
 def test_tests():
@@ -754,7 +820,10 @@ def test_tree():
 
 @go
 def test_bore():
-  &#34;Recursively prune half the data.&#34;
+  &#34;&#34;&#34;
+  Recursively prune worst half the data 
+  (down to sqrt(N) of original data).
+  &#34;&#34;&#34;
   t = Tab().read(&#34;../docs/data/auto93.csv&#34;)
   b = Bore(t)
   print([col.txt for col in t.cols.y.values()])
@@ -780,44 +849,9 @@ def test_range1():
 
 if __name__ == &#34;__main__&#34;:
   my = args(help)
-  print(my)
   if my.T: go()
   if my.t: go(use=my.t)
-  if my.L: Test.list()
-
-#----------------------------------------------
-### License
-# 
-# Copyright (c) 2020, Tim Menzies
-# All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or
-# without modification, are permitted provided that the
-# following conditions are met:
-# 
-# 1. Redistributions of source code must retain the above
-#    copyright notice, this
-#    list of conditions and the following disclaimer.
-# 
-# 2. Redistributions in binary form must reproduce the above
-#    copyright notice,
-#    this list of conditions and the following disclaimer in
-#    the documentation and/or other materials provided with
-#    the distribution.
-# 
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-# CONTRIBUTORS &#34;AS IS&#34; AND ANY EXPRESS OR IMPLIED WARRANTIES,
-# INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-# MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-# NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
-# OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</code></pre>
+  if my.L: Test.list()</code></pre>
 </details>
 </section>
 <section>
@@ -841,7 +875,8 @@ if __name__ == &#34;__main__&#34;:
   Link to Python&#39;s command line option processor.
   &#34;&#34;&#34;
   lst = f()
-  before = re.sub(r&#34;\n  &#34;,&#34;\n&#34;,__doc__)
+  before = re.sub(r&#34;\n  &#34;,&#34;\n&#34;, __doc__)
+  before = before.split(&#39;\n\n&#39;)[0]
   parser = argparse.ArgumentParser(description = before,
              formatter_class = argparse.RawDescriptionHelpFormatter)
   for key, _,args in lst:
@@ -925,26 +960,14 @@ private slots (those that start with '<em>'</em>).</p></div>
 <span>def <span class="ident">go</span></span>(<span>fn=None, use=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Decorator for test functions. Adds the function to <code><a title="brknbad.Test.all" href="#brknbad.Test.all">Test.all</a></code></p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def go(fn=None,use=None):  Test.go(fn=fn,use=use); return fn</code></pre>
-</details>
-</dd>
-<dt id="brknbad.goalp"><code class="name flex">
-<span>def <span class="ident">goalp</span></span>(<span>s)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Goals</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def goalp(s): 
-  &#34;Goals&#34;
-  return &#34;&lt;&#34; in s or &#34;!&#34; in s or &#34;&gt;&#34; in s</code></pre>
+<pre><code class="python">def go(fn=None,use=None):  
+  &#34;Decorator for test functions. Adds the function to `Test.all`&#34;
+  Test.go(fn=fn,use=use); return fn</code></pre>
 </details>
 </dd>
 <dt id="brknbad.has"><code class="name flex">
@@ -1013,34 +1036,6 @@ i.e. anything whose name starts with "_".</p></div>
   ]</code></pre>
 </details>
 </dd>
-<dt id="brknbad.klassp"><code class="name flex">
-<span>def <span class="ident">klassp</span></span>(<span>s)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Non-numeric goals.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def klassp(s): 
-  &#34;Non-numeric goals.&#34;
-  return &#34;!&#34; in s</code></pre>
-</details>
-</dd>
-<dt id="brknbad.lessp"><code class="name flex">
-<span>def <span class="ident">lessp</span></span>(<span>s)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Thing to minimize</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def lessp(s): 
-  &#34;Thing to minimize&#34;
-  return &#34;&lt;&#34; in s</code></pre>
-</details>
-</dd>
 <dt id="brknbad.makeArgParseOption"><code class="name flex">
 <span>def <span class="ident">makeArgParseOption</span></span>(<span>txt, **d)</span>
 </code></dt>
@@ -1076,34 +1071,6 @@ Different types then lead to different kinds of options.</p></div>
       eg = &#34;; e.g. -%s %s&#34;%(key,val) if val != &#34;&#34; else &#34;&#34;
       return key,default, dict(help=txt + eg,
                       default=default, metavar=m, type=t)</code></pre>
-</details>
-</dd>
-<dt id="brknbad.no"><code class="name flex">
-<span>def <span class="ident">no</span></span>(<span>s)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Things to skip.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def no(s): 
-  &#34;Things to skip.&#34;
-  return  s == &#34;?&#34;</code></pre>
-</details>
-</dd>
-<dt id="brknbad.nump"><code class="name flex">
-<span>def <span class="ident">nump</span></span>(<span>s)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Numbers.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def nump(s): 
-  &#34;Numbers.&#34;
-  return &#34;&lt;&#34; in s or &#34;$&#34; in s or &#34;&gt;&#34; in s</code></pre>
 </details>
 </dd>
 <dt id="brknbad.rows"><code class="name flex">
@@ -1148,14 +1115,18 @@ Different types then lead to different kinds of options.</p></div>
 <span>def <span class="ident">test_bore</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Recursively prune half the data.</p></div>
+<div class="desc"><p>Recursively prune worst half the data
+(down to sqrt(N) of original data).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@go
 def test_bore():
-  &#34;Recursively prune half the data.&#34;
+  &#34;&#34;&#34;
+  Recursively prune worst half the data 
+  (down to sqrt(N) of original data).
+  &#34;&#34;&#34;
   t = Tab().read(&#34;../docs/data/auto93.csv&#34;)
   b = Bore(t)
   print([col.txt for col in t.cols.y.values()])
@@ -1390,9 +1361,9 @@ pprint-ing that dictionary.</p></div>
 <pre><code class="python">class Col(Thing):
   def __init__(i,pos,txt):
     i.n, i.pos, i.txt = 0, pos, txt
-    i.w = -1 if lessp(txt) else 1
+    i.w = -1 if Magic.lessp(txt) else 1
   def __add__(i,x):
-    if no(x): return x
+    if Magic.no(x): return x
     i.n += 1
     return i.add(x)</code></pre>
 </details>
@@ -1426,11 +1397,11 @@ pprint-ing that dictionary.</p></div>
     return lst[i.klas]
   def header(i,lst):
     for pos,txt in enumerate(lst):
-      tmp = (Num if nump(txt) else Sym)(pos,txt)
+      tmp = (Num if Magic.nump(txt) else Sym)(pos,txt)
       i.all += [tmp]
-      (i.y    if goalp(txt) else i.x)[pos] = tmp
-      (i.nums if nump(txt)  else i.syms)[pos] = tmp
-      if klassp(txt) : i.klas  = tmp</code></pre>
+      (i.y    if Magic.goalp(txt) else i.x)[pos] = tmp
+      (i.nums if Magic.nump(txt)  else i.syms)[pos] = tmp
+      if Magic.klassp(txt) : i.klas  = tmp</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -1462,11 +1433,11 @@ pprint-ing that dictionary.</p></div>
 </summary>
 <pre><code class="python">def header(i,lst):
   for pos,txt in enumerate(lst):
-    tmp = (Num if nump(txt) else Sym)(pos,txt)
+    tmp = (Num if Magic.nump(txt) else Sym)(pos,txt)
     i.all += [tmp]
-    (i.y    if goalp(txt) else i.x)[pos] = tmp
-    (i.nums if nump(txt)  else i.syms)[pos] = tmp
-    if klassp(txt) : i.klas  = tmp</code></pre>
+    (i.y    if Magic.goalp(txt) else i.x)[pos] = tmp
+    (i.nums if Magic.nump(txt)  else i.syms)[pos] = tmp
+    if Magic.klassp(txt) : i.klas  = tmp</code></pre>
 </details>
 </dd>
 <dt id="brknbad.Cols.klass"><code class="name flex">
@@ -1608,6 +1579,113 @@ pprint-ing that dictionary.</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="brknbad.Magic"><code class="flex name class">
+<span>class <span class="ident">Magic</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Define magic characterss.
+Used in column headers to denote goals, klasses, numbers.
+Used also to denote things to skip (columns, specific cells).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Magic:
+  &#34;&#34;&#34;
+  Define magic characterss. 
+  Used in column headers to denote goals, klasses, numbers.
+  Used also to denote things to skip (columns, specific cells).
+  &#34;&#34;&#34;
+  def no(s): 
+    &#34;Things to skip.&#34;
+    return  s == &#34;?&#34;
+  def nump(s): 
+    &#34;Numbers.&#34;
+    return &#34;&lt;&#34; in s or &#34;$&#34; in s or &#34;&gt;&#34; in s
+  def goalp(s): 
+    &#34;Goals&#34;
+    return &#34;&lt;&#34; in s or &#34;!&#34; in s or &#34;&gt;&#34; in s
+  def klassp(s): 
+    &#34;Non-numeric goals.&#34;
+    return &#34;!&#34; in s
+  def lessp(s): 
+    &#34;Thing to minimize&#34;
+    return &#34;&lt;&#34; in s</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="brknbad.Magic.goalp"><code class="name flex">
+<span>def <span class="ident">goalp</span></span>(<span>s)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Goals</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def goalp(s): 
+  &#34;Goals&#34;
+  return &#34;&lt;&#34; in s or &#34;!&#34; in s or &#34;&gt;&#34; in s</code></pre>
+</details>
+</dd>
+<dt id="brknbad.Magic.klassp"><code class="name flex">
+<span>def <span class="ident">klassp</span></span>(<span>s)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Non-numeric goals.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def klassp(s): 
+  &#34;Non-numeric goals.&#34;
+  return &#34;!&#34; in s</code></pre>
+</details>
+</dd>
+<dt id="brknbad.Magic.lessp"><code class="name flex">
+<span>def <span class="ident">lessp</span></span>(<span>s)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Thing to minimize</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def lessp(s): 
+  &#34;Thing to minimize&#34;
+  return &#34;&lt;&#34; in s</code></pre>
+</details>
+</dd>
+<dt id="brknbad.Magic.no"><code class="name flex">
+<span>def <span class="ident">no</span></span>(<span>s)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Things to skip.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def no(s): 
+  &#34;Things to skip.&#34;
+  return  s == &#34;?&#34;</code></pre>
+</details>
+</dd>
+<dt id="brknbad.Magic.nump"><code class="name flex">
+<span>def <span class="ident">nump</span></span>(<span>s)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Numbers.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nump(s): 
+  &#34;Numbers.&#34;
+  return &#34;&lt;&#34; in s or &#34;$&#34; in s or &#34;&gt;&#34; in s</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 <dt id="brknbad.Num"><code class="flex name class">
 <span>class <span class="ident">Num</span></span>
 <span>(</span><span>*l)</span>
@@ -1631,12 +1709,12 @@ pprint-ing that dictionary.</p></div>
     i.mu      = i.mu + (x - i.mu)/i.n
     return x
   def norm(i,x):
-    if no(x) : return x
+    if Magic.no(x) : return x
     return (x - i.lo)  / (i.hi - i.lo + 0.000001)
   def dist(i,x,y):
-    if no(x) and no(y): return 1
-    if no(x): x = i.lo if y &gt; i.mu else i.hi
-    if no(y): y = i.lo if x &gt; i.mu else i.hi
+    if Magic.no(x) and Magic.no(y): return 1
+    if Magic.no(x): x = i.lo if y &gt; i.mu else i.hi
+    if Magic.no(y): y = i.lo if x &gt; i.mu else i.hi
     return abs(i.norm(x) - i.norm(y))</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1672,9 +1750,9 @@ pprint-ing that dictionary.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dist(i,x,y):
-  if no(x) and no(y): return 1
-  if no(x): x = i.lo if y &gt; i.mu else i.hi
-  if no(y): y = i.lo if x &gt; i.mu else i.hi
+  if Magic.no(x) and Magic.no(y): return 1
+  if Magic.no(x): x = i.lo if y &gt; i.mu else i.hi
+  if Magic.no(y): y = i.lo if x &gt; i.mu else i.hi
   return abs(i.norm(x) - i.norm(y))</code></pre>
 </details>
 </dd>
@@ -1700,7 +1778,7 @@ pprint-ing that dictionary.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def norm(i,x):
-  if no(x) : return x
+  if Magic.no(x) : return x
   return (x - i.lo)  / (i.hi - i.lo + 0.000001)</code></pre>
 </details>
 </dd>
@@ -1946,7 +2024,7 @@ pprint-ing that dictionary.</p></div>
     d      = {}
     for one in a:
       x1, y1 = x(one), y(one)
-      if no(x1): continue
+      if Magic.no(x1): continue
       if not x1 in d: d[x1] = Range(txt,x,i)
       d[x].add(x1,y1)
       i.all.add(x1,y1)
@@ -1979,7 +2057,7 @@ pprint-ing that dictionary.</p></div>
     if tmp &gt; i.most: i.most,i.mode = tmp,x
     return x
   def dist(i,x,y): 
-    return 1 if no(x) and no(y) else x != y</code></pre>
+    return 1 if Magic.no(x) and Magic.no(y) else x != y</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -2013,7 +2091,7 @@ pprint-ing that dictionary.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dist(i,x,y): 
-  return 1 if no(x) and no(y) else x != y</code></pre>
+  return 1 if Magic.no(x) and Magic.no(y) else x != y</code></pre>
 </details>
 </dd>
 <dt id="brknbad.Sym.mid"><code class="name flex">
@@ -2190,12 +2268,17 @@ pprint-ing that dictionary.</p></div>
 <span>class <span class="ident">Test</span></span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Unit test manager. Stores all the tests in <code><a title="brknbad.Test.all" href="#brknbad.Test.all">Test.all</a></code>.
+Lets you list the tests, run some of them, or all.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Test:
+  &#34;&#34;&#34;
+  Unit test manager. Stores all the tests in `Test.all`. 
+  Lets you list the tests, run some of them, or all.
+  &#34;&#34;&#34;
   t,f = 0,0
   all = []
   def score(s): 
@@ -2224,11 +2307,13 @@ pprint-ing that dictionary.</p></div>
       print(Test.score(&#34;FAIL&#34;),&#39;:&#39;,fun.__name__)
   def list():
     print(&#34;&#34;)
+    print(__file__ + &#34; -t [NAME]&#34;) 
+    print(&#34;\nKnown test names:&#34;)
     for fun in Test.all:
       name = re.sub(r&#34;test_&#34;,&#34;&#34;,fun.__name__)
       doc = fun.__doc__ or &#34;&#34;
       doc = re.sub(r&#34;\n[ ]*&#34;,&#34;&#34;,doc)
-      print(f&#34;{__file__} -t {name:10s} : {doc}&#34;)</code></pre>
+      print(f&#34;  {name:10s} : {doc}&#34;)</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -2276,11 +2361,13 @@ pprint-ing that dictionary.</p></div>
 </summary>
 <pre><code class="python">def list():
   print(&#34;&#34;)
+  print(__file__ + &#34; -t [NAME]&#34;) 
+  print(&#34;\nKnown test names:&#34;)
   for fun in Test.all:
     name = re.sub(r&#34;test_&#34;,&#34;&#34;,fun.__name__)
     doc = fun.__doc__ or &#34;&#34;
     doc = re.sub(r&#34;\n[ ]*&#34;,&#34;&#34;,doc)
-    print(f&#34;{__file__} -t {name:10s} : {doc}&#34;)</code></pre>
+    print(f&#34;  {name:10s} : {doc}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="brknbad.Test.run"><code class="name flex">
@@ -2410,12 +2497,13 @@ pprint-ing that dictionary.</p></div>
 </section>
 </article>
 <nav id="sidebar">
-<center><img src="letscook.png" width=400></center>
+<center><img src="letscook.png" width=500></center>
 <h1>Index</h1>
 <div class="toc">
 <ul>
 <li><a href="#overview">Overview</a></li>
 <li><a href="#classes">Classes</a></li>
+<li><a href="#license">License</a></li>
 </ul>
 </div>
 <ul id="index">
@@ -2426,14 +2514,9 @@ pprint-ing that dictionary.</p></div>
 <li><code><a title="brknbad.dicts" href="#brknbad.dicts">dicts</a></code></li>
 <li><code><a title="brknbad.dprint" href="#brknbad.dprint">dprint</a></code></li>
 <li><code><a title="brknbad.go" href="#brknbad.go">go</a></code></li>
-<li><code><a title="brknbad.goalp" href="#brknbad.goalp">goalp</a></code></li>
 <li><code><a title="brknbad.has" href="#brknbad.has">has</a></code></li>
 <li><code><a title="brknbad.help" href="#brknbad.help">help</a></code></li>
-<li><code><a title="brknbad.klassp" href="#brknbad.klassp">klassp</a></code></li>
-<li><code><a title="brknbad.lessp" href="#brknbad.lessp">lessp</a></code></li>
 <li><code><a title="brknbad.makeArgParseOption" href="#brknbad.makeArgParseOption">makeArgParseOption</a></code></li>
-<li><code><a title="brknbad.no" href="#brknbad.no">no</a></code></li>
-<li><code><a title="brknbad.nump" href="#brknbad.nump">nump</a></code></li>
 <li><code><a title="brknbad.rows" href="#brknbad.rows">rows</a></code></li>
 <li><code><a title="brknbad.shuffle" href="#brknbad.shuffle">shuffle</a></code></li>
 <li><code><a title="brknbad.test_bore" href="#brknbad.test_bore">test_bore</a></code></li>
@@ -2474,6 +2557,16 @@ pprint-ing that dictionary.</p></div>
 <li><code><a title="brknbad.Dist.neighbors" href="#brknbad.Dist.neighbors">neighbors</a></code></li>
 <li><code><a title="brknbad.Dist.poles" href="#brknbad.Dist.poles">poles</a></code></li>
 <li><code><a title="brknbad.Dist.project" href="#brknbad.Dist.project">project</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="brknbad.Magic" href="#brknbad.Magic">Magic</a></code></h4>
+<ul class="">
+<li><code><a title="brknbad.Magic.goalp" href="#brknbad.Magic.goalp">goalp</a></code></li>
+<li><code><a title="brknbad.Magic.klassp" href="#brknbad.Magic.klassp">klassp</a></code></li>
+<li><code><a title="brknbad.Magic.lessp" href="#brknbad.Magic.lessp">lessp</a></code></li>
+<li><code><a title="brknbad.Magic.no" href="#brknbad.Magic.no">no</a></code></li>
+<li><code><a title="brknbad.Magic.nump" href="#brknbad.Magic.nump">nump</a></code></li>
 </ul>
 </li>
 <li>
