@@ -19,6 +19,7 @@ list.
              :------:
 """
 
+import math
 from lib import args, csv, sd, mu, symsp, numsp, isa, any, r, seed
 from duolib import showRule, selects, cell
 from tiny import o, of
@@ -81,12 +82,12 @@ def table(src):
   otherwise.
 
   """
-  def Tbl(rows=[]): return Obj(cols={}, x={}, y={}, rows=rows)
-  def Row(cells=[]): return Obj(cells=cells, score=0, klass=True)
+  def Tbl(rows=[]): return o(cols={}, x={}, y={}, rows=rows)
+  def Row(cells=[]): return o(cells=cells, score=0, klass=True)
 
   def Col(txt='', pos=0, w=1):
-    return Obj(n=0, txt=txt, pos=pos, has=None, spans=[],
-               w=-1 if "<" in txt else 1)
+    return o(n=0, txt=txt, pos=pos, has=None, spans=[],
+             w=-1 if "<" in txt else 1)
 
   def head(tbl, x):
     for pos, txt in enumerate(x):
@@ -101,10 +102,10 @@ def table(src):
     def inc(col, x):
       if col.has is None:
         col.has = [math.inf, -
-                   math.inf] if u.isa(x, (float, int)) else {}
+                   math.inf] if isa(x, (float, int)) else {}
         return inc(col, x)
       col.n += 1
-      if u.symsp(col.has):
+      if symsp(col.has):
         col.has[x] = col.has.get(x, 0) + 1
       else:
         if x > col.has[1]:
@@ -116,7 +117,7 @@ def table(src):
 
   def footer(tbl):
     for col in tbl.cols.values():
-      if u.numsp(col.has):
+      if numsp(col.has):
         col.has.sort()
   ##########################
   tbl = Tbl()
@@ -143,7 +144,7 @@ def classify(tbl):
     return s1 / n < s2 / n
   #######################
   for row1 in tbl.rows:
-    row1.score = sum(better(tbl, row1, u.any(tbl.rows))
+    row1.score = sum(better(tbl, row1, any(tbl.rows))
                      for _ in range(THE.rowsamples)) / THE.rowsamples
   for n, row in enumerate(sorted(tbl.rows, key=lambda z: z.score)):
     row.klass = n > len(tbl.rows) * THE.best
@@ -177,7 +178,7 @@ def discretize(TBL):
   """
 
   def Span(lo=-math.inf, hi=math.inf, has=None):
-    return Obj(lo=lo, hi=hi, _has=has if has else [])
+    return o(lo=lo, hi=hi, _has=has if has else [])
 
   def pairs(lst, fx, fy):
     xs, ys, xy = [], [], []
@@ -189,8 +190,8 @@ def discretize(TBL):
         ys += [y]
         xy += [(x, y)]
     ys = sorted(ys)
-    return (u.sd(sorted(xs)) * THE.xsmall,
-            u.sd(ys) * THE.ysmall,
+    return (sd(sorted(xs)) * THE.xsmall,
+            sd(ys) * THE.ysmall,
             ys[int(THE.best * len(ys))],
             sorted(xy))
 
@@ -225,9 +226,9 @@ def discretize(TBL):
       a = b4[j]
       if j < len(b4) - 1:
         b = b4[j + 1]
-        if (abs(u.mu(b._has) - u.mu(a._has)) < ysmall
+        if (abs(mu(b._has) - mu(a._has)) < ysmall
             or
-                (u.mu(b._has) < ymin and u.mu(a._has) < ymin)):
+                (mu(b._has) < ymin and mu(a._has) < ymin)):
           merged = Span(lo=a.lo, hi=b.hi, has=a._has + b._has)
           now += [merged]
           j += 2
@@ -236,7 +237,7 @@ def discretize(TBL):
     return merge(now, ymin, ysmall) if len(now) < len(b4) else now
 
   for col in TBL.x.values():
-    if u.numsp(col.has):
+    if numsp(col.has):
       col.spans = div(*pairs(TBL.rows,
                              lambda z: z.cells[col.pos],
                              lambda z: z.score))
@@ -268,14 +269,14 @@ def counts(TBL):
 
    """
 
-  def Counts(): return Obj(f={}, h={}, n=0)
+  def Counts(): return o(f={}, h={}, n=0)
   out = Counts()
   for row in TBL.rows:
     k = row.klass
     out.n += 1
     out.h[k] = out.h.get(k, 0) + 1
     for col in TBL.x.values():
-      x = u.cell(col, row)
+      x = cell(col, row)
       if x:
         v = (k, col.txt, x)
         out.f[v] = out.f.get(v, 0) + 1
@@ -343,7 +344,7 @@ def learn(COUNTS):
     return sum(s for s, _ in pruned), pruned
 
   def pick(rules, total):  # (s1, r1) (s2,r2) (s3,r3) total=s1+s2+s3
-    n = u.r()
+    n = r()
     for rule in rules:
       n -= rule[0] / total
       if n <= 0:
@@ -367,11 +368,11 @@ def main():
   return discretize(
       classify(
           table(
-              u.csv(THE.path2data + "/" + THE.data))))
+              csv(THE.path2data + "/" + THE.data))))
 
 #####################################################
 def _main():
-  u.seed(THE.seed)
+  seed(THE.seed)
   t = main()
   for k, rules in learn(counts(t)).items():
     print("")
@@ -380,17 +381,17 @@ def _main():
                                 for col in t.y.values()]))
     for rule in rules:
       ys = {}
-      some = u.selects(t, rule)
+      some = selects(t, rule)
       for row in some:
         for col in t.y.values():
           ys[col.txt] = ys.get(col.txt, []) + [row.cells[col.pos]]
       print(
-          f"{len(some):5}  " + ' '.join([f"{u.mu(ys[k]):7.2f}"
+          f"{len(some):5}  " + ' '.join([f"{mu(ys[k]):7.2f}"
                                          for k in ys]), end="   ")
-      print(u.showRule(rule))
+      print(showRule(rule))
 
 
 #######################################################
 if __name__ == "__main__":
-  THE = _args("duo4", __doc__.split("\n\n")[0], THE)
+  THE = args("duo4", __doc__.split("\n\n")[0], THE)
   _main()

@@ -9,6 +9,7 @@ import time
 import math
 import sys
 import re
+from tiny import o, of
 
 def r():
   "Return a random number."
@@ -28,11 +29,11 @@ def isa(x, y):
 
 def numsp(x):
   "Returns true if `x` is a container for numbers."
-  return u.isa(x, list)
+  return isa(x, list)
 
 def symsp(x):
   "Returns true if `x` is a container for symbols."
-  return u.isa(x, dict)
+  return isa(x, dict)
 
 def mu(lst):
   "Mean of a list."
@@ -77,10 +78,10 @@ def args(what, txt, d):
     if val is False:
       return dict(help=eg, action='store_true')
     return dict(help=eg, default=val,
-                metavar=("I" if u.isa(val, int) else (
-                    "F" if u.isa(val, float) else "S")),
-                type=(int if u.isa(val, int) else (
-                    float if u.isa(val, float) else str)))
+                metavar=("I" if isa(val, int) else (
+                    "F" if isa(val, float) else "S")),
+                type=(int if isa(val, int) else (
+                    float if isa(val, float) else str)))
 
   ###############
   p = argparse
@@ -89,4 +90,4 @@ def args(what, txt, d):
       formatter_class=p.RawDescriptionHelpFormatter)
   for key, v in d.__dict__.items():
     parser.add_argument("-" + key, **arg(key, v))
-  return Obj(**vars(parser.parse_args()))
+  return o(**vars(parser.parse_args()))

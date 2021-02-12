@@ -3,6 +3,8 @@ Misc python utils
 (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 """
 
+from lib import numsp
+
 def showRule(r):
   def show1(k, v): return k + " = (" + ' | '.join(map(str, v)) + ")"
   s, rule = r
@@ -13,7 +15,7 @@ def selects(t, rule):
   "Return the rows selected by a rule."
   def selects1(t, row, ands):
     for txt, ors in ands:
-      val = u.cell(t.cols[txt], row)
+      val = cell(t.cols[txt], row)
       if val:
         if val not in ors:
           return False
@@ -32,4 +34,4 @@ def cell(col, row):
   ######################
   x = row.cells[col.pos]
   if x != "?":
-    return bin(col.spans, x) if u.numsp(col.has) else x
+    return bin(col.spans, x) if numsp(col.has) else x
