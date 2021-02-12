@@ -35,12 +35,9 @@ PROMPT_COMMAND='echo -ne "🔆 $(git branch 2>/dev/null | grep '^*' | colrm 1 2)
 #     mv tmp$$ $i; done
 # }
 docs() {
-  (cd $Ish/bnbad2; #for i in *.py; do
-    pdoc3 -o $Ish/docs --force --html --template-dir $Ish/docs index 
-    pdoc3 -o $Ish/docs --force --html --template-dir $Ish/docs duo4 
+  (cd $Ish/src
+   pdoc3 -o $Ish/docs --force --html --template-dir $Ish/docs *.py
   )
-  cp $Ish/README.md $Ish/docs/index.md
-  cp $Ish/etc/pycco.css $Ish/docs
 }
 
 art() { cat<<'EOF'
