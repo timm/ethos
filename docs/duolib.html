@@ -75,20 +75,29 @@ def cell(col, row):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="duolib.showRule"><code class="name flex">
-<span>def <span class="ident">showRule</span></span>(<span>r)</span>
+<dt id="duolib.cell"><code class="name flex">
+<span>def <span class="ident">cell</span></span>(<span>col, row)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>HELPER.
+Returns a cell value if it is not missing.
+Also, if appropriate, Discretize it first.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def showRule(r):
-  def show1(k, v): return k + &#34; = (&#34; + &#39; | &#39;.join(map(str, v)) + &#34;)&#34;
-  s, rule = r
-  out = &#34;&#34;
-  return &#39; &amp; &#39;.join([show1(k, v) for k, v in rule])</code></pre>
+<pre><code class="python">def cell(col, row):
+  &#34;&#34;&#34;HELPER.  Returns a cell value if it is not missing.
+  Also, if appropriate, Discretize it first.&#34;&#34;&#34;
+  def bin(spans, x):
+    for span in spans:
+      if span.lo &lt;= x &lt; span.hi:
+        return span.hi
+    return span.hi
+  ######################
+  x = row.cells[col.pos]
+  if x != &#34;?&#34;:
+    return bin(col.spans, x) if numsp(col.has) else x</code></pre>
 </details>
 </dd>
 <dt id="duolib.selects"><code class="name flex">
@@ -113,29 +122,20 @@ def cell(col, row):
   return [row for row in t.rows if selects1(t, row, rule)]</code></pre>
 </details>
 </dd>
-<dt id="duolib.cell"><code class="name flex">
-<span>def <span class="ident">cell</span></span>(<span>col, row)</span>
+<dt id="duolib.showRule"><code class="name flex">
+<span>def <span class="ident">showRule</span></span>(<span>r)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>HELPER.
-Returns a cell value if it is not missing.
-Also, if appropriate, Discretize it first.</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def cell(col, row):
-  &#34;&#34;&#34;HELPER.  Returns a cell value if it is not missing.
-  Also, if appropriate, Discretize it first.&#34;&#34;&#34;
-  def bin(spans, x):
-    for span in spans:
-      if span.lo &lt;= x &lt; span.hi:
-        return span.hi
-    return span.hi
-  ######################
-  x = row.cells[col.pos]
-  if x != &#34;?&#34;:
-    return bin(col.spans, x) if numsp(col.has) else x</code></pre>
+<pre><code class="python">def showRule(r):
+  def show1(k, v): return k + &#34; = (&#34; + &#39; | &#39;.join(map(str, v)) + &#34;)&#34;
+  s, rule = r
+  out = &#34;&#34;
+  return &#39; &amp; &#39;.join([show1(k, v) for k, v in rule])</code></pre>
 </details>
 </dd>
 </dl>
@@ -172,9 +172,9 @@ truth for yourself."
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="duolib.showRule" href="#duolib.showRule">showRule</a></code></li>
-<li><code><a title="duolib.selects" href="#duolib.selects">selects</a></code></li>
 <li><code><a title="duolib.cell" href="#duolib.cell">cell</a></code></li>
+<li><code><a title="duolib.selects" href="#duolib.selects">selects</a></code></li>
+<li><code><a title="duolib.showRule" href="#duolib.showRule">showRule</a></code></li>
 </ul>
 </li>
 </ul>

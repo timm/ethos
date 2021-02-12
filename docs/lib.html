@@ -131,34 +131,6 @@ def args(what, txt, d):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="lib.r"><code class="name flex">
-<span>def <span class="ident">r</span></span>(<span>)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Return a random number.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def r():
-  &#34;Return a random number.&#34;
-  return random.random()</code></pre>
-</details>
-</dd>
-<dt id="lib.seed"><code class="name flex">
-<span>def <span class="ident">seed</span></span>(<span>x)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Reset the seed.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def seed(x):
-  &#34;Reset the seed.&#34;
-  return random.seed(x)</code></pre>
-</details>
-</dd>
 <dt id="lib.any"><code class="name flex">
 <span>def <span class="ident">any</span></span>(<span>lst)</span>
 </code></dt>
@@ -173,74 +145,37 @@ def args(what, txt, d):
   return random.choice(lst)</code></pre>
 </details>
 </dd>
-<dt id="lib.isa"><code class="name flex">
-<span>def <span class="ident">isa</span></span>(<span>x, y)</span>
+<dt id="lib.args"><code class="name flex">
+<span>def <span class="ident">args</span></span>(<span>what, txt, d)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns true if <code>x</code> is of type <code>y</code>.</p></div>
+<div class="desc"><p>Misc: Converts a dictionary <code>d</code> of key = val
+into command line arguments.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def isa(x, y):
-  &#34;Returns true if `x` is of type `y`.&#34;
-  return isinstance(x, y)</code></pre>
-</details>
-</dd>
-<dt id="lib.numsp"><code class="name flex">
-<span>def <span class="ident">numsp</span></span>(<span>x)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns true if <code>x</code> is a container for numbers.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def numsp(x):
-  &#34;Returns true if `x` is a container for numbers.&#34;
-  return isa(x, list)</code></pre>
-</details>
-</dd>
-<dt id="lib.symsp"><code class="name flex">
-<span>def <span class="ident">symsp</span></span>(<span>x)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns true if <code>x</code> is a container for symbols.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def symsp(x):
-  &#34;Returns true if `x` is a container for symbols.&#34;
-  return isa(x, dict)</code></pre>
-</details>
-</dd>
-<dt id="lib.mu"><code class="name flex">
-<span>def <span class="ident">mu</span></span>(<span>lst)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Mean of a list.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def mu(lst):
-  &#34;Mean of a list.&#34;
-  return sum(lst) / len(lst)</code></pre>
-</details>
-</dd>
-<dt id="lib.sd"><code class="name flex">
-<span>def <span class="ident">sd</span></span>(<span>lst)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Standard deviation of a list.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def sd(lst):
-  &#34;Standard deviation of a list.&#34;
-  return (lst[int(.9 * len(lst))] - lst[int(.1 * len(lst))]) / 2.56</code></pre>
+<pre><code class="python">def args(what, txt, d):
+  &#34;&#34;&#34;Misc: Converts a dictionary `d` of key = val
+   into command line arguments.&#34;&#34;&#34;
+  def arg(txt, val):
+    eg = &#34;[%s]&#34; % val
+    if val is False:
+      return dict(help=eg, action=&#39;store_true&#39;)
+    return dict(help=eg, default=val,
+                metavar=(&#34;I&#34; if isa(val, int) else (
+                    &#34;F&#34; if isa(val, float) else &#34;S&#34;)),
+                type=(int if isa(val, int) else (
+                    float if isa(val, float) else str)))
+
+  ###############
+  p = argparse
+  parser = p.ArgumentParser(
+      prog=what, description=txt,
+      formatter_class=p.RawDescriptionHelpFormatter)
+  for key, v in d.__dict__.items():
+    parser.add_argument(&#34;-&#34; + key, **arg(key, v))
+  return o(**vars(parser.parse_args()))</code></pre>
 </details>
 </dd>
 <dt id="lib.csv"><code class="name flex">
@@ -289,37 +224,102 @@ etc</p></div>
       yield [atom(x) for x in re.sub(ignore, &#39;&#39;, a).split(sep)]</code></pre>
 </details>
 </dd>
-<dt id="lib.args"><code class="name flex">
-<span>def <span class="ident">args</span></span>(<span>what, txt, d)</span>
+<dt id="lib.isa"><code class="name flex">
+<span>def <span class="ident">isa</span></span>(<span>x, y)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Misc: Converts a dictionary <code>d</code> of key = val
-into command line arguments.</p></div>
+<div class="desc"><p>Returns true if <code>x</code> is of type <code>y</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def args(what, txt, d):
-  &#34;&#34;&#34;Misc: Converts a dictionary `d` of key = val
-   into command line arguments.&#34;&#34;&#34;
-  def arg(txt, val):
-    eg = &#34;[%s]&#34; % val
-    if val is False:
-      return dict(help=eg, action=&#39;store_true&#39;)
-    return dict(help=eg, default=val,
-                metavar=(&#34;I&#34; if isa(val, int) else (
-                    &#34;F&#34; if isa(val, float) else &#34;S&#34;)),
-                type=(int if isa(val, int) else (
-                    float if isa(val, float) else str)))
-
-  ###############
-  p = argparse
-  parser = p.ArgumentParser(
-      prog=what, description=txt,
-      formatter_class=p.RawDescriptionHelpFormatter)
-  for key, v in d.__dict__.items():
-    parser.add_argument(&#34;-&#34; + key, **arg(key, v))
-  return o(**vars(parser.parse_args()))</code></pre>
+<pre><code class="python">def isa(x, y):
+  &#34;Returns true if `x` is of type `y`.&#34;
+  return isinstance(x, y)</code></pre>
+</details>
+</dd>
+<dt id="lib.mu"><code class="name flex">
+<span>def <span class="ident">mu</span></span>(<span>lst)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Mean of a list.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mu(lst):
+  &#34;Mean of a list.&#34;
+  return sum(lst) / len(lst)</code></pre>
+</details>
+</dd>
+<dt id="lib.numsp"><code class="name flex">
+<span>def <span class="ident">numsp</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns true if <code>x</code> is a container for numbers.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def numsp(x):
+  &#34;Returns true if `x` is a container for numbers.&#34;
+  return isa(x, list)</code></pre>
+</details>
+</dd>
+<dt id="lib.r"><code class="name flex">
+<span>def <span class="ident">r</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a random number.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def r():
+  &#34;Return a random number.&#34;
+  return random.random()</code></pre>
+</details>
+</dd>
+<dt id="lib.sd"><code class="name flex">
+<span>def <span class="ident">sd</span></span>(<span>lst)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Standard deviation of a list.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sd(lst):
+  &#34;Standard deviation of a list.&#34;
+  return (lst[int(.9 * len(lst))] - lst[int(.1 * len(lst))]) / 2.56</code></pre>
+</details>
+</dd>
+<dt id="lib.seed"><code class="name flex">
+<span>def <span class="ident">seed</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Reset the seed.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def seed(x):
+  &#34;Reset the seed.&#34;
+  return random.seed(x)</code></pre>
+</details>
+</dd>
+<dt id="lib.symsp"><code class="name flex">
+<span>def <span class="ident">symsp</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns true if <code>x</code> is a container for symbols.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def symsp(x):
+  &#34;Returns true if `x` is a container for symbols.&#34;
+  return isa(x, dict)</code></pre>
 </details>
 </dd>
 </dl>
@@ -356,16 +356,16 @@ truth for yourself."
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="two-column">
-<li><code><a title="lib.r" href="#lib.r">r</a></code></li>
-<li><code><a title="lib.seed" href="#lib.seed">seed</a></code></li>
 <li><code><a title="lib.any" href="#lib.any">any</a></code></li>
-<li><code><a title="lib.isa" href="#lib.isa">isa</a></code></li>
-<li><code><a title="lib.numsp" href="#lib.numsp">numsp</a></code></li>
-<li><code><a title="lib.symsp" href="#lib.symsp">symsp</a></code></li>
-<li><code><a title="lib.mu" href="#lib.mu">mu</a></code></li>
-<li><code><a title="lib.sd" href="#lib.sd">sd</a></code></li>
-<li><code><a title="lib.csv" href="#lib.csv">csv</a></code></li>
 <li><code><a title="lib.args" href="#lib.args">args</a></code></li>
+<li><code><a title="lib.csv" href="#lib.csv">csv</a></code></li>
+<li><code><a title="lib.isa" href="#lib.isa">isa</a></code></li>
+<li><code><a title="lib.mu" href="#lib.mu">mu</a></code></li>
+<li><code><a title="lib.numsp" href="#lib.numsp">numsp</a></code></li>
+<li><code><a title="lib.r" href="#lib.r">r</a></code></li>
+<li><code><a title="lib.sd" href="#lib.sd">sd</a></code></li>
+<li><code><a title="lib.seed" href="#lib.seed">seed</a></code></li>
+<li><code><a title="lib.symsp" href="#lib.symsp">symsp</a></code></li>
 </ul>
 </li>
 </ul>
