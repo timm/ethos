@@ -4,6 +4,8 @@
 <img align=right src="/etc/img/duo.png">
 (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 
+
+
 Sort the data by how much each row dominates over rows.  Split the
 sort into 'bad' and 'better'. Discretize data, combining any splits
 that do not comment on those splits.  Count how often ranges appear
