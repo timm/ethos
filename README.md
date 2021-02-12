@@ -2,6 +2,7 @@
 # DUO = data miners used / used-by optimizers.
 
 <img align=right src="/etc/img/duo.png">
+
 (c) Tim Menzies    
 2021 MIT License     
 https://opensource.org/licenses/MIT
