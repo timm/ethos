@@ -8,6 +8,13 @@
 https://opensource.org/licenses/MIT
 <br clear=all>
 
+[home](http://menzies.us/duo) ::
+[duo.py](http://menzies.us/duo/duo.html) ::
+[duolib.py](http://menzies.us/duo/duolib.html) ::
+[tbl.py](http://menzies.us/duo/tbl.html) ::
+[lib.py](http://menzies.us/duo/lib.html) ::
+[the.py](http://menzies.us/duo/the.html) ::
+[tiny.py](http://menzies.us/duo/tiny.html) 
 
 Sort the data by how much each row dominates over rows.  Split the
 sort into 'bad' and 'better'.  Discretize data, combining any splits
