@@ -1,6 +1,7 @@
-<img align=right src="/etc/img/duo.png">
+
 # DUO = data miners used / used-by optimizers.
 
+<img align=right src="/etc/img/duo.png">
 (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 
 Sort the data by how much each row dominates over rows.  Split the
