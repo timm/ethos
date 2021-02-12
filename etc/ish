@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
 py() {
-  python3 $1.py
+  f=$1
+  shift
+  python3 $f.py $*
 }
 
 Ish=$(cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )/..
 chmod +x $Ish/etc/ish
-mkdir -p $Ish/bnbad2 $Ish/docs
+mkdir -p  $Ish/docs
 
 alias ls="ls -G"
 alias gp="git add *; git commit -am saving; git push; git status"
@@ -175,6 +177,22 @@ redgreen() { gawk '
             { print  $0                 }
      END    { exit bad!=0 }'
 }
+
+
+for f in $Ish/src/*.py; do
+  g=$Ish/docs/$(basename $f .py).md
+  #if [ $f -nt $g ]; then
+    gawk ' 
+         gsub(/^""".*$/,"") { 
+             if (Com) print "\n```python"
+             if (!Com && Pre) print Pre
+             Pre="```"
+             Com=1-Com 
+             if(!Com) next}
+         1  
+    END {if (!Com) print "```"}'  $f > $g
+  #fi
+done
 
 if [ "$1" == "-T" ]; then
   date +"%r"
