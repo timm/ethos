@@ -15,7 +15,7 @@
 
     # Show collapsed source code block next to each item.
     # Disabling this can improve rendering speed of large modules.
-    show_source_code = False
+    show_source_code = True
 
     # If set, format links to objects in online source code repository
     # according to this template. Supported keywords for interpolation
@@ -46,7 +46,7 @@
     # The whitespace-separated tokens represent arbitrary extra queries (at least one
     # must match) passed to regular Google search. Example:
     #google_search_query = 'inurl:github.com/USER/PROJECT  site:PROJECT.github.io  site:PROJECT.website'
-    google_search_query = 'inurl:github.com/timm/bnbad2   site:menzies.us/bndbad2'
+    #google_search_query = 'inurl:github.com/timm/duo   site:menzies.us/duo'
 
     # Enable offline search using Lunr.js. For explanation of 'fuzziness' parameter, which is
     # added to every query word, see: https://lunrjs.com/guides/searching.html#fuzzy-matches
