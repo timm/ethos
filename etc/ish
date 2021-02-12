@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+
+py() {
+  python3 $1.py
+}
+
+Ish=$(cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )/..
+chmod +x $Ish/etc/ish
+mkdir -p $Ish/bnbad2 $Ish/docs
+
+alias ls="ls -G"
+alias gp="git add *; git commit -am saving; git push; git status"
+alias ish="$Ish/etc/ish "
+#alias ok="test1"
+#alias oks="ish -t"
+#alias okspy="(rerun '$Ish/etc/ish -T')"
+alias vi='vim -u $Ish/etc/dotvimrc'
+alias tmux='tmux -f $Ish/etc/dotmux'
+
+
+here() { cd $1; basename `pwd`; }
+
+PROMPT_COMMAND='echo -ne "🔆 $(git branch 2>/dev/null | grep '^*' | colrm 1 2):";PS1="$(here ..)/$(here .):\!\e[m ▶ "'
+
+# header() {
+#   gawk 'BEGIN {FS="\n"; RS=""} 
+#         {gsub(/\n/,"\n# "); print "# "$0; exit}' $Ish/README.md
+#   gawk 'BEGIN {FS="\n"; RS=""} 
+#         NR != 1 {print "\n"$0}' $1
+# }
+# headers() {
+#   cd $Ish/bnbad2
+#   for i in *.py; do
+#     header $i > tmp$$
+#     mv tmp$$ $i; done
+# }
+docs() {
+  (cd $Ish/bnbad2; #for i in *.py; do
+    pdoc3 -o $Ish/docs --force --html --template-dir $Ish/docs index 
+    pdoc3 -o $Ish/docs --force --html --template-dir $Ish/docs duo4 
+  )
+  cp $Ish/README.md $Ish/docs/index.md
+  cp $Ish/etc/pycco.css $Ish/docs
+}
+
+art() { cat<<'EOF'
+  oO)-.                       .-(Oo
+ /__  _\                     /_  __\
+ \  \(  |     ()~()         |  )/  /
+  \__|\ |    (-___-)        | /|__/
+  '  '--'    ==`-'==        '--'  '
+
+     .--.
+    |o_o |
+    |:_/ |
+   //   \ \
+  (|     | )
+ /'\_   _/`\
+ \___)=(___/
+
+                                   .::!!!!!!!:.
+ .!!!!!:.                        .:!!!!!!!!!!!!
+ ~~~~!!!!!!.                 .:!!!!!!!!!UWWW$$$
+     :$$NWX!!:           .:!!!!!!XUWW$$$$$$$$$P
+     $$$$$##WX!:      .<!!!!UW$$$$"  $$$$$$$$#
+     $$$$$  $$$UX   :!!UW$$$$$$$$$   4$$$$$*
+     ^$$$B  $$$$\     $$$$$$$$$$$$   d$$R"
+       "*$bd$$$$      '*$$$$$$$$$$$o+#"
+            """"          """""""
+
+         /'._     _,
+         \   ;__.'  }
+     (`-._;-" _.--.}'
+     /_'    /`    _}     _.--"""-.
+       `.   \_._.;     .'         \
+         '-.__ /      /            |
+ jgs      _/  `\      \            /
+         ^`   ^`       '._       .'
+                          `"""""``
+
+      _.---._..-""""""-.
+   .-" o   -.           `.
+   `._     -'             \
+     _`";`                 |  
+    '-'__\  \     _.-'     /__
+      '-'---'--'``\__, _.-'--""-.
+ jgs               (.-'        ,-`
+
+      ,____________,
+      .'          '.
+     /~~~~^~~~^~^~~~\
+    /      _    /||  \
+   ;      ( }   \||D  ;
+   |    | /\__,=[_]   |
+   ;  ( |_\_  |---|   ;
+    \  )|  |/ |   |  /
+ jgs '. |  /_ |   |.'
+      '------------'
+
+          '\                   .  . 
+            \              .         ' .
+           O>>         .                 'o
+            \       . 
+            /\    .  
+           / /  .'                           
+ ^^^^^jgs^^^^^^^`^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   __
+    /
+ .-/-.
+ |'-'|
+ |   |
+ |   |   .-""""-.
+ \___/  /' .  '. \   \|/\//
+       (`-..:...-')  |`""`|
+        ;-......-;   |    |
+   jgs   '------'    \____/
+
+                                  .
+     .              .   .'.     \   /
+   \   /      .'. .' '.'   '  -=  o  =-
+ -=  o  =-  .'   '              /   \
+   /   \                          '
+     '
+
+                       *       +
+   *     '                  |
+     ()    .-.,-"``"-.    - o -
+           '=/_       \     |
+        *   |::'=._    ;      '
+   '         \::.  `=./`,   '
+     +    .   '-::..-'``'    *
+ jgs   O    *     .       +  .
+          *     .       +
+
+           ___
+          /`  _\    
+          |  / 0|--.  
+     -   / \_|0`/ \.`'._/)
+ - ~ -^_| /-_~ ^- ~_` - -~_
+ -  ~  -| |   - ~ -  ~  -
+ jgs     \ \, ~   -   ~  
+          \_|
+
+  , ; ,   .-'"""'-.   , ; ,
+  \\|/  .'         '.  \|//
+   \-;-/  ()     ()  \-;-/
+   // ;               ; \\
+  //__; :.         .; ;__\\
+ `-----\'.'-.....-'.'/-----'
+        '.'.-.-,_.'.'
+ jgs      '(  (..-'
+            '-'
+
+                _ _       \ \
+     .-"""""-. / \_> /\    |/
+    /         \.'`  `',.--//
+  -(          I       I  @@\
+    \         /'.____.'\___|
+     '-.....-' __/ | \   (`)
+ jgs          /   /  /
+                  \  \
+
+       _____
+      /     \______
+     |  .-""-.     |
+     | /      \    |
+     | \      /    |
+     |  '-..-;\    |
+ jgs |________\\___|
+                  \|
+EOF
+}
+redgreen() { gawk '
+     /^---/ {        $0="\033[01;36m"$0"\033[0m" }
+     /FAIL/ { bad++; $NF="\033[31m"$NF"\033[0m" }
+     /PASS/ {        $NF="\033[32m"$NF"\033[0m" }
+            { print  $0                 }
+     END    { exit bad!=0 }'
+}
+
+if [ "$1" == "-T" ]; then
+  date +"%r"
+  echo -e "\e[1m\e[30m"
+  art | gawk '
+   BEGIN {srand('$RANDOM'); RS="";FS=""}
+         {N[rand()] = $0}
+   END   {for(i in N) { print N[i]; break}}'
+  echo -e "\033[0m" 
+  #date +"%H %M %S" |figlet -f big
+  python3 -m bnbad2 -T | redgreen
+  exit $?
+fi
+

@@ -1,5 +1,0 @@
-alias b="pypy3 brknbad.py"
-
-doc() {
-  pdoc3 --template-dir=./ --html --force  -c latex_math=True  brknbad.py 
-}
