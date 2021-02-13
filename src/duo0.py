@@ -2,6 +2,7 @@
 # (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 from random import seed as seed
 from random import random as _r
+import random
 import re,math
 
 class o:
@@ -15,18 +16,30 @@ def _of(i, methods):
   for k in methods: i.__dict__[k] = of1(i, methods[k])
   return i
 
-THE = o(seed=1, skip="?", cohen=.3, id=0, 
+THE = o(seed=1, skip="?", cohen=.3, id=0, betters=32,
         less="<",more=">",path="data",file="auto93.csv",
         Xchop=.5, best=.8, sep=",", ignore=r'([\n\t\r ]|#.*)')
+seed(THE.seed)
 
 def Counts(): 
-  return o(f={}, h={})
+  return o(f={}, h={}, n=0)
 
-def Row(cells=[]): 
-  def score(i,t): 
-    print(">>>>",t.cols.y[0])
-    i.n = i.n if i.n else sum(c.norm(i.cells[c.pos]) for c in t.cols.y)
-  return _of(o(cells=cells, n=0, _tag=False), locals())
+def Row(lst): 
+  def ys(i,t): return [i.cells[c.pos] for c in t.cols.y]
+  def better(i,j,t):
+    s1,s2,n = 0,0,len(t.cols.y)
+    for col in t.cols.y:
+      pos,w = col.pos, col.w
+      a,b   = i.cells[pos], j.cells[pos]
+      a,b   = col.norm(a), col.norm(b)
+      s1   -= math.e**(w*(a-b)/n)
+      s1   -= math.e**(w*(b-a)/n)
+    return s1/n < s2/n
+  def betters(i,t):
+    i.n = i.n or sum(i.better(random.choice(t.rows), t) 
+                     for _ in range(THE.betters))/THE.betters
+    return i.n
+  return _of(o(cells=lst, n=None, _tag=False), locals())
 
 def Tbl(): 
   def ready(i): return i.cols.all
@@ -65,10 +78,7 @@ def Num(place=0,text="",weight=1):
   def add(i, x): i._all += [x]; i.ok = False
   def mid(i)   : n,a = i.all(); return a[int(n/2)]
   def var(i)   : n,a = i.all(); return (a[int(.9*n)] - a[int(n/10)]) / 2.56
-  def norm(i,x): 
-    _,a = i.all() 
-    tmp = (x - a[0]) / (a[-1] - a[0])
-    return tmp if i.w>0 else 1 - tmp
+  def norm(i,x): _,a = i.all(); return (x - a[0]) / (a[-1] - a[0])
   def all(i)   : 
     i._all = i._all if i.ok else sorted(i._all)
     i.ok = True
@@ -106,32 +116,22 @@ def table(src):
     else        : [ t.cols.add(pos, txt) for pos,txt in enumerate(row) ]
   return t
 
-
-seed(THE.seed)
-n=Num()
-for _ in range(10000): _add(n,int(1000*_r()))
-#print(n.mid())
-
-#print(n.var(), n.mid())
-#print(n.div())
-
 def _csv(file):
   def atom(x):
-    try:
-      return int(x)
+    try: return int(x)
     except Exception:
-      try:
-        return float(x)
-      except Exception:
-        return x
+      try: return float(x)
+      except Exception: return x
   with open(file) as fp:
     for a in fp: 
       yield [atom(x) for x in re.sub(THE.ignore, '', a).split(THE.sep)]
 
+def counts 
 t=table(_csv(THE.path + "/" + THE.file))
-#for row in t.rows: print(row)
-#for n,col in enumerate(t.cols.x): print("\n",n,col.div())
-#print(sorted((row.score(t) for row in t.rows)))
+lst=sorted((row for row in t.rows),key=lambda z:z.betters(t))
+for z in sorted(row.ys(t) for row in lst[:5]): print(z)
+print("")
+for z in sorted(row.ys(t) for row in lst[-5:]): print(z)
 
-print(t.cols.y[0].norm(3000))
-#rows[0].score(t)
+
+
