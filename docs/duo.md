@@ -274,9 +274,10 @@ def main():
 def _main():
   seed(THE.seed)
   t = main()
-  for k, rules in learn(counts(t)).items():
+  c = counts(t)
+  for k, rules in learn(c).items():
     print("")
-    print(k, "if")
+    print(k, f"(n={c.h[k]}) if")
     print("    N  " + ' '.join([f"  {col.txt:5}"
                                 for col in t.y.values()]))
     for rule in rules:
