@@ -114,6 +114,9 @@ def table(src):
   for row in src:
     if t.ready(): t.rows += [Row([_add(c, x) for c,x in zip(t.cols.all,row)])]
     else        : [ t.cols.add(pos, txt) for pos,txt in enumerate(row) ]
+  t.rows = sorted(t.rows, key = lambda row: row.betters(t))
+  for n,row in enumerate(t.rows): 
+    row.tag = n > len(t.rows)*THE.best 
   return t
 
 def _csv(file):
@@ -126,12 +129,11 @@ def _csv(file):
     for a in fp: 
       yield [atom(x) for x in re.sub(THE.ignore, '', a).split(THE.sep)]
 
-def counts 
 t=table(_csv(THE.path + "/" + THE.file))
-lst=sorted((row for row in t.rows),key=lambda z:z.betters(t))
-for z in sorted(row.ys(t) for row in lst[:5]): print(z)
-print("")
-for z in sorted(row.ys(t) for row in lst[-5:]): print(z)
+#lst=sorted((row for row in t.rows),key=lambda z:z.betters(t))
+#for z in sorted(row.ys(t) for row in lst[:5]): print(z)
+#print("")
+#for z in sorted(row.ys(t) for row in lst[-5:]): print(z)
 
 
 
