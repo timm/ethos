@@ -19,8 +19,8 @@ THE = o(seed=1, skip="?", cohen=.3, id=0,
         less="<",more=">",path="data",file="auto93.csv",
         Xchop=.5, best=.8, sep=",", ignore=r'([\n\t\r ]|#.*)')
 
-#------------------------------------------
-def Counts(): return o(f={}, h={})
+def Counts(): 
+  return o(f={}, h={})
 
 def Row(cells=[]): 
   def score(i,t): 
