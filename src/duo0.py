@@ -1,13 +1,13 @@
 from random import seed as seed
 from random import random as _r
-import math
+import re,math
 
 #------------------- ------------------- ------------------- ------------------
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
-  def __repr__(i): return str(
-      {k: (v.__name__ + "()" if callable(v) else v)
-       for k, v in sorted(i.__dict__.items()) if k[0] != "_"})
+  def __repr__(i): return "{"+ ', '.join(
+      [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
+       if not callable(v) and k[0] != "_"])+"}"
 
 def _of(i, methods):
   def of1(i, f): return lambda *l, **d: f(i, *l, **d)
@@ -15,28 +15,47 @@ def _of(i, methods):
     i.__dict__[k] = of1(i, methods[k])
   return i
 #------------------- ------------------- ------------------- ------------------
-THE = o(seed=1, skip="?", cohen=.35, id=0,
+THE = o(seed=1, skip="?", cohen=.35, id=0, 
+        less="<",more=">",path="data",file="auto93.csv",
         Xchop=.5, best=.8, sep=",", ignore=r'([\n\t\r ]|#.*)')
 #------------------- ------------------- ------------------- ------------------
 def App()       : return o(tbl=Tbl(), counts=Counts())
 def Counts()    : return o(f={}, h={})
-def Tbl()       : return o(cols=[], rows=[])
 def Row()       : return o(cells=[], n=0, tag=False)
+def Tbl()       : 
+  def ready(i): return i.cols.all
+  return _of(o(cols=Cols(), rows=[]),locals())
+#------------------- ------------------- ------------------- ------------------
+def Cols(): 
+  def add(i,pos,txt):
+    if   THE.skip in txt                                       : f=Skip
+    elif THE.less in txt or THE.more in txt or txt[0].isupper(): f=Num
+    else                                                       : f=Sym
+    now = f(txt=txt, pos=pos, w=THE.less in txt)
+    if   THE.skip in txt                                       : also=[]
+    elif THE.less in txt or THE.more in txt                    : also = i.y
+    else                                                       : also = i.x
+    also += [now]
+    i.all  += [now]
+  return _of(o(all=[], y=[], x=[]),locals())
 #------------------- ------------------- ------------------- ------------------
 def Span(x,y)   :
-  def top(i)    : i.hi =  math.inf
-  def tail(i)   : i.lo = -math.inf  
-  def has(i,x,y): return i.lo <= x <=hi
-  return _of(o(lo=x,hi=y),locals())
+  def _has(i,x,y): return i.down <= x <i.up
+  return _of(o(down=x,up=y),locals())
 #------------------- ------------------- ------------------- ------------------
-def Sym()       :
+def Skip(pos=0, txt="", w=0)      : 
+  def add(i,x): return x
+  return _of(o(pos=pos, txt=txt, w=w, n=0), locals())
+#------------------- ------------------- ------------------- ------------------
+def Sym(pos=0,txt="",w=1):
   def ent(i)    : return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
+  def div(i)    : return list(i.seen.keys())
   def add(i,x)  : 
     now = i.seen[x] = i.seen.get(x, 0) + 1
     if now > i.most: i.most, i.mode = now, x
-  return _of(o(seen={},most=0,mode=None), locals())
+  return _of(o(pos=pos,txt=txt,w=w,n=0,seen={},most=0,mode=None), locals())
 #------------------- ------------------- ------------------- ------------------
-def Num()       :
+def Num(pos=0,txt="",w=1):
   def add(i, x) : i._all += [x]; i.ok = False
   def mid(i)    : n,a= i.all(); return a[int(.5 * n)]
   def var(i)    : n,a= i.all(); return (a[int(.9 * n)] - a[int(.1 * n)]) / 2.56
@@ -57,16 +76,26 @@ def Num()       :
       now += 1
       x1, x2 = a[now], a[now+1]
       if x1 != x2 and x1 - x0 > sd*THE.cohen:
+        out += [Span(x0,x1)]
         x0   = x1
-        out += [x1]
         now += width
+    out[-1].up =  math.inf
+    out[ 0].down = -math.inf
     return out
-  return _of(o(_all=[], ok=True, n=0), locals())
+  return _of(o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0), locals())
 #------------------- ------------------- ------------------- ------------------
 def _add(i,x):
   if x != THE.skip:
     i.n += 1
     i.add(x)
+  return x
+#------------------- ------------------- ------------------- ------------------
+def table(src):
+  t = Tbl()
+  for row in src:
+    if t.ready(): t.rows += [ _add(col, x) for col,x in zip(t.cols.all,row)]
+    else        : [ t.cols.add(pos, txt) for pos,txt in enumerate(row) ]
+  return t
 
 seed(THE.seed)
 n=Num()
@@ -86,13 +115,9 @@ def _csv(file):
       except Exception:
         return x
   with open(file) as fp:
-    for a in fp:
+    for a in fp: 
       yield [atom(x) for x in re.sub(THE.ignore, '', a).split(THE.sep)]
 
-
-def _coladd(cols,pos,x):
-  i = cols[n] = cols[n] if cols[n] else (
-      Num() if isinstance(x, (float, int)) else Sym())
-  return cols
-
-
+t=table(_csv(THE.path + "/" + THE.file))
+for n,col in enumerate(t.cols.x):
+  print("\n",n,col.div())
