@@ -14,39 +14,40 @@ def _of(i, methods):
   for k in methods:
     i.__dict__[k] = of1(i, methods[k])
   return i
-#------------------- ------------------- ------------------- ------------------
-THE = o(seed=1, skip="?", cohen=.35, id=0, 
+
+THE = o(seed=1, skip="?", cohen=.3, id=0, 
         less="<",more=">",path="data",file="auto93.csv",
         Xchop=.5, best=.8, sep=",", ignore=r'([\n\t\r ]|#.*)')
-#------------------- ------------------- ------------------- ------------------
-def App()       : return o(tbl=Tbl(), counts=Counts())
-def Counts()    : return o(f={}, h={})
-def Row()       : return o(cells=[], n=0, tag=False)
-def Tbl()       : 
+
+def Counts(): return o(f={}, h={})
+
+def Row(): 
+  def tag(i,t): [i.cells[col.pos] for col in t.cols.y]
+  return _of(o(cells=[], n=0, _tag=False), locals())
+
+def Tbl(): 
   def ready(i): return i.cols.all
-  return _of(o(cols=Cols(), rows=[]),locals())
-#------------------- ------------------- ------------------- ------------------
+  return _of(o(cols=Cols(), rows=[]), locals())
+
 def Cols(): 
   def add(i,pos,txt):
-    if   THE.skip in txt                                       : f=Skip
-    elif THE.less in txt or THE.more in txt or txt[0].isupper(): f=Num
-    else                                                       : f=Sym
+    if   THE.skip in txt                                       : f = Skip
+    elif THE.less in txt or THE.more in txt or txt[0].isupper(): f = Num
+    else                                                       : f = Sym
     now = f(txt=txt, pos=pos, w=THE.less in txt)
-    if   THE.skip in txt                                       : also=[]
-    elif THE.less in txt or THE.more in txt                    : also = i.y
-    else                                                       : also = i.x
-    also += [now]
-    i.all  += [now]
+    i.all += [now]
+    if THE.skip not in txt:
+      (i.y if THE.less in txt or THE.more in txt else i.x).append(now)
   return _of(o(all=[], y=[], x=[]),locals())
-#------------------- ------------------- ------------------- ------------------
-def Span(x,y)   :
+
+def Span(x,y):
   def _has(i,x,y): return i.down <= x <i.up
   return _of(o(down=x,up=y),locals())
-#------------------- ------------------- ------------------- ------------------
-def Skip(pos=0, txt="", w=0)      : 
+
+def Skip(pos=0, txt="", w=0): 
   def add(i,x): return x
   return _of(o(pos=pos, txt=txt, w=w, n=0), locals())
-#------------------- ------------------- ------------------- ------------------
+
 def Sym(pos=0,txt="",w=1):
   def ent(i)    : return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
   def div(i)    : return list(i.seen.keys())
@@ -54,7 +55,7 @@ def Sym(pos=0,txt="",w=1):
     now = i.seen[x] = i.seen.get(x, 0) + 1
     if now > i.most: i.most, i.mode = now, x
   return _of(o(pos=pos,txt=txt,w=w,n=0,seen={},most=0,mode=None), locals())
-#------------------- ------------------- ------------------- ------------------
+
 def Num(pos=0,txt="",w=1):
   def add(i, x) : i._all += [x]; i.ok = False
   def mid(i)    : n,a= i.all(); return a[int(.5 * n)]
@@ -69,9 +70,9 @@ def Num(pos=0,txt="",w=1):
     while n < 4 and n < len(xy) / 2: n *= 1.2
     return int(n)
   def div(i):
-    n,a = i.all()
-    width, sd, x0, out = i.width(), i.var(), a[0], []
-    now = width
+    n,a          = i.all()
+    width, sd    = i.width(), i.var()
+    now, x0, out = width, a[0], []
     while now < n - width:
       now += 1
       x1, x2 = a[now], a[now+1]
@@ -83,13 +84,13 @@ def Num(pos=0,txt="",w=1):
     out[ 0].down = -math.inf
     return out
   return _of(o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0), locals())
-#------------------- ------------------- ------------------- ------------------
+
 def _add(i,x):
   if x != THE.skip:
     i.n += 1
     i.add(x)
   return x
-#------------------- ------------------- ------------------- ------------------
+
 def table(src):
   t = Tbl()
   for row in src:
@@ -97,6 +98,10 @@ def table(src):
     else        : [ t.cols.add(pos, txt) for pos,txt in enumerate(row) ]
   return t
 
+def counts(rows, 
+           ranges,# ranges.keys() = colNumberss; ranges[key]=list of Spans, 
+           fy=lambda z:z.tag):
+  
 seed(THE.seed)
 n=Num()
 for _ in range(10000): _add(n,int(1000*_r()))
