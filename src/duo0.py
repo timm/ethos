@@ -1,24 +1,28 @@
+#!/usr/bin/env python3
+# vim: ts=2 sw=2 sts=2 et :
 # DUO = data miners used / used-by optimizers.
 # (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 from random import seed as seed
 from random import random as _r
-import random
-import re,math
+import random,types
+import re,math,random,types
+
+def funp(x)    : return isinstance(x,types.FunctionType)
+def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
 
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
   def __repr__(i): return "{"+ ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
-       if  not callable(v) and k[0] != "_"])+"}"
+       if  not funp(v) and k[0] != "_"])+"}"
+  def __add__(i, d): 
+    for k in d: 
+      if funp(d[k]): i.__dict__[k] = method(i,d[k])
+    return i
 
-def _of(i, methods):
-  def of1(i, f): return lambda *l, **d: f(i, *l, **d)
-  for k in methods: i.__dict__[k] = of1(i, methods[k])
-  return i
-
-THE = o(seed=1, skip="?", cohen=.3, id=0, betters=32,
+THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
         less="<",more=">",path="data",file="auto93.csv",
-        Xchop=.5, best=.8, sep=",", ignore=r'([\n\t\r ]|#.*)')
+        Xchop=.5, best=.75, sep=",", ignore=r'([\n\t\r ]|#.*)')
 seed(THE.seed)
 
 def Counts(): 
@@ -33,49 +37,68 @@ def Row(lst):
       a,b   = i.cells[pos], j.cells[pos]
       a,b   = col.norm(a), col.norm(b)
       s1   -= math.e**(w*(a-b)/n)
-      s1   -= math.e**(w*(b-a)/n)
+      s2   -= math.e**(w*(b-a)/n)
     return s1/n < s2/n
   def betters(i,t):
     i.n = i.n or sum(i.better(random.choice(t.rows), t) 
                      for _ in range(THE.betters))/THE.betters
     return i.n
-  return _of(o(cells=lst, n=None, _tag=False), locals())
+  return o(cells=lst, n=None, _tag=False) + locals()
 
 def Tbl(): 
-  def ready(i): return i.cols.all
-  return _of(o(cols=Cols(), rows=[]), locals())
+  def classify(i):
+    i.rows = sorted(i.rows, key=lambda r: r.betters(i))
+    for n,row in enumerate(i.rows):
+      row.tag = n > len(i.rows)*THE.best 
+  def adds(i,src):
+    for lst in src:
+      if i.cols.all: 
+        i.rows += [Row( [c.add(x) for c,x in zip(i.cols.all, lst)] )]
+      else: 
+        i.cols.all = [ i.cols.add(pos,txt) for pos,txt in enumerate(lst) ]
+    i.classify()
+    return i
+  return o(cols=Cols(), rows=[])+ locals()
 
 def Cols(): 
   def add(i,pos,txt):
     if   THE.skip in txt                                       : f = Skip
     elif THE.less in txt or THE.more in txt or txt[0].isupper(): f = Num
     else                                                       : f = Sym
-    now = f(pos, txt, -1 if THE.less in txt else 1)
-    i.all += [now]
-    if THE.skip not in txt:
-      (i.y if THE.less in txt or THE.more in txt else i.x).append(now)
+    now = f(pos=pos, txt=txt, w=-1 if THE.less in txt else 1)
+    if   THE.skip in txt                                       : also = []
+    elif THE.less in txt or THE.more in txt                    : also = i.y
+    else                                                       : also = i.x
+    also  += [now]
     return now
-  return _of(o(all=[], y=[], x=[]),locals())
+  return o(all=[], y=[], x=[]) + locals()
 
-def Span(x,y):
-  def _has(i,x,y): return i.down <= x <i.up
-  return _of(o(down=x,up=y),locals())
+def Span(x, y):
+  def has(i,x,y): return i.down <= x <i.up
+  return o(down=x, up=y, _also=Sym()) + locals()
 
-def Skip(place=0,text="",weight=1):
-  def add(i,x): return x
-  return _of(o(pos=place, txt=text, w=weight, n=0), locals())
-
-def Sym(place=0,text="",weight=1):
-  def ent(i)  : return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
-  def div(i)  : return list(i.seen.keys())
+def Skip(pos=0, txt="", w=1):
   def add(i,x): 
-    now = i.seen[x] = i.seen.get(x, 0) + 1
-    if now > i.most: i.most, i.mode = now, x
-  return _of(o(pos=place,txt=text,w=weight,n=0,seen={},most=0,mode=None), 
-            locals())
+    if x != THE.skip: i.n += 1; return x
+  return o(pos=pos, txt=txt, w=w, n=0) + locals()
 
-def Num(place=0,text="",weight=1):
-  def add(i, x): i._all += [x]; i.ok = False
+def Sym(pos=0, txt="", w=1):
+  def ent(i):    return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
+  def div(i, _): return list(i.seen.keys())
+  def spurious(i, j):
+    if i.mode == j.mode:
+      k = Sym(pos=i.pos, txt=i.txt, w=i.w)
+      for x,n in {**i.seen, **j.seen}.items(): k.add(x,n)
+      return k
+  def add(i,x,n=1): 
+    if x != THE.skip: 
+      i.n += n
+      now = i.seen[x] = i.seen.get(x, 0) + n
+      if now > i.most: i.most, i.mode = now, x
+    return x
+  return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
+
+def Num(pos=0, txt="", w=1):
   def mid(i)   : n,a = i.all(); return a[int(n/2)]
   def var(i)   : n,a = i.all(); return (a[int(.9*n)] - a[int(n/10)]) / 2.56
   def norm(i,x): _,a = i.all(); return (x - a[0]) / (a[-1] - a[0])
@@ -83,43 +106,48 @@ def Num(place=0,text="",weight=1):
     i._all = i._all if i.ok else sorted(i._all)
     i.ok = True
     return len(i._all), i._all
-  def width(i): 
-    n = len(i._all)**THE.Xchop
-    while n < 4 and n < len(xy) / 2: n *= 1.2
-    return int(n)
-  def div(i):
-    n,a          = i.all()
-    width, sd    = i.width(), i.var()
-    now, x0, out = width, a[0], []
-    while now < n - width:
-      now += 1
-      x1, x2 = a[now], a[now+1]
-      if x1 != x2 and x1 - x0 > sd*THE.cohen:
-        out += [Span(x0,x1)]
-        x0   = x1
-        now += width
-    out[-1].up =  math.inf
+  def add(i, x): 
+    if x != THE.skip:
+      i._all += [x]; i.n+= 1; i.ok = False
+    return x
+  #--------------------------------------------------------------
+  def div(i,t): 
+    xy = sorted([(r.cells[pos], r.tag) for r in t.rows 
+                if r.cells[pos] != THE.skip])
+    width = len(xy)**THE.Xchop
+    while width < 4 and width < len(xy) / 2: width *= 1.2
+    now = Span(xy[0][0], xy[0][0])
+    tmp = [now]
+    for j,(x,y) in enumerate(xy):
+      if j < len(xy) - width:
+        if now._also.n >= width:
+          if x != xy[j+1][0] and now.up - now.down > i.var()*THE.cohen:
+            now  = Span(now.up, x)
+            tmp += [now]
+      now.up = x
+      now._also.add(y)
+    out = i.merge(tmp)
     out[ 0].down = -math.inf
+    out[-1].up   =  math.inf
     return out
-  return _of(o(pos=place, txt=text, w=weight, _all=[], ok=True, n=0), locals())
+  #--------------------------------------------------------------
+  def merge(i, b4):
+    j, tmp, n = 0, [], len(b4)
+    while j < n:
+      a = b4[j]
+      if j < n - 1:
+        b  = b4[j+1]
+        if now := a._also.spurious(b._also):
+          a = Span(a.down, b.up)
+          a._also = now
+          j += 1
+      tmp += [a]
+      j   += 1
+    return i.merge(tmp) if len(tmp) < len(b4) else b4
+  #--------------------------------------------------------------
+  return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
 
-def _add(i,x):
-  if x != THE.skip:
-    i.n += 1
-    i.add(x)
-  return x
-
-def table(src):
-  t = Tbl()
-  for row in src:
-    if t.ready(): t.rows += [Row([_add(c, x) for c,x in zip(t.cols.all,row)])]
-    else        : [ t.cols.add(pos, txt) for pos,txt in enumerate(row) ]
-  t.rows = sorted(t.rows, key = lambda row: row.betters(t))
-  for n,row in enumerate(t.rows): 
-    row.tag = n > len(t.rows)*THE.best 
-  return t
-
-def _csv(file):
+def csv(file):
   def atom(x):
     try: return int(x)
     except Exception:
@@ -129,9 +157,17 @@ def _csv(file):
     for a in fp: 
       yield [atom(x) for x in re.sub(THE.ignore, '', a).split(THE.sep)]
 
-t=table(_csv(THE.path + "/" + THE.file))
-#lst=sorted((row for row in t.rows),key=lambda z:z.betters(t))
-#for z in sorted(row.ys(t) for row in lst[:5]): print(z)
+t=Tbl().adds(csv(THE.path + "/" + THE.file))
+#print(t.cols.y)
+#print(t.cols.y)
+for row in t.rows[:5]: print(row.ys(t),row.tag,row.n)
+print("")
+for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
+for col in t.cols.x: 
+  print(f"\n {col.txt}", col.pos)
+  print(col.div(t))
+
+  #for z in sorted(row.ys(t) for row in lst[:5]): print(z)
 #print("")
 #for z in sorted(row.ys(t) for row in lst[-5:]): print(z)
 
