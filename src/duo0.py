@@ -83,9 +83,9 @@ def Skip(pos=0, txt="", w=1):
   return o(pos=pos, txt=txt, w=w, n=0) + locals()
 
 def Sym(pos=0, txt="", w=1):
-  def ent(i):    return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
-  def div(i, _): return list(i.seen.keys())
-  def spurious(i, j):
+  def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
+  def div(i, _): return [Span(x,x) for x in i.seen.keys()]
+  def combined(i, j):
     if i.mode == j.mode:
       k = Sym(pos=i.pos, txt=i.txt, w=i.w)
       for x,n in {**i.seen, **j.seen}.items(): k.add(x,n)
@@ -137,7 +137,7 @@ def Num(pos=0, txt="", w=1):
       a = b4[j]
       if j < n - 1:
         b  = b4[j+1]
-        if now := a._also.spurious(b._also):
+        if now := a._also.combined(b._also):
           a = Span(a.down, b.up)
           a._also = now
           j += 1
@@ -146,6 +146,28 @@ def Num(pos=0, txt="", w=1):
     return i.merge(tmp) if len(tmp) < len(b4) else b4
   #--------------------------------------------------------------
   return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
+
+def counts(t):
+  i = o(n=0, h={}, k={}, spans={})
+  i.spans = {id(spn):spn for c in t.cols.all for spn in c.div(t)}}
+
+  for row in t.rows: 
+    k    = row.tag
+    i.n += 1
+    i.h  = i.h.get(k,0) + 1
+    
+    h[r.tag] = h.get(r.tag,0) + 1
+    n += 1
+  for col in t.cols.x:
+    spans = col.divs(t)
+    for row in t.rows:
+      x = row.cells[col.pos]
+      if x != THE.skip:
+        for span in spans: 
+          if span.has(x): break
+        v = (row.tag, col.pos, id(span))
+        out.f[v] = out.f.get(v, 0) + 1
+  return o(n=n, h=h, k=k)
 
 def csv(file):
   def atom(x):
