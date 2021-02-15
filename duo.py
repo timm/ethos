@@ -8,15 +8,16 @@ import random,types,inspect
 import re,math,random,types
 
 class o:
+  "Simple containers with easy constructors and get/set accessors."
   def __init__(i, **d): i.__dict__.update(**d)
   def __repr__(i): return "{"+ ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
        if  not isinstance(v, types.FunctionType) and k[0] != "_"])+"}"
 
 def so(**attributes):
-  "Small objects: add in local functions into the container `i`."
-  def method(f): return lambda *l, **kw: f(i, *l, **kw)
+  "Small objects: add local functions into the container `i`."
   i = o(**attributes)
+  def method(f): return lambda *l, **kw: f(i, *l, **kw)
   for k,f in inspect.stack()[1].frame.f_locals.items():
     if isinstance(f, types.FunctionType): 
       i.__dict__[k] = method(f)
