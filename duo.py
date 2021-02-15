@@ -15,11 +15,11 @@ class o:
 
 def so(**attributes):
   "Small objects: add in local functions into the container `i`."
-  def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
+  def method(f): return lambda *l, **kw: f(i, *l, **kw)
   i = o(**attributes)
   for k,f in inspect.stack()[1].frame.f_locals.items():
     if isinstance(f, types.FunctionType): 
-      i.__dict__[k] = method(i,f)
+      i.__dict__[k] = method(f)
   return i
 
 THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
