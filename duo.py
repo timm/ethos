@@ -4,8 +4,7 @@
 # (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 from random import seed as seed
 from random import random as _r
-import random,types,inspect
-import re,math,random,types
+import re, math, types, random, inspect
 
 class o:
   "Simple containers with easy constructors and get/set accessors."
@@ -58,7 +57,7 @@ def Tbl():
       if i.cols.all: 
         i.rows += [Row( [c.add(x) for c,x in zip(i.cols.all, lst)] )]
       else: 
-        i.cols.all = [ i.cols.add(pos,txt) for pos,txt in enumerate(lst) ]
+        i.cols.all = [i.cols.add(pos,txt) for pos,txt in enumerate(lst)]
     i.classify()
     return i
   return so(cols=Cols(), rows=[])
@@ -113,7 +112,6 @@ def Num(pos=0, txt="", w=1):
     if x != THE.skip:
       i._all += [x]; i.n+= 1; i.ok = False
     return x
-  #--------------------------------------------------------------
   def div(i,t): 
     xy = sorted([(r.cells[pos], r.tag) for r in t.rows 
                 if r.cells[pos] != THE.skip])
@@ -133,7 +131,6 @@ def Num(pos=0, txt="", w=1):
     out[ 0].down = -math.inf
     out[-1].up   =  math.inf
     return out
-  #--------------------------------------------------------------
   def merge(i, b4):
     j, tmp, n = 0, [], len(b4)
     while j < n:
@@ -147,7 +144,6 @@ def Num(pos=0, txt="", w=1):
       tmp += [a]
       j   += 1
     return i.merge(tmp) if len(tmp) < len(b4) else b4
-  #--------------------------------------------------------------
   return so(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0)
 
 def csv(file):
@@ -169,10 +165,6 @@ for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
 for col in t.cols.x: 
   print(f"\n {col.txt}", col.pos)
   print(col.div(t))
-
-  #for z in sorted(row.ys(t) for row in lst[:5]): print(z)
-#print("")
-#for z in sorted(row.ys(t) for row in lst[-5:]): print(z)
 
 
 
