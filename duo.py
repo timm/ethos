@@ -4,21 +4,23 @@
 # (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 from random import seed as seed
 from random import random as _r
-import random,types
+import random,types,inspect
 import re,math,random,types
 
-def funp(x)    : return isinstance(x,types.FunctionType)
-def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
+def obj(**attributes):
+  def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
+  up = inspect.stack()[1].frame.f_locals
+  i  = o(**attributes)
+  for k in up: 
+    if isinstance(up[k],types.FunctionType): 
+      i.__dict__[k] = method(i, up[k])
+  return i
 
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
   def __repr__(i): return "{"+ ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
-       if  not funp(v) and k[0] != "_"])+"}"
-  def __add__(i, d): 
-    for k in d: 
-      if funp(d[k]): i.__dict__[k] = method(i,d[k])
-    return i
+       if  not isinstance(v, types.FunctionType) and k[0] != "_"])+"}"
 
 THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
         less="<",more=">",path="data",file="auto93.csv",
@@ -43,7 +45,7 @@ def Row(lst):
     i.n = i.n or sum(i.better(random.choice(t.rows), t) 
                      for _ in range(THE.betters))/THE.betters
     return i.n
-  return o(cells=lst, n=None, _tag=False) + locals()
+  return obj(cells=lst, n=None, _tag=False) #+ locals()
 
 def Tbl(): 
   def classify(i):
@@ -58,7 +60,7 @@ def Tbl():
         i.cols.all = [ i.cols.add(pos,txt) for pos,txt in enumerate(lst) ]
     i.classify()
     return i
-  return o(cols=Cols(), rows=[])+ locals()
+  return obj(cols=Cols(), rows=[])
 
 def Cols(): 
   def add(i,pos,txt):
@@ -71,16 +73,16 @@ def Cols():
     else                                                       : also = i.x
     also  += [now]
     return now
-  return o(all=[], y=[], x=[]) + locals()
+  return obj(all=[], y=[], x=[])
 
 def Span(x, y):
   def has(i,x,y): return i.down <= x <i.up
-  return o(down=x, up=y, _also=Sym()) + locals()
+  return obj(down=x, up=y, _also=Sym())
 
 def Skip(pos=0, txt="", w=1):
   def add(i,x): 
     if x != THE.skip: i.n += 1; return x
-  return o(pos=pos, txt=txt, w=w, n=0) + locals()
+  return obj(pos=pos, txt=txt, w=w, n=0) 
 
 def Sym(pos=0, txt="", w=1):
   def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
@@ -96,7 +98,7 @@ def Sym(pos=0, txt="", w=1):
       now = i.seen[x] = i.seen.get(x, 0) + n
       if now > i.most: i.most, i.mode = now, x
     return x
-  return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
+  return obj(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None)
 
 def Num(pos=0, txt="", w=1):
   def mid(i)   : n,a = i.all(); return a[int(n/2)]
@@ -145,29 +147,7 @@ def Num(pos=0, txt="", w=1):
       j   += 1
     return i.merge(tmp) if len(tmp) < len(b4) else b4
   #--------------------------------------------------------------
-  return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
-
-def counts(t):
-  i = o(n=0, h={}, k={}, spans={})
-  i.spans = {id(spn):spn for c in t.cols.all for spn in c.div(t)}}
-
-  for row in t.rows: 
-    k    = row.tag
-    i.n += 1
-    i.h  = i.h.get(k,0) + 1
-    
-    h[r.tag] = h.get(r.tag,0) + 1
-    n += 1
-  for col in t.cols.x:
-    spans = col.divs(t)
-    for row in t.rows:
-      x = row.cells[col.pos]
-      if x != THE.skip:
-        for span in spans: 
-          if span.has(x): break
-        v = (row.tag, col.pos, id(span))
-        out.f[v] = out.f.get(v, 0) + 1
-  return o(n=n, h=h, k=k)
+  return obj(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0)
 
 def csv(file):
   def atom(x):

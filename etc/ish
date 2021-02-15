@@ -37,7 +37,7 @@ PROMPT_COMMAND='echo -ne "🔆 $(git branch 2>/dev/null | grep '^*' | colrm 1 2)
 #     mv tmp$$ $i; done
 # }
 docs() {
-  (cd $Ish/src
+  (cd $Ish
    pdoc3 -o $Ish/docs --force --html --template-dir $Ish/docs *.py
   )
 }
@@ -179,7 +179,7 @@ redgreen() { gawk '
 }
 
 
-for f in $Ish/src/*.py; do
+for f in $Ish/*.py; do
   g=$Ish/docs/$(basename $f .py).md
   #if [ $f -nt $g ]; then
     gawk ' 
