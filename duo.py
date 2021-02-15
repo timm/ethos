@@ -7,20 +7,20 @@ from random import random as _r
 import random,types,inspect
 import re,math,random,types
 
-def obj(**attributes):
-  def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
-  up = inspect.stack()[1].frame.f_locals
-  i  = o(**attributes)
-  for k in up: 
-    if isinstance(up[k],types.FunctionType): 
-      i.__dict__[k] = method(i, up[k])
-  return i
-
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
   def __repr__(i): return "{"+ ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
        if  not isinstance(v, types.FunctionType) and k[0] != "_"])+"}"
+
+def so(**attributes):
+  "Small objects: add in local functions into the container `i`."
+  def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
+  i = o(**attributes)
+  for k,f in inspect.stack()[1].frame.f_locals.items():
+    if isinstance(f, types.FunctionType): 
+      i.__dict__[k] = method(i,f)
+  return i
 
 THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
         less="<",more=">",path="data",file="auto93.csv",
@@ -45,7 +45,7 @@ def Row(lst):
     i.n = i.n or sum(i.better(random.choice(t.rows), t) 
                      for _ in range(THE.betters))/THE.betters
     return i.n
-  return obj(cells=lst, n=None, _tag=False) #+ locals()
+  return so(cells=lst, n=None, _tag=False)
 
 def Tbl(): 
   def classify(i):
@@ -60,7 +60,7 @@ def Tbl():
         i.cols.all = [ i.cols.add(pos,txt) for pos,txt in enumerate(lst) ]
     i.classify()
     return i
-  return obj(cols=Cols(), rows=[])
+  return so(cols=Cols(), rows=[])
 
 def Cols(): 
   def add(i,pos,txt):
@@ -73,16 +73,16 @@ def Cols():
     else                                                       : also = i.x
     also  += [now]
     return now
-  return obj(all=[], y=[], x=[])
+  return so(all=[], y=[], x=[])
 
 def Span(x, y):
   def has(i,x,y): return i.down <= x <i.up
-  return obj(down=x, up=y, _also=Sym())
+  return so(down=x, up=y, _also=Sym())
 
 def Skip(pos=0, txt="", w=1):
   def add(i,x): 
     if x != THE.skip: i.n += 1; return x
-  return obj(pos=pos, txt=txt, w=w, n=0) 
+  return so(pos=pos, txt=txt, w=w, n=0) 
 
 def Sym(pos=0, txt="", w=1):
   def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
@@ -98,7 +98,7 @@ def Sym(pos=0, txt="", w=1):
       now = i.seen[x] = i.seen.get(x, 0) + n
       if now > i.most: i.most, i.mode = now, x
     return x
-  return obj(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None)
+  return so(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None)
 
 def Num(pos=0, txt="", w=1):
   def mid(i)   : n,a = i.all(); return a[int(n/2)]
@@ -147,7 +147,7 @@ def Num(pos=0, txt="", w=1):
       j   += 1
     return i.merge(tmp) if len(tmp) < len(b4) else b4
   #--------------------------------------------------------------
-  return obj(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0)
+  return so(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0)
 
 def csv(file):
   def atom(x):

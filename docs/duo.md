@@ -7,20 +7,18 @@ from random import random as _r
 import random,types,inspect
 import re,math,random,types
 
-def obj(**attributes):
-  def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
-  up = inspect.stack()[1].frame.f_locals
-  i  = o(**attributes)
-  for k in up: 
-    if isinstance(up[k],types.FunctionType): 
-      i.__dict__[k] = method(i, up[k])
-  return i
-
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
   def __repr__(i): return "{"+ ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
        if  not isinstance(v, types.FunctionType) and k[0] != "_"])+"}"
+
+def obj(**attributes):
+  def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
+  i  = o(**attributes)
+  for k,f in inspect.stack()[1].frame.f_locals.items():
+    if isinstance(f, types.FunctionType): i.__dict__[k] = method(i, f)
+  return i
 
 THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
         less="<",more=">",path="data",file="auto93.csv",
