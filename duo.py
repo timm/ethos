@@ -5,7 +5,7 @@ DUO = data miners used / used-by optimizers.
 (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 
 
-- Stores csv data in `Row`s held in `Tbl` (tables).
+- Stores the csv data in `Row`s held in `Tbl` (tables).
 - Missing values in each row are denoted `?`.
 - Column names are stored in row@1. 
     - Numeric column names start in upper case.
