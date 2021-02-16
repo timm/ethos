@@ -5,7 +5,6 @@ DUO = data miners used / used-by optimizers.
 (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 """
 from random import seed as seed
-from random import random as _r
 import re, math, types, random, inspect
 
 class o:
