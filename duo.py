@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# vim: ts=2 sw=2 sts=2 et tw=81:
+# vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
 """
 DUO = data miners used / used-by optimizers.
 (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
@@ -9,7 +9,6 @@ import re, math, types, random, inspect
 
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
-  
   def __repr__(i): return "{"+ ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
        if  not o.funp(v) and k[0] != "_"])+"}"
@@ -45,7 +44,7 @@ def Row(lst):
                      for _ in range(THE.betters))/THE.betters
     return i.n
   #----------------------------------------
-  return o(cells=lst, n=None, _tag=False) + locals()]
+  return o(cells=lst, n=None, _tag=False) + locals()
 
 def Tbl(): 
   def _row(i, lst): return Row([c.add(x) for c,x in zip(i.cols.all,lst)])
@@ -74,15 +73,18 @@ def Cols():
     else                                                       : also = i.x
     also  += [now]
     return now
+  #----------------------------------------
   return o(all=[], y=[], x=[]) + locals()
 
 def Span(x, y):
   def has(i,x,y): return i.down <= x <i.up
+  #----------------------------------------
   return o(down=x, up=y, _also=Sym()) + locals()
 
 def Skip(pos=0, txt="", w=1):
   def add(i,x): 
     if x != THE.skip: i.n += 1; return x
+  #----------------------------------------
   return o(pos=pos, txt=txt, w=w, n=0)  + locals()
 
 def Sym(pos=0, txt="", w=1):
@@ -99,6 +101,7 @@ def Sym(pos=0, txt="", w=1):
       now = i.seen[x] = i.seen.get(x, 0) + n
       if now > i.most: i.most, i.mode = now, x
     return x
+  #----------------------------------------
   return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
 
 def Num(pos=0, txt="", w=1):
@@ -145,6 +148,7 @@ def Num(pos=0, txt="", w=1):
       tmp += [a]
       j   += 1
     return _merge(tmp) if len(tmp) < len(b4) else b4
+  #----------------------------------------
   return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
 
 def csv(file):
