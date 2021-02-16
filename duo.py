@@ -56,7 +56,7 @@ def Tbl():
     for lst in src:
       if i.cols.all: i.rows     += [_row(i,lst)]
       else:          i.cols.all  = _cols(i,lst)
-    classify(i)
+    _classify(i)
     return i
   #-----------------------------------------
   return o(cols=Cols(), rows=[]) + locals()
