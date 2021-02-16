@@ -1,27 +1,58 @@
 #!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
 """
-DUO = data miners used / used-by optimizers.
+DUO = data miners used / used-by optimizers.    
 (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
+
+
+- Stores csv data in `Row`s held in `Tbl` (tables).
+- Missing values in each row are denoted `?`.
+- Column names are stored in row@1. 
+    - Numeric column names start in upper case.
+    - Goals to be minimized/maximized end in -/+ (respectively).
+    - Columns to be ignored have names with  symbol `?`.
+       - Ignored columns are summarized in `Skip` instances (that do nothing).
+- `Row` columns are summarized in `Sym`(bol) or `Num`umeric columns or
+  `Skip` columns (that just ignore the data passed to them).
+    - `Sym`s count the symbols (and the mode, which is the most common symbol).
+    - `Num`s can report the median and standard deviation of the nums seen so far.
+- One `Row` is better than another if 
+- `Num`s can also discretization their numerics into bins. 
+    - Spurious bins are fused with their neighbors. 
+    - Discretizations are stored as `Span`s.
+- `Cols` store the `x/y/all` (independent/dependent/all) columns. 
+ :w
+ - `Skip`ed columns do not appear in the `x/y` lists.
+
+Coding standards:
+
+- No tabs. Indent with 2 spaces.
+- Keep code <= 80 LOC 
+- Use flake8 but ignore pep8 (cause its too verbose)  
+- Use `small objects` (sets of local functions inside containers)
+- Use `i` to denote  a pointer to a container instances.
+- Use only one global `THE`. Offer all keys of `THE` as command-line options.
+
 """
 from random import seed as seed
-import re, math, types, random, inspect
+import  re, math, types, random, inspect, argparse
 
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
-  def __repr__(i): return "{"+ ', '.join(
-      [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
-       if  not o.funp(v) and k[0] != "_"])+"}"
-  def __add__(i, here):
-    for k,v in here.items():
-      if o.funp(v) and k[0] != "_":
-        i.__dict__[k] = o.method(i,v)
+  def __repr__(i): 
+    "Pretty print, sorted keys, ignore private keys (those starting with `_`)."
+    return "{"+ ', '.join( [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
+                            if  not o.funp(v) and k[0] != "_"])+"}"
+  def __add__(i, maybe):
+    "For all functions, add them as methods to `i`."
+    for k,v in maybe.items():
+      if o.funp(v) and k[0] != "_": i.__dict__[k] = o.method(i,v)
     return i
   def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
   def funp(x)    : return isinstance(x,types.FunctionType)
 
 THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
-        less="<",more=">",path="data",file="auto93.csv",
+        less="-",more="+",path="data",file="auto93.csv",
         Xchop=.5, best=.75, sep=",", ignore=r'([\n\t\r ]|#.*)')
 seed(THE.seed)
 
@@ -90,7 +121,7 @@ def Skip(pos=0, txt="", w=1):
 def Sym(pos=0, txt="", w=1):
   def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
   def div(i, _): return [Span(x,x) for x in i.seen.keys()]
-  def combined(i, j):
+  def spurious(i, j):
     if i.mode == j.mode:
       k = Sym(pos=i.pos, txt=i.txt, w=i.w)
       for x,n in {**i.seen, **j.seen}.items(): k.add(x,n)
@@ -141,7 +172,7 @@ def Num(pos=0, txt="", w=1):
       a = b4[j]
       if j < n - 1:
         b  = b4[j+1]
-        if now := a._also.combined(b._also):
+        if now := a._also.spurious(b._also):
           a = Span(a.down, b.up)
           a._also = now
           j += 1
@@ -171,8 +202,6 @@ def csv(file):
 #   print(f"\n {col.txt}", col.pos)
 #   print(col.div(t))
 #
-import  inspect 
-import argparse
 
 def cli(fun):
   parser = argparse.ArgumentParser(
@@ -195,15 +224,4 @@ def cli(fun):
     else:              add(default=val, metavar=meta, type=ako)
   return fun(**vars(parser.parse_args()))
 
-def ageAndShoeSize(
-       dob  :  "date of birth" = 1960,
-       elated : "make happy" = False,
-       where: "birth place"= ["nsw","vic"],
-       shoes :  "shoesize" = 10):
-  """Good times for all.
-  (c) Tim here now 2021"""
-  print( f"{where} dob + shoes = {dob+shoes} elated= {elated}")
-
-if __name__=="__main__":
-  cli(ageAndShoeSize)
 
