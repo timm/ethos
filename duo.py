@@ -9,6 +9,7 @@ import re, math, types, random, inspect
 
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
+  
   def __repr__(i): return "{"+ ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
        if  not o.funp(v) and k[0] != "_"])+"}"
@@ -43,7 +44,8 @@ def Row(lst):
     i.n = i.n or sum(_better(i,random.choice(t.rows), t) 
                      for _ in range(THE.betters))/THE.betters
     return i.n
-  return o(cells=lst, n=None, _tag=False) + locals()
+  #----------------------------------------
+  return o(cells=lst, n=None, _tag=False) + locals()]
 
 def Tbl(): 
   def _row(i, lst): return Row([c.add(x) for c,x in zip(i.cols.all,lst)])
