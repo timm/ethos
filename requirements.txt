@@ -1,4 +1,8 @@
-# gawk
+# for timm's personnel  dev environment:
+#  gawk
+#  bash
+#  vim
+#  tmux
 
 Mako==1.1.4
 Markdown==3.3.3

@@ -4,21 +4,20 @@
 # (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 from random import seed as seed
 from random import random as _r
-import random,types,inspect
-import re,math,random,types
+import re, math, types, random, inspect
 
 class o:
   def __init__(i, **d): i.__dict__.update(**d)
   def __repr__(i): return "{"+ ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
-       if  not isinstance(v, types.FunctionType) and k[0] != "_"])+"}"
-
-def obj(**attributes):
-  def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
-  i  = o(**attributes)
-  for k,f in inspect.stack()[1].frame.f_locals.items():
-    if isinstance(f, types.FunctionType): i.__dict__[k] = method(i, f)
-  return i
+       if  not o.funp(v) and k[0] != "_"])+"}"
+  def __add__(i, here):
+    for k,v in here.items():
+      if o.funp(v):
+        i.__dict__[k] = o.method(k[v])
+    return i
+  def method(f): return lambda *l, **kw: f(i, *l, **kw)
+  def funp(f)  : return isinstance(x,types.FunctionType)
 
 THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
         less="<",more=">",path="data",file="auto93.csv",
@@ -43,7 +42,7 @@ def Row(lst):
     i.n = i.n or sum(i.better(random.choice(t.rows), t) 
                      for _ in range(THE.betters))/THE.betters
     return i.n
-  return obj(cells=lst, n=None, _tag=False) #+ locals()
+  return o(cells=lst, n=None, _tag=False) + locals()
 
 def Tbl(): 
   def classify(i):
@@ -55,10 +54,10 @@ def Tbl():
       if i.cols.all: 
         i.rows += [Row( [c.add(x) for c,x in zip(i.cols.all, lst)] )]
       else: 
-        i.cols.all = [ i.cols.add(pos,txt) for pos,txt in enumerate(lst) ]
+        i.cols.all = [i.cols.add(pos,txt) for pos,txt in enumerate(lst)]
     i.classify()
     return i
-  return obj(cols=Cols(), rows=[])
+  return o(cols=Cols(), rows=[]) + locals()
 
 def Cols(): 
   def add(i,pos,txt):
@@ -71,16 +70,16 @@ def Cols():
     else                                                       : also = i.x
     also  += [now]
     return now
-  return obj(all=[], y=[], x=[])
+  return o(all=[], y=[], x=[]) + locals()
 
 def Span(x, y):
   def has(i,x,y): return i.down <= x <i.up
-  return obj(down=x, up=y, _also=Sym())
+  return o(down=x, up=y, _also=Sym()) + locals()
 
 def Skip(pos=0, txt="", w=1):
   def add(i,x): 
     if x != THE.skip: i.n += 1; return x
-  return obj(pos=pos, txt=txt, w=w, n=0) 
+  return o(pos=pos, txt=txt, w=w, n=0)  + locals()
 
 def Sym(pos=0, txt="", w=1):
   def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
@@ -96,7 +95,7 @@ def Sym(pos=0, txt="", w=1):
       now = i.seen[x] = i.seen.get(x, 0) + n
       if now > i.most: i.most, i.mode = now, x
     return x
-  return obj(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None)
+  return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
 
 def Num(pos=0, txt="", w=1):
   def mid(i)   : n,a = i.all(); return a[int(n/2)]
@@ -110,7 +109,6 @@ def Num(pos=0, txt="", w=1):
     if x != THE.skip:
       i._all += [x]; i.n+= 1; i.ok = False
     return x
-  #--------------------------------------------------------------
   def div(i,t): 
     xy = sorted([(r.cells[pos], r.tag) for r in t.rows 
                 if r.cells[pos] != THE.skip])
@@ -130,7 +128,6 @@ def Num(pos=0, txt="", w=1):
     out[ 0].down = -math.inf
     out[-1].up   =  math.inf
     return out
-  #--------------------------------------------------------------
   def merge(i, b4):
     j, tmp, n = 0, [], len(b4)
     while j < n:
@@ -144,8 +141,7 @@ def Num(pos=0, txt="", w=1):
       tmp += [a]
       j   += 1
     return i.merge(tmp) if len(tmp) < len(b4) else b4
-  #--------------------------------------------------------------
-  return obj(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0)
+  return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
 
 def csv(file):
   def atom(x):
@@ -166,10 +162,6 @@ for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
 for col in t.cols.x: 
   print(f"\n {col.txt}", col.pos)
   print(col.div(t))
-
-  #for z in sorted(row.ys(t) for row in lst[:5]): print(z)
-#print("")
-#for z in sorted(row.ys(t) for row in lst[-5:]): print(z)
 
 
 
