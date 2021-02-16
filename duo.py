@@ -2,8 +2,6 @@
 # vim: ts=2 sw=2 sts=2 et :
 # DUO = data miners used / used-by optimizers.
 # (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
-from random import seed as seed
-from random import random as _r
 import re, math, types, random, inspect
 
 class o:
@@ -25,7 +23,7 @@ def so(**attributes):
 THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
         less="<",more=">",path="data",file="auto93.csv",
         Xchop=.5, best=.75, sep=",", ignore=r'([\n\t\r ]|#.*)')
-seed(THE.seed)
+random.seed(THE.seed)
 
 def Counts(): 
   return o(f={}, h={}, n=0)
@@ -90,7 +88,8 @@ def Sym(pos=0, txt="", w=1):
   def combined(i, j):
     if i.mode == j.mode:
       k = Sym(pos=i.pos, txt=i.txt, w=i.w)
-      for x,n in {**i.seen, **j.seen}.items(): k.add(x,n)
+      for x,n in i.seen.items(): k.add(x,n)
+      for x,n in j.seen.items(): k.add(x,n)
       return k
   def add(i,x,n=1): 
     if x != THE.skip: 
@@ -156,15 +155,13 @@ def csv(file):
     for a in fp: 
       yield [atom(x) for x in re.sub(THE.ignore, '', a).split(THE.sep)]
 
-t=Tbl().adds(csv(THE.path + "/" + THE.file))
-#print(t.cols.y)
-#print(t.cols.y)
-for row in t.rows[:5]: print(row.ys(t),row.tag,row.n)
-print("")
-for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
-for col in t.cols.x: 
-  print(f"\n {col.txt}", col.pos)
-  print(col.div(t))
-
-
-
+if __name__ == "__main__":
+  t=Tbl().adds(csv(THE.path + "/" + THE.file))
+  #print(t.cols.y)
+  #print(t.cols.y)
+  for row in t.rows[:5]: print(row.ys(t),row.tag,row.n)
+  print("")
+  for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
+  for col in t.cols.x: 
+    print(f"\n {col.txt}", col.pos)
+    print(col.div(t))
