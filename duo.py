@@ -47,16 +47,19 @@ def Row(lst):
   return o(cells=lst, n=None, _tag=False) + locals()
 
 def Tbl(): 
-  def adds(i,src):
-    for lst in src:
-      if i.cols.all: 
-        i.rows += [Row( [c.add(x) for c,x in zip(i.cols.all, lst)] )]
-      else: 
-        i.cols.all = [i.cols.add(pos,txt) for pos,txt in enumerate(lst)]
+  def _row(i, lst): return Row([c.add(x) for c,x in zip(i.cols.all,lst)])
+  def _cols(i,lst): return [i.cols.add(pos,txt) for pos,txt in enumerate(lst)]
+  def _classify(i):
     i.rows = sorted(i.rows, key=lambda r: r.betters(i))
     for n,row in enumerate(i.rows):
       row.tag = n > len(i.rows)*THE.best 
+  def adds(i,src):
+    for lst in src:
+      if i.cols.all: i.rows     += [_row(i,lst)]
+      else:          i.cols.all  = _cols(i,lst)
+    classify(i)
     return i
+  #-----------------------------------------
   return o(cols=Cols(), rows=[]) + locals()
 
 def Cols(): 
