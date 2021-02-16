@@ -1,10 +1,6 @@
 
 # DUO = data miners used / used-by optimizers.
 
-#hello
-seems to work
-typing typing typing
-shit shitsadasdas asdasdsadgggggggggggggggg
 
 <img align=right src="/etc/img/duo.png">
 
