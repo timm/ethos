@@ -21,7 +21,6 @@ DUO = data miners used / used-by optimizers.
     - Spurious bins are fused with their neighbors. 
     - Discretizations are stored as `Span`s.
 - `Cols` store the `x/y/all` (independent/dependent/all) columns. 
- :w
  - `Skip`ed columns do not appear in the `x/y` lists.
 
 Coding standards:
