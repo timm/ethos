@@ -26,30 +26,30 @@
 <p>DUO = data miners used / used-by optimizers.<br>
 (c) Tim Menzies, 2021 MIT License, <a href="https://opensource.org/licenses/MIT.">https://opensource.org/licenses/MIT.</a></p>
 <ul>
-<li>Stores the csv data in <code><a title="duo.Row" href="#duo.Row">Row()</a></code>s held in <code><a title="duo.Tbl" href="#duo.Tbl">Tbl()</a></code> (tables).</li>
+<li>Stores the csv data in <code>Row</code>s held in <code>Tbl</code> (tables).</li>
 <li>Missing values in each row are denoted <code>?</code>.</li>
 <li>Column names are stored in row@1.<ul>
 <li>Numeric column names start in upper case.</li>
 <li>Goals to be minimized/maximized end in -/+ (respectively).</li>
 <li>Columns to be ignored have names with
 symbol <code>?</code>.</li>
-<li>Ignored columns are summarized in <code><a title="duo.Skip" href="#duo.Skip">Skip()</a></code> instances (that do nothing).</li>
+<li>Ignored columns are summarized in <code>Skip</code> instances (that do nothing).</li>
 </ul>
 </li>
-<li><code><a title="duo.Row" href="#duo.Row">Row()</a></code> columns are summarized in <code><a title="duo.Sym" href="#duo.Sym">Sym()</a></code>(bol) or <code><a title="duo.Num" href="#duo.Num">Num()</a></code>umeric columns or
-<code><a title="duo.Skip" href="#duo.Skip">Skip()</a></code> columns (that just ignore the data passed to them).<ul>
-<li><code><a title="duo.Sym" href="#duo.Sym">Sym()</a></code>s count the symbols (and the mode, which is the most common symbol).</li>
-<li><code><a title="duo.Num" href="#duo.Num">Num()</a></code>s report the median and standard deviation of the nums seen so far.</li>
+<li><code>Row</code> columns are summarized in <code>Sym</code>(bol) or <code>Num</code>umeric columns or
+<code>Skip</code> columns (that just ignore the data passed to them).<ul>
+<li><code>Sym</code>s count the symbols (and the mode, which is the most common symbol).</li>
+<li><code>Num</code>s report the median and standard deviation of the nums seen so far.</li>
 </ul>
 </li>
-<li>One <code><a title="duo.Row" href="#duo.Row">Row()</a></code> is better than another if</li>
-<li><code><a title="duo.Num" href="#duo.Num">Num()</a></code>s can also discretization their numerics into bins.<ul>
+<li>One <code>Row</code> is better than another if</li>
+<li><code>Num</code>s can also discretization their numerics into bins.<ul>
 <li>Spurious bins are fused with their neighbors.</li>
-<li>Discretizations are stored as <code><a title="duo.Span" href="#duo.Span">Span()</a></code>s.</li>
+<li>Discretizations are stored as <code>Span</code>s.</li>
 </ul>
 </li>
-<li><code><a title="duo.Cols" href="#duo.Cols">Cols()</a></code> store the <code>x/y/all</code> (independent/dependent/all) columns.</li>
-<li><code><a title="duo.Skip" href="#duo.Skip">Skip()</a></code>ed columns do not appear in the <code>x/y</code> lists.</li>
+<li><code>Cols</code> store the <code>x/y/all</code> (independent/dependent/all) columns.</li>
+<li><code>Skip</code>ed columns do not appear in the <code>x/y</code> lists.</li>
 </ul>
 <p>Coding standards: </p>
 <ul>
@@ -59,7 +59,6 @@ symbol <code>?</code>.</li>
 <li>Use <code>small objects</code> (sets of local functions inside containers)</li>
 <li>Use <code>i</code> to denote
 a pointer to a container instances.</li>
-<li>Use only one global <code>THE</code>. Offer all keys of <code>THE</code> as command-line options.</li>
 </ul>
 <details class="source">
 <summary>
@@ -96,15 +95,16 @@ Coding standards:
 - Use flake8 but ignore pep8 (cause its too verbose)
 - Use `small objects` (sets of local functions inside containers)
 - Use `i` to denote  a pointer to a container instances.
-- Use only one global `THE`. Offer all keys of `THE` as command-line options.
 
 &#34;&#34;&#34;
 
 from random import seed as seed
-import re, math, random, inspect, argparse
+import re, math, random, inspect
 from types import FunctionType as Fun
+import argparse as arg
 
 class o:
+  &#34;Simple container of names fields, with methods.&#34;
   def __init__(i, **d): i.__dict__.update(d)
   def __repr__(i):
     &#34;Pretty print, sorted keys, ignore private keys (those  with `_`).&#34;
@@ -117,179 +117,192 @@ class o:
       if type(v) == Fun and k[0] != &#34;_&#34;: i.__dict__[k] = method(i,v)
     return i
 
-THE = o(seed=1, skip=&#34;?&#34;, cohen=.2, id=0, betters=32,
-        less=&#34;-&#34;,more=&#34;+&#34;,path=&#34;.&#34;,file=&#34;auto93.csv&#34;,
-        Xchop=.5, best=.75, sep=&#34;,&#34;, ignore=r&#39;([\n\t\r ]|#.*)&#39;)
-seed(THE.seed)
+def duo( BEST:      &#39;ratio of best examples&#39;         = .75, 
+         COHEN:     &#39;min interesting xbin size&#39;      =.2, 
+         DELIMITER: &#39;csv column seperator=&#39;          = &#39;,&#39;, 
+         FILE:      &#39;data file&#39;                      = &#39;auto93.csv&#39;,
+         IGNORE:    &#39;characters to delete in data&#39;   = r&#39;([\n\t\r ]|#.*)&#39;,
+         LESS:      &#39;marker for goals to minimize&#39;   = &#39;-&#39;, 
+         MORE:      &#39;marker for goals to maximize&#39;   = &#39;+&#39;,
+         PATH:      &#39;path to data&#39;                   = &#39;.&#39;, 
+         SEED:      &#39;random number seed&#39;             = 1,
+         SKIP:      &#39;data to ignore&#39;                 = &#39;?&#39;,
+         TESTS:     &#39;comparison size for domination&#39; = 32,
+         XCHOP:     &#39;size of bins&#39;                   = 5
+       ): 
+  &#34;Data mining using/used-by optimisers.&#34;
+  random.seed(SEED)
+  print(BEST)
+  
+  def Counts():
+    return o(f={}, h={}, n=0)
+  
+  def Row(lst):
+    def ys(i,t): return [i.cells[c.pos] for c in t.cols.y]
+    def _better(i,j,t):
+      s1,s2,n = 0,0,len(t.cols.y)
+      for col in t.cols.y:
+        pos,w = col.pos, col.w
+        a,b   = i.cells[pos], j.cells[pos]
+        a,b   = col.norm(a), col.norm(b)
+        s1   -= math.e**(w*(a-b)/n)
+        s2   -= math.e**(w*(b-a)/n)
+      return s1/n &lt; s2/n
+    def betters(i,t):
+      i.n = i.n or sum(_better(i,random.choice(t.rows), t)
+                       for _ in range(TESTS))/TESTS
+      return i.n
+    #----------------------------------------
+    return o(cells=lst, n=None, _tag=False) + locals()
+  
+  def Tbl():
+    def _row(i, lst): return Row([c.add(x) for c,x in zip(i.cols.all,lst)])
+    def _cols(i,lst): return [i.cols.add(n,txt) for n,txt in enumerate(lst)]
+    def _classify(i):
+      i.rows = sorted(i.rows, key=lambda r: r.betters(i))
+      for n,row in enumerate(i.rows):
+        row.tag = n &gt; len(i.rows)*BEST
+    def adds(i,src):
+      for lst in src:
+        if i.cols.all: i.rows     += [_row(i,lst)]
+        else:          i.cols.all  = _cols(i,lst)
+      _classify(i)
+      return i
+    #-----------------------------------------
+    #return o(cols=Cols(), rows=[]) #+ locals()
+    return o(cols=Cols(), rows=[]) + locals()
+  
+  def Cols():
+    def add(i,pos,txt):
+      if   SKIP in txt                                   : f = Skip
+      elif LESS in txt or MORE in txt or txt[0].isupper(): f = Num
+      else                                               : f = Sym
+      now = f(pos=pos, txt=txt, w=-1 if LESS in txt else 1)
+      if   SKIP in txt                                   : also = []
+      elif LESS in txt or MORE in txt                    : also = i.y
+      else                                               : also = i.x
+      also  += [now]
+      return now
+    #----------------------------------------
+    return o(all=[], y=[], x=[]) + locals()
+  
+  def Span(x, y):
+    def has(i,x,y): return i.down &lt;= x &lt;i.up
+    #----------------------------------------
+    return o(down=x, up=y, _also=Sym()) + locals()
+  
+  def Skip(pos=0, txt=&#34;&#34;, w=1):
+    def add(i,x):
+      if x != SKIP: i.n += 1; return x
+    #----------------------------------------
+    return o(pos=pos, txt=txt, w=w, n=0)  + locals()
+  
+  def Sym(pos=0, txt=&#34;&#34;, w=1):
+    def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
+    def div(i, _): return [Span(x,x) for x in i.seen.keys()]
+    def spurious(i, j):
+      if i.mode == j.mode:
+        k = Sym(pos=i.pos, txt=i.txt, w=i.w)
+        for x,n in {**i.seen, **j.seen}.items(): k.add(x,n)
+        return k
+    def add(i,x,n=1):
+      if x != SKIP:
+        i.n += n
+        now = i.seen[x] = i.seen.get(x, 0) + n
+        if now &gt; i.most: i.most, i.mode = now, x
+      return x
+    #----------------------------------------
+    return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
+  
+  def Num(pos=0, txt=&#34;&#34;, w=1):
+    def mid(i)   : n,a = _all(i); return a[int(n/2)]
+    def var(i)   : n,a = _all(i); return (a[int(.9*n)] - a[int(n/10)]) / 2.56
+    def norm(i,x): _,a = _all(i); return (x - a[0]) / (a[-1] - a[0])
+    def _all(i)   :
+      i._all = i._all if i.ok else sorted(i._all)
+      i.ok = True
+      return len(i._all), i._all
+    def add(i, x):
+      if x != SKIP:
+        i._all += [x]; i.n+= 1; i.ok = False
+      return x
+    def div(i,t):
+      xy = sorted([(r.cells[pos], r.tag) for r in t.rows
+                  if r.cells[pos] != SKIP])
+      width = len(xy)**XCHOP
+      while width &lt; 4 and width &lt; len(xy) / 2: width *= 1.2
+      now = Span(xy[0][0], xy[0][0])
+      tmp = [now]
+      for j,(x,y) in enumerate(xy):
+        if j &lt; len(xy) - width:
+          if now._also.n &gt;= width:
+            if x != xy[j+1][0] and now.up - now.down &gt; i.var()*COHEN:
+              now  = Span(now.up, x)
+              tmp += [now]
+        now.up = x
+        now._also.add(y)
+      out = _merge(tmp)
+      out[ 0].down = -math.inf
+      out[-1].up   =  math.inf
+      return out
+    def _merge(b4):
+      j, tmp, n = 0, [], len(b4)
+      while j &lt; n:
+        a = b4[j]
+        if j &lt; n - 1:
+          b  = b4[j+1]
+          now = a._also.spurious(b._also)
+          if now:
+            a = Span(a.down, b.up)
+            a._also = now
+            j += 1
+        tmp += [a]
+        j   += 1
+      return _merge(tmp) if len(tmp) &lt; len(b4) else b4
+    #----------------------------------------
+    return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
+  
+  def csv(file):
+    def atom(x):
+      try: return int(x)
+      except Exception:
+        try: return float(x)
+        except Exception: return x
+    with open(file) as fp:
+      for a in fp:
+        yield [atom(x) for x in re.sub(IGNORE, &#39;&#39;, a).split(DELIMITER)]
+  
+  t=Tbl().adds(csv(PATH + &#34;/&#34; + FILE))
+  # #print(t.cols.y)
+  # #print(t.cols.y)
+  for row in t.rows[:5]: print(row.ys(t),row.tag,row.n)
+  print(&#34;&#34;)
+  for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
+  # for col in t.cols.x:
+  #   print(f&#34;\n {col.txt}&#34;, col.pos)
+  #   print(col.div(t))
+  
+def cli(f):
+  &#34;Call `f`, first checking if any command line options override the defaults.&#34;
+  def details(x,txt):
+    isa, a = isinstance, None
+    if isa(x, list):
+      a, x = x, x[0]
+    m, t = ((&#34;I&#34;, int)   if isa(x, int)   else (
+            (&#34;F&#34;, float) if isa(x, float) else (&#34;S&#34;, str)))
+    h = f&#34;{txt}; default= {x} &#34; + (f&#34;range= {a}&#34; if a else &#34;&#34;)
+    return dict(help=h, default=x, metavar=m, type=t, choices=a) if a else ( 
+           dict(help=h, action=&#39;store_true&#39;)            if x is False else (
+           dict(help=h, default=x, metavar=m, type=t)))
+  #----------------------------------------------------
+  do = arg.ArgumentParser(prog            = f.__name__,
+                          description     = f.__doc__.split(&#34;\n\n&#34;)[0],
+                          formatter_class = arg.RawDescriptionHelpFormatter)
+  for key, v in inspect.signature(f).parameters.items():
+    do.add_argument(&#34;-&#34;+key, **details(v.default, v.annotation))
+  return f(**vars(do.parse_args())) 
 
-def Counts():
-  return o(f={}, h={}, n=0)
-
-def Row(lst):
-  def ys(i,t): return [i.cells[c.pos] for c in t.cols.y]
-  def _better(i,j,t):
-    s1,s2,n = 0,0,len(t.cols.y)
-    for col in t.cols.y:
-      pos,w = col.pos, col.w
-      a,b   = i.cells[pos], j.cells[pos]
-      a,b   = col.norm(a), col.norm(b)
-      s1   -= math.e**(w*(a-b)/n)
-      s2   -= math.e**(w*(b-a)/n)
-    return s1/n &lt; s2/n
-  def betters(i,t):
-    i.n = i.n or sum(_better(i,random.choice(t.rows), t)
-                     for _ in range(THE.betters))/THE.betters
-    return i.n
-  #----------------------------------------
-  return o(cells=lst, n=None, _tag=False) + locals()
-
-def Tbl():
-  def _row(i, lst): return Row([c.add(x) for c,x in zip(i.cols.all,lst)])
-  def _cols(i,lst): return [i.cols.add(pos,txt) for pos,txt in enumerate(lst)]
-  def _classify(i):
-    i.rows = sorted(i.rows, key=lambda r: r.betters(i))
-    for n,row in enumerate(i.rows):
-      row.tag = n &gt; len(i.rows)*THE.best
-  def adds(i,src):
-    for lst in src:
-      if i.cols.all: i.rows     += [_row(i,lst)]
-      else:          i.cols.all  = _cols(i,lst)
-    _classify(i)
-    return i
-  #-----------------------------------------
-  #return o(cols=Cols(), rows=[]) #+ locals()
-  return o(cols=Cols(), rows=[]) + locals()
-
-def Cols():
-  def add(i,pos,txt):
-    if   THE.skip in txt                                       : f = Skip
-    elif THE.less in txt or THE.more in txt or txt[0].isupper(): f = Num
-    else                                                       : f = Sym
-    now = f(pos=pos, txt=txt, w=-1 if THE.less in txt else 1)
-    if   THE.skip in txt                                       : also = []
-    elif THE.less in txt or THE.more in txt                    : also = i.y
-    else                                                       : also = i.x
-    also  += [now]
-    return now
-  #----------------------------------------
-  return o(all=[], y=[], x=[]) + locals()
-
-def Span(x, y):
-  def has(i,x,y): return i.down &lt;= x &lt;i.up
-  #----------------------------------------
-  return o(down=x, up=y, _also=Sym()) + locals()
-
-def Skip(pos=0, txt=&#34;&#34;, w=1):
-  def add(i,x):
-    if x != THE.skip: i.n += 1; return x
-  #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, n=0)  + locals()
-
-def Sym(pos=0, txt=&#34;&#34;, w=1):
-  def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
-  def div(i, _): return [Span(x,x) for x in i.seen.keys()]
-  def spurious(i, j):
-    if i.mode == j.mode:
-      k = Sym(pos=i.pos, txt=i.txt, w=i.w)
-      for x,n in {**i.seen, **j.seen}.items(): k.add(x,n)
-      return k
-  def add(i,x,n=1):
-    if x != THE.skip:
-      i.n += n
-      now = i.seen[x] = i.seen.get(x, 0) + n
-      if now &gt; i.most: i.most, i.mode = now, x
-    return x
-  #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
-
-def Num(pos=0, txt=&#34;&#34;, w=1):
-  def mid(i)   : n,a = _all(i); return a[int(n/2)]
-  def var(i)   : n,a = _all(i); return (a[int(.9*n)] - a[int(n/10)]) / 2.56
-  def norm(i,x): _,a = _all(i); return (x - a[0]) / (a[-1] - a[0])
-  def _all(i)   :
-    i._all = i._all if i.ok else sorted(i._all)
-    i.ok = True
-    return len(i._all), i._all
-  def add(i, x):
-    if x != THE.skip:
-      i._all += [x]; i.n+= 1; i.ok = False
-    return x
-  def div(i,t):
-    xy = sorted([(r.cells[pos], r.tag) for r in t.rows
-                if r.cells[pos] != THE.skip])
-    width = len(xy)**THE.Xchop
-    while width &lt; 4 and width &lt; len(xy) / 2: width *= 1.2
-    now = Span(xy[0][0], xy[0][0])
-    tmp = [now]
-    for j,(x,y) in enumerate(xy):
-      if j &lt; len(xy) - width:
-        if now._also.n &gt;= width:
-          if x != xy[j+1][0] and now.up - now.down &gt; i.var()*THE.cohen:
-            now  = Span(now.up, x)
-            tmp += [now]
-      now.up = x
-      now._also.add(y)
-    out = _merge(tmp)
-    out[ 0].down = -math.inf
-    out[-1].up   =  math.inf
-    return out
-  def _merge(b4):
-    j, tmp, n = 0, [], len(b4)
-    while j &lt; n:
-      a = b4[j]
-      if j &lt; n - 1:
-        b  = b4[j+1]
-        if now := a._also.spurious(b._also):
-          a = Span(a.down, b.up)
-          a._also = now
-          j += 1
-      tmp += [a]
-      j   += 1
-    return _merge(tmp) if len(tmp) &lt; len(b4) else b4
-  #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
-
-def csv(file):
-  def atom(x):
-    try: return int(x)
-    except Exception:
-      try: return float(x)
-      except Exception: return x
-  with open(file) as fp:
-    for a in fp:
-      yield [atom(x) for x in re.sub(THE.ignore, &#39;&#39;, a).split(THE.sep)]
-
-t=Tbl().adds(csv(THE.path + &#34;/&#34; + THE.file))
-# #print(t.cols.y)
-# #print(t.cols.y)
-for row in t.rows[:5]: print(row.ys(t),row.tag,row.n)
-print(&#34;&#34;)
-for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
-# for col in t.cols.x:
-#   print(f&#34;\n {col.txt}&#34;, col.pos)
-#   print(col.div(t))
-#
-
-def cli(fun):
-  parser = argparse.ArgumentParser(
-    prog            = fun.__name__,
-    description     = fun.__doc__.split(&#34;\n\n&#34;)[0],
-    formatter_class = argparse.RawDescriptionHelpFormatter)
-  for k,v in inspect.signature(fun).parameters.items():
-    val, txt, choices, isa = v.default, v.annotation, None, isinstance
-    if isa(val,(list,tuple)):
-       choices, val = val, val[0]
-       notes = f&#34;{txt}; default= {val}, range= {choices}&#34;
-    else:
-       notes = f&#34;{txt}; default= {val}&#34;
-    meta,ako= ((&#34;I&#34;,int)   if isa(val, int)   else (
-               (&#34;F&#34;,float) if isa(val, float) else (&#34;S&#34;,str)))
-    add = lambda **d: parser.add_argument(&#34;-&#34;+k,help=notes,**d)
-    if   val is False: add(action=&#39;store_true&#39;)
-    elif val is True:  add(action=&#39;store_false&#39;)
-    elif choices:      add(default=val, metavar=meta, type=ako, choices=choices)
-    else:              add(default=val, metavar=meta, type=ako)
-  return fun(**vars(parser.parse_args()))</code></pre>
+if __name__ == &#34;__main__&#34;: cli(duo)</code></pre>
 </details>
 </section>
 <section>
@@ -299,262 +312,209 @@ def cli(fun):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="duo.Cols"><code class="name flex">
-<span>def <span class="ident">Cols</span></span>(<span>)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Cols():
-  def add(i,pos,txt):
-    if   THE.skip in txt                                       : f = Skip
-    elif THE.less in txt or THE.more in txt or txt[0].isupper(): f = Num
-    else                                                       : f = Sym
-    now = f(pos=pos, txt=txt, w=-1 if THE.less in txt else 1)
-    if   THE.skip in txt                                       : also = []
-    elif THE.less in txt or THE.more in txt                    : also = i.y
-    else                                                       : also = i.x
-    also  += [now]
-    return now
-  #----------------------------------------
-  return o(all=[], y=[], x=[]) + locals()</code></pre>
-</details>
-</dd>
-<dt id="duo.Counts"><code class="name flex">
-<span>def <span class="ident">Counts</span></span>(<span>)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Counts():
-  return o(f={}, h={}, n=0)</code></pre>
-</details>
-</dd>
-<dt id="duo.Num"><code class="name flex">
-<span>def <span class="ident">Num</span></span>(<span>pos=0, txt='', w=1)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Num(pos=0, txt=&#34;&#34;, w=1):
-  def mid(i)   : n,a = _all(i); return a[int(n/2)]
-  def var(i)   : n,a = _all(i); return (a[int(.9*n)] - a[int(n/10)]) / 2.56
-  def norm(i,x): _,a = _all(i); return (x - a[0]) / (a[-1] - a[0])
-  def _all(i)   :
-    i._all = i._all if i.ok else sorted(i._all)
-    i.ok = True
-    return len(i._all), i._all
-  def add(i, x):
-    if x != THE.skip:
-      i._all += [x]; i.n+= 1; i.ok = False
-    return x
-  def div(i,t):
-    xy = sorted([(r.cells[pos], r.tag) for r in t.rows
-                if r.cells[pos] != THE.skip])
-    width = len(xy)**THE.Xchop
-    while width &lt; 4 and width &lt; len(xy) / 2: width *= 1.2
-    now = Span(xy[0][0], xy[0][0])
-    tmp = [now]
-    for j,(x,y) in enumerate(xy):
-      if j &lt; len(xy) - width:
-        if now._also.n &gt;= width:
-          if x != xy[j+1][0] and now.up - now.down &gt; i.var()*THE.cohen:
-            now  = Span(now.up, x)
-            tmp += [now]
-      now.up = x
-      now._also.add(y)
-    out = _merge(tmp)
-    out[ 0].down = -math.inf
-    out[-1].up   =  math.inf
-    return out
-  def _merge(b4):
-    j, tmp, n = 0, [], len(b4)
-    while j &lt; n:
-      a = b4[j]
-      if j &lt; n - 1:
-        b  = b4[j+1]
-        if now := a._also.spurious(b._also):
-          a = Span(a.down, b.up)
-          a._also = now
-          j += 1
-      tmp += [a]
-      j   += 1
-    return _merge(tmp) if len(tmp) &lt; len(b4) else b4
-  #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()</code></pre>
-</details>
-</dd>
-<dt id="duo.Row"><code class="name flex">
-<span>def <span class="ident">Row</span></span>(<span>lst)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Row(lst):
-  def ys(i,t): return [i.cells[c.pos] for c in t.cols.y]
-  def _better(i,j,t):
-    s1,s2,n = 0,0,len(t.cols.y)
-    for col in t.cols.y:
-      pos,w = col.pos, col.w
-      a,b   = i.cells[pos], j.cells[pos]
-      a,b   = col.norm(a), col.norm(b)
-      s1   -= math.e**(w*(a-b)/n)
-      s2   -= math.e**(w*(b-a)/n)
-    return s1/n &lt; s2/n
-  def betters(i,t):
-    i.n = i.n or sum(_better(i,random.choice(t.rows), t)
-                     for _ in range(THE.betters))/THE.betters
-    return i.n
-  #----------------------------------------
-  return o(cells=lst, n=None, _tag=False) + locals()</code></pre>
-</details>
-</dd>
-<dt id="duo.Skip"><code class="name flex">
-<span>def <span class="ident">Skip</span></span>(<span>pos=0, txt='', w=1)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Skip(pos=0, txt=&#34;&#34;, w=1):
-  def add(i,x):
-    if x != THE.skip: i.n += 1; return x
-  #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, n=0)  + locals()</code></pre>
-</details>
-</dd>
-<dt id="duo.Span"><code class="name flex">
-<span>def <span class="ident">Span</span></span>(<span>x, y)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Span(x, y):
-  def has(i,x,y): return i.down &lt;= x &lt;i.up
-  #----------------------------------------
-  return o(down=x, up=y, _also=Sym()) + locals()</code></pre>
-</details>
-</dd>
-<dt id="duo.Sym"><code class="name flex">
-<span>def <span class="ident">Sym</span></span>(<span>pos=0, txt='', w=1)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Sym(pos=0, txt=&#34;&#34;, w=1):
-  def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
-  def div(i, _): return [Span(x,x) for x in i.seen.keys()]
-  def spurious(i, j):
-    if i.mode == j.mode:
-      k = Sym(pos=i.pos, txt=i.txt, w=i.w)
-      for x,n in {**i.seen, **j.seen}.items(): k.add(x,n)
-      return k
-  def add(i,x,n=1):
-    if x != THE.skip:
-      i.n += n
-      now = i.seen[x] = i.seen.get(x, 0) + n
-      if now &gt; i.most: i.most, i.mode = now, x
-    return x
-  #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()</code></pre>
-</details>
-</dd>
-<dt id="duo.Tbl"><code class="name flex">
-<span>def <span class="ident">Tbl</span></span>(<span>)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def Tbl():
-  def _row(i, lst): return Row([c.add(x) for c,x in zip(i.cols.all,lst)])
-  def _cols(i,lst): return [i.cols.add(pos,txt) for pos,txt in enumerate(lst)]
-  def _classify(i):
-    i.rows = sorted(i.rows, key=lambda r: r.betters(i))
-    for n,row in enumerate(i.rows):
-      row.tag = n &gt; len(i.rows)*THE.best
-  def adds(i,src):
-    for lst in src:
-      if i.cols.all: i.rows     += [_row(i,lst)]
-      else:          i.cols.all  = _cols(i,lst)
-    _classify(i)
-    return i
-  #-----------------------------------------
-  #return o(cols=Cols(), rows=[]) #+ locals()
-  return o(cols=Cols(), rows=[]) + locals()</code></pre>
-</details>
-</dd>
 <dt id="duo.cli"><code class="name flex">
-<span>def <span class="ident">cli</span></span>(<span>fun)</span>
+<span>def <span class="ident">cli</span></span>(<span>f)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Call <code>f</code>, first checking if any command line options override the defaults.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def cli(fun):
-  parser = argparse.ArgumentParser(
-    prog            = fun.__name__,
-    description     = fun.__doc__.split(&#34;\n\n&#34;)[0],
-    formatter_class = argparse.RawDescriptionHelpFormatter)
-  for k,v in inspect.signature(fun).parameters.items():
-    val, txt, choices, isa = v.default, v.annotation, None, isinstance
-    if isa(val,(list,tuple)):
-       choices, val = val, val[0]
-       notes = f&#34;{txt}; default= {val}, range= {choices}&#34;
-    else:
-       notes = f&#34;{txt}; default= {val}&#34;
-    meta,ako= ((&#34;I&#34;,int)   if isa(val, int)   else (
-               (&#34;F&#34;,float) if isa(val, float) else (&#34;S&#34;,str)))
-    add = lambda **d: parser.add_argument(&#34;-&#34;+k,help=notes,**d)
-    if   val is False: add(action=&#39;store_true&#39;)
-    elif val is True:  add(action=&#39;store_false&#39;)
-    elif choices:      add(default=val, metavar=meta, type=ako, choices=choices)
-    else:              add(default=val, metavar=meta, type=ako)
-  return fun(**vars(parser.parse_args()))</code></pre>
+<pre><code class="python">def cli(f):
+  &#34;Call `f`, first checking if any command line options override the defaults.&#34;
+  def details(x,txt):
+    isa, a = isinstance, None
+    if isa(x, list):
+      a, x = x, x[0]
+    m, t = ((&#34;I&#34;, int)   if isa(x, int)   else (
+            (&#34;F&#34;, float) if isa(x, float) else (&#34;S&#34;, str)))
+    h = f&#34;{txt}; default= {x} &#34; + (f&#34;range= {a}&#34; if a else &#34;&#34;)
+    return dict(help=h, default=x, metavar=m, type=t, choices=a) if a else ( 
+           dict(help=h, action=&#39;store_true&#39;)            if x is False else (
+           dict(help=h, default=x, metavar=m, type=t)))
+  #----------------------------------------------------
+  do = arg.ArgumentParser(prog            = f.__name__,
+                          description     = f.__doc__.split(&#34;\n\n&#34;)[0],
+                          formatter_class = arg.RawDescriptionHelpFormatter)
+  for key, v in inspect.signature(f).parameters.items():
+    do.add_argument(&#34;-&#34;+key, **details(v.default, v.annotation))
+  return f(**vars(do.parse_args())) </code></pre>
 </details>
 </dd>
-<dt id="duo.csv"><code class="name flex">
-<span>def <span class="ident">csv</span></span>(<span>file)</span>
+<dt id="duo.duo"><code class="name flex">
+<span>def <span class="ident">duo</span></span>(<span>BEST: ratio of best examples = 0.75, COHEN: min interesting xbin size = 0.2, DELIMITER: csv column seperator= = ',', FILE: data file = 'auto93.csv', IGNORE: characters to delete in data = '([\\n\\t\\r ]|#.*)', LESS: marker for goals to minimize = '-', MORE: marker for goals to maximize = '+', PATH: path to data = '.', SEED: random number seed = 1, SKIP: data to ignore = '?', TESTS: comparison size for domination = 32, XCHOP: size of bins = 5)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Data mining using/used-by optimisers.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def csv(file):
-  def atom(x):
-    try: return int(x)
-    except Exception:
-      try: return float(x)
-      except Exception: return x
-  with open(file) as fp:
-    for a in fp:
-      yield [atom(x) for x in re.sub(THE.ignore, &#39;&#39;, a).split(THE.sep)]</code></pre>
+<pre><code class="python">def duo( BEST:      &#39;ratio of best examples&#39;         = .75, 
+         COHEN:     &#39;min interesting xbin size&#39;      =.2, 
+         DELIMITER: &#39;csv column seperator=&#39;          = &#39;,&#39;, 
+         FILE:      &#39;data file&#39;                      = &#39;auto93.csv&#39;,
+         IGNORE:    &#39;characters to delete in data&#39;   = r&#39;([\n\t\r ]|#.*)&#39;,
+         LESS:      &#39;marker for goals to minimize&#39;   = &#39;-&#39;, 
+         MORE:      &#39;marker for goals to maximize&#39;   = &#39;+&#39;,
+         PATH:      &#39;path to data&#39;                   = &#39;.&#39;, 
+         SEED:      &#39;random number seed&#39;             = 1,
+         SKIP:      &#39;data to ignore&#39;                 = &#39;?&#39;,
+         TESTS:     &#39;comparison size for domination&#39; = 32,
+         XCHOP:     &#39;size of bins&#39;                   = 5
+       ): 
+  &#34;Data mining using/used-by optimisers.&#34;
+  random.seed(SEED)
+  print(BEST)
+  
+  def Counts():
+    return o(f={}, h={}, n=0)
+  
+  def Row(lst):
+    def ys(i,t): return [i.cells[c.pos] for c in t.cols.y]
+    def _better(i,j,t):
+      s1,s2,n = 0,0,len(t.cols.y)
+      for col in t.cols.y:
+        pos,w = col.pos, col.w
+        a,b   = i.cells[pos], j.cells[pos]
+        a,b   = col.norm(a), col.norm(b)
+        s1   -= math.e**(w*(a-b)/n)
+        s2   -= math.e**(w*(b-a)/n)
+      return s1/n &lt; s2/n
+    def betters(i,t):
+      i.n = i.n or sum(_better(i,random.choice(t.rows), t)
+                       for _ in range(TESTS))/TESTS
+      return i.n
+    #----------------------------------------
+    return o(cells=lst, n=None, _tag=False) + locals()
+  
+  def Tbl():
+    def _row(i, lst): return Row([c.add(x) for c,x in zip(i.cols.all,lst)])
+    def _cols(i,lst): return [i.cols.add(n,txt) for n,txt in enumerate(lst)]
+    def _classify(i):
+      i.rows = sorted(i.rows, key=lambda r: r.betters(i))
+      for n,row in enumerate(i.rows):
+        row.tag = n &gt; len(i.rows)*BEST
+    def adds(i,src):
+      for lst in src:
+        if i.cols.all: i.rows     += [_row(i,lst)]
+        else:          i.cols.all  = _cols(i,lst)
+      _classify(i)
+      return i
+    #-----------------------------------------
+    #return o(cols=Cols(), rows=[]) #+ locals()
+    return o(cols=Cols(), rows=[]) + locals()
+  
+  def Cols():
+    def add(i,pos,txt):
+      if   SKIP in txt                                   : f = Skip
+      elif LESS in txt or MORE in txt or txt[0].isupper(): f = Num
+      else                                               : f = Sym
+      now = f(pos=pos, txt=txt, w=-1 if LESS in txt else 1)
+      if   SKIP in txt                                   : also = []
+      elif LESS in txt or MORE in txt                    : also = i.y
+      else                                               : also = i.x
+      also  += [now]
+      return now
+    #----------------------------------------
+    return o(all=[], y=[], x=[]) + locals()
+  
+  def Span(x, y):
+    def has(i,x,y): return i.down &lt;= x &lt;i.up
+    #----------------------------------------
+    return o(down=x, up=y, _also=Sym()) + locals()
+  
+  def Skip(pos=0, txt=&#34;&#34;, w=1):
+    def add(i,x):
+      if x != SKIP: i.n += 1; return x
+    #----------------------------------------
+    return o(pos=pos, txt=txt, w=w, n=0)  + locals()
+  
+  def Sym(pos=0, txt=&#34;&#34;, w=1):
+    def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
+    def div(i, _): return [Span(x,x) for x in i.seen.keys()]
+    def spurious(i, j):
+      if i.mode == j.mode:
+        k = Sym(pos=i.pos, txt=i.txt, w=i.w)
+        for x,n in {**i.seen, **j.seen}.items(): k.add(x,n)
+        return k
+    def add(i,x,n=1):
+      if x != SKIP:
+        i.n += n
+        now = i.seen[x] = i.seen.get(x, 0) + n
+        if now &gt; i.most: i.most, i.mode = now, x
+      return x
+    #----------------------------------------
+    return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
+  
+  def Num(pos=0, txt=&#34;&#34;, w=1):
+    def mid(i)   : n,a = _all(i); return a[int(n/2)]
+    def var(i)   : n,a = _all(i); return (a[int(.9*n)] - a[int(n/10)]) / 2.56
+    def norm(i,x): _,a = _all(i); return (x - a[0]) / (a[-1] - a[0])
+    def _all(i)   :
+      i._all = i._all if i.ok else sorted(i._all)
+      i.ok = True
+      return len(i._all), i._all
+    def add(i, x):
+      if x != SKIP:
+        i._all += [x]; i.n+= 1; i.ok = False
+      return x
+    def div(i,t):
+      xy = sorted([(r.cells[pos], r.tag) for r in t.rows
+                  if r.cells[pos] != SKIP])
+      width = len(xy)**XCHOP
+      while width &lt; 4 and width &lt; len(xy) / 2: width *= 1.2
+      now = Span(xy[0][0], xy[0][0])
+      tmp = [now]
+      for j,(x,y) in enumerate(xy):
+        if j &lt; len(xy) - width:
+          if now._also.n &gt;= width:
+            if x != xy[j+1][0] and now.up - now.down &gt; i.var()*COHEN:
+              now  = Span(now.up, x)
+              tmp += [now]
+        now.up = x
+        now._also.add(y)
+      out = _merge(tmp)
+      out[ 0].down = -math.inf
+      out[-1].up   =  math.inf
+      return out
+    def _merge(b4):
+      j, tmp, n = 0, [], len(b4)
+      while j &lt; n:
+        a = b4[j]
+        if j &lt; n - 1:
+          b  = b4[j+1]
+          now = a._also.spurious(b._also)
+          if now:
+            a = Span(a.down, b.up)
+            a._also = now
+            j += 1
+        tmp += [a]
+        j   += 1
+      return _merge(tmp) if len(tmp) &lt; len(b4) else b4
+    #----------------------------------------
+    return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
+  
+  def csv(file):
+    def atom(x):
+      try: return int(x)
+      except Exception:
+        try: return float(x)
+        except Exception: return x
+    with open(file) as fp:
+      for a in fp:
+        yield [atom(x) for x in re.sub(IGNORE, &#39;&#39;, a).split(DELIMITER)]
+  
+  t=Tbl().adds(csv(PATH + &#34;/&#34; + FILE))
+  # #print(t.cols.y)
+  # #print(t.cols.y)
+  for row in t.rows[:5]: print(row.ys(t),row.tag,row.n)
+  print(&#34;&#34;)
+  for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
+  # for col in t.cols.x:
+  #   print(f&#34;\n {col.txt}&#34;, col.pos)
+  #   print(col.div(t))</code></pre>
 </details>
 </dd>
 </dl>
@@ -567,12 +527,13 @@ def cli(fun):
 <span>(</span><span>**d)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Simple container of names fields, with methods.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class o:
+  &#34;Simple container of names fields, with methods.&#34;
   def __init__(i, **d): i.__dict__.update(d)
   def __repr__(i):
     &#34;Pretty print, sorted keys, ignore private keys (those  with `_`).&#34;
@@ -596,17 +557,9 @@ def cli(fun):
 </div>
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="two-column">
-<li><code><a title="duo.Cols" href="#duo.Cols">Cols</a></code></li>
-<li><code><a title="duo.Counts" href="#duo.Counts">Counts</a></code></li>
-<li><code><a title="duo.Num" href="#duo.Num">Num</a></code></li>
-<li><code><a title="duo.Row" href="#duo.Row">Row</a></code></li>
-<li><code><a title="duo.Skip" href="#duo.Skip">Skip</a></code></li>
-<li><code><a title="duo.Span" href="#duo.Span">Span</a></code></li>
-<li><code><a title="duo.Sym" href="#duo.Sym">Sym</a></code></li>
-<li><code><a title="duo.Tbl" href="#duo.Tbl">Tbl</a></code></li>
+<ul class="">
 <li><code><a title="duo.cli" href="#duo.cli">cli</a></code></li>
-<li><code><a title="duo.csv" href="#duo.csv">csv</a></code></li>
+<li><code><a title="duo.duo" href="#duo.duo">duo</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

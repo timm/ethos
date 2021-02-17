@@ -51,27 +51,6 @@ class o:
       if type(v) == Fun and k[0] != "_": i.__dict__[k] = method(i,v)
     return i
 
-def cli(f):
-  "Call `f`, first checking if any command line options override the defaults."
-  def details(x,txt):
-    isa, a = isinstance, None
-    if isa(x, list):
-      a, x = x, x[0]
-    m, t = (("I", int)   if isa(x, int)   else (
-            ("F", float) if isa(x, float) else ("S", str)))
-    h = f"{txt}; default= {x} " + (f"range= {a}" if a else "")
-    return dict(help=h, default=x, metavar=m, type=t, choices=a) if a else ( 
-           dict(help=h, action='store_true')            if x is False else (
-           dict(help=h, default=x, metavar=m, type=t)))
-  #----------------------------------------------------
-  do = arg.ArgumentParser(prog            = f.__name__,
-                          description     = f.__doc__.split("\n\n")[0],
-                          formatter_class = arg.RawDescriptionHelpFormatter)
-  for key, v in inspect.signature(f).parameters.items():
-    do.add_argument("-"+key, **details(v.default, v.annotation))
-  return f(**vars(do.parse_args())) 
-  
-@cli
 def duo( BEST:      'ratio of best examples'         = .75, 
          COHEN:     'min interesting xbin size'      =.2, 
          DELIMITER: 'csv column seperator='          = ',', 
@@ -83,7 +62,8 @@ def duo( BEST:      'ratio of best examples'         = .75,
          SEED:      'random number seed'             = 1,
          SKIP:      'data to ignore'                 = '?',
          TESTS:     'comparison size for domination' = 32,
-         XCHOP:     'size of bins'                   = 5): 
+         XCHOP:     'size of bins'                   = 5
+       ): 
   "Data mining using/used-by optimisers."
   random.seed(SEED)
   print(BEST)
@@ -235,4 +215,25 @@ def duo( BEST:      'ratio of best examples'         = .75,
   # for col in t.cols.x:
   #   print(f"\n {col.txt}", col.pos)
   #   print(col.div(t))
-  #
+  
+def cli(f):
+  "Call `f`, first checking if any command line options override the defaults."
+  def details(x,txt):
+    isa, a = isinstance, None
+    if isa(x, list):
+      a, x = x, x[0]
+    m, t = (("I", int)   if isa(x, int)   else (
+            ("F", float) if isa(x, float) else ("S", str)))
+    h = f"{txt}; default= {x} " + (f"range= {a}" if a else "")
+    return dict(help=h, default=x, metavar=m, type=t, choices=a) if a else ( 
+           dict(help=h, action='store_true')            if x is False else (
+           dict(help=h, default=x, metavar=m, type=t)))
+  #----------------------------------------------------
+  do = arg.ArgumentParser(prog            = f.__name__,
+                          description     = f.__doc__.split("\n\n")[0],
+                          formatter_class = arg.RawDescriptionHelpFormatter)
+  for key, v in inspect.signature(f).parameters.items():
+    do.add_argument("-"+key, **details(v.default, v.annotation))
+  return f(**vars(do.parse_args())) 
+
+if __name__ == "__main__": cli(duo)
