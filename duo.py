@@ -1,55 +1,8 @@
 #!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
-"""
-DUO = data miners used / used-by optimizers.  
-(c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
-
-- Stores the csv data in `Row`s held in `Tbl` (tables).
-- Missing values in each row are denoted `?`.
-- Column names are stored in row@1.
-    - Numeric column names start in upper case.
-    - Goals to be minimized/maximized end in -/+ (respectively).
-    - Columns to be ignored have names with  symbol `?`.
-       - Ignored columns are summarized in `Skip` instances (that do nothing).
-- `Row` columns are summarized in `Sym`(bol) or `Num`umeric columns or
-  `Skip` columns (that just ignore the data passed to them).
-    - `Sym`s count the symbols (and the mode, which is the most common symbol).
-    - `Num`s report the median and standard deviation of the nums seen so far.
-- One `Row` is better than another if
-- `Num`s can also discretization their numerics into bins.
-    - Spurious bins are fused with their neighbors.
-    - Discretizations are stored as `Span`s.
-- `Cols` store the `x/y/all` (independent/dependent/all) columns.
- - `Skip`ed columns do not appear in the `x/y` lists.
-
-Coding standards: 
-
-- No tabs. Indent with 2 spaces.
-- Keep code <= 80 LOC
-- Use flake8 but ignore pep8 (cause its too verbose)
-- Use `small objects` (sets of local functions inside containers)
-- Use `i` to denote  a pointer to a container instances.
-
-"""
-
-from random import seed as seed
 import re, math, random, inspect
 from types import FunctionType as Fun
 import argparse as arg
-
-class o:
-  "Simple container of names fields, with methods."
-  def __init__(i, **d): i.__dict__.update(d)
-  def __repr__(i):
-    "Pretty print, sorted keys, ignore private keys (those  with `_`)."
-    return "{"+ ', '.join( [f":{k} {v}" for k, v in sorted(i.__dict__.items())
-                            if  type(v) != Fun and k[0] != "_"])+"}"
-  def __add__(i, maybe):
-    "For all functions, add them as methods to `i`."
-    def method(i,f): return lambda *lst, **kw: f(i, *lst, **kw)
-    for k,v in maybe.items():
-      if type(v) == Fun and k[0] != "_": i.__dict__[k] = method(i,v)
-    return i
 
 def duo( BEST:      'ratio of best examples'         = .75, 
          COHEN:     'min interesting xbin size'      =.2, 
@@ -64,9 +17,38 @@ def duo( BEST:      'ratio of best examples'         = .75,
          TESTS:     'comparison size for domination' = 32,
          XCHOP:     'size of bins'                   = 5
        ): 
-  "Data mining using/used-by optimisers."
+  """
+  DUO = data miners used / used-by optimizers.  
+  (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
+  
+  - Stores the csv data in `Row`s held in `Tbl` (tables).
+  - Missing values in each row are denoted `?`.
+  - Column names are stored in row@1.
+      - Numeric column names start in upper case.
+      - Goals to be minimized/maximized end in -/+ (respectively).
+      - Columns to be ignored have names with  symbol `?`.
+         - Ignored columns are summarized in `Skip` instances (that do nothing).
+  - `Row` columns are summarized in `Sym`(bol) or `Num`umeric columns or
+    `Skip` columns (that just ignore the data passed to them).
+      - `Sym`s count the symbols (and the mode, which is the most common symbol).
+      - `Num`s report the median and standard deviation of the nums seen so far.
+  - One `Row` is better than another if
+  - `Num`s can also discretization their numerics into bins.
+      - Spurious bins are fused with their neighbors.
+      - Discretizations are stored as `Span`s.
+  - `Cols` store the `x/y/all` (independent/dependent/all) columns.
+   - `Skip`ed columns do not appear in the `x/y` lists.
+  
+  Coding standards: 
+  
+  - No tabs. Indent with 2 spaces.
+  - Keep code <= 80 LOC
+  - Use flake8 but ignore pep8 (cause its too verbose)
+  - Use `small objects` (sets of local functions inside containers)
+  - Use `i` to denote  a pointer to a container instances.
+  
+  """
   random.seed(SEED)
-  print(BEST)
   
   def Counts():
     return o(f={}, h={}, n=0)
@@ -215,7 +197,22 @@ def duo( BEST:      'ratio of best examples'         = .75,
   # for col in t.cols.x:
   #   print(f"\n {col.txt}", col.pos)
   #   print(col.div(t))
-  
+
+#-------------------------------------------------------  
+class o:
+  "Simple container of names fields, with methods."
+  def __init__(i, **d): i.__dict__.update(d)
+  def __repr__(i):
+    "Pretty print, sorted keys, ignore private keys (those  with `_`)."
+    return "{"+ ', '.join( [f":{k} {v}" for k, v in sorted(i.__dict__.items())
+                            if  type(v) != Fun and k[0] != "_"])+"}"
+  def __add__(i, maybe):
+    "For all functions, add them as methods to `i`."
+    def method(i,f): return lambda *lst, **kw: f(i, *lst, **kw)
+    for k,v in maybe.items():
+      if type(v) == Fun and k[0] != "_": i.__dict__[k] = method(i,v)
+    return i
+
 def cli(f):
   "Call `f`, first checking if any command line options override the defaults."
   def details(x,txt):
@@ -236,4 +233,5 @@ def cli(f):
     do.add_argument("-"+key, **details(v.default, v.annotation))
   return f(**vars(do.parse_args())) 
 
+#-------------------------------------------------------  
 if __name__ == "__main__": cli(duo)
