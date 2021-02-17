@@ -18,34 +18,34 @@ def duo( BEST:      'ratio of best examples'         = .75,
          XCHOP:     'size of bins'                   = 5
        ): 
   """
-  DUO = data miners used / used-by optimizers.  
-  (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
-  
-  - Stores the csv data in `Row`s held in `Tbl` (tables).
-  - Missing values in each row are denoted `?`.
-  - Column names are stored in row@1.
-      - Numeric column names start in upper case.
-      - Goals to be minimized/maximized end in -/+ (respectively).
-      - Columns to be ignored have names with  symbol `?`.
-         - Ignored columns are summarized in `Skip` instances (that do nothing).
-  - `Row` columns are summarized in `Sym`(bol) or `Num`umeric columns or
-    `Skip` columns (that just ignore the data passed to them).
-      - `Sym`s count the symbols (and the mode, which is the most common symbol).
-      - `Num`s report the median and standard deviation of the nums seen so far.
-  - One `Row` is better than another if
-  - `Num`s can also discretization their numerics into bins.
-      - Spurious bins are fused with their neighbors.
-      - Discretizations are stored as `Span`s.
-  - `Cols` store the `x/y/all` (independent/dependent/all) columns.
-   - `Skip`ed columns do not appear in the `x/y` lists.
-  
-  Coding standards: 
-  
-  - No tabs. Indent with 2 spaces.
-  - Keep code <= 80 LOC
-  - Use flake8 but ignore pep8 (cause its too verbose)
-  - Use `small objects` (sets of local functions inside containers)
-  - Use `i` to denote  a pointer to a container instances.
+DUO = data miners used / used-by optimizers.  
+(c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
+
+- Stores the csv data in `Row`s held in `Tbl` (tables).
+- Missing values in each row are denoted `?`.
+- Column names are stored in row@1.
+    - Numeric column names start in upper case.
+    - Goals to be minimized/maximized end in -/+ (respectively).
+    - Columns to be ignored have names with  symbol `?`.
+       - Ignored columns are summarized in `Skip` instances (that do nothing).
+- `Row` columns are summarized in `Sym`(bol) or `Num`umeric columns or
+  `Skip` columns (that just ignore the data passed to them).
+    - `Sym`s count the symbols (and the mode, which is the most common symbol).
+    - `Num`s report the median and standard deviation of the nums seen so far.
+- One `Row` is better than another if
+- `Num`s can also discretization their numerics into bins.
+    - Spurious bins are fused with their neighbors.
+    - Discretizations are stored as `Span`s.
+- `Cols` store the `x/y/all` (independent/dependent/all) columns.
+ - `Skip`ed columns do not appear in the `x/y` lists.
+
+Coding standards: 
+
+- No tabs. Indent with 2 spaces.
+- Keep code <= 80 LOC
+- Use flake8 but ignore pep8 (cause its too verbose)
+- Use `small objects` (sets of local functions inside containers)
+- Use `i` to denote  a pointer to a container instances.
   
   """
   random.seed(SEED)
@@ -227,7 +227,7 @@ def cli(f):
            dict(help=h, default=x, metavar=m, type=t)))
   #----------------------------------------------------
   do = arg.ArgumentParser(prog            = f.__name__,
-                          description     = f.__doc__.split("\n\n")[0],
+                          description     = (f.__doc__ or '').split("\n\n")[0],
                           formatter_class = arg.RawDescriptionHelpFormatter)
   for key, v in inspect.signature(f).parameters.items():
     do.add_argument("-"+key, **details(v.default, v.annotation))
