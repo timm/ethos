@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
 
 Ish=$(cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
+Tmp=$HOME/tmp/$(basename $Ish)
+
+mkdir -p $Tmp
+echo $Tmp
+
 for f in $Ish/ish $Ish/duo.py; do
    [ -f "$f" ] && chmod +x $f
 done
-Tmp=$HOME/tmp/$(basename $(dirname $Ish))
 
-mkdir -p $Tmp
 
 alias ls="ls -G"
 alias gp="git add *; git commit -am saving; git push; git status"
 alias vi='vim -u $Tmp/dotvimrc'
 alias tmux='tmux -f $Tmp/dottmux'
 
-docs() { (cd $Ish; pdoc3 -o $Ish --force --html duo.py); }
+docs() { 
+   (cd $Ish; pdoc3 -o $Ish --force --html duo.py)
+   mv duo.html index.html
+}
+
 here() { cd $1; basename `pwd`; }
 
 PROMPT_COMMAND='echo -ne "🔆 $(git branch 2>/dev/null | grep '^*' | colrm 1 2):";PS1="$(here ..)/$(here .):\!\e[m ▶ "'
@@ -185,9 +192,9 @@ Plugin 'ap/vim-buftabline'
 Plugin 'junegunn/fzf.vim'
 Plugin 'jnurmine/Zenburn'
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'nvie/vim-flake8'
+"Plugin 'nvie/vim-flake8'
 Plugin 'seebi/dircolors-solarized'
-Plugin 'vim-syntastic/syntastic'
+"Plugin 'vim-syntastic/syntastic'
 Plugin 'nequo/vim-allomancer'
 Plugin 'julialang/julia-vim'
 Plugin 'nanotech/jellybeans.vim'
@@ -236,19 +243,19 @@ let g:GitGutterSignsDisable=0
 colorscheme jellybeans
 set number
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
 autocmd Filetype python setlocal ts=2 sw=2 expandtab  
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+"let g:syntastic_always_populate_loc_list = 1
+"let g:syntastic_auto_loc_list = 1
+"let g:syntastic_check_on_open = 1
+"let g:syntastic_check_on_wq = 0
 "let g:syntastic_python_checkers = ['flake8', 'python']
-let g:syntastic_python_checkers = ['flake8']
-let g:syntastic_python_python_exec = 'python3'
-let g:syntastic_loc_list_height=5
+""let g:syntastic_python_checkers = ['python3']
+"let g:syntastic_python_python_exec = 'python3'
+"let g:syntastic_loc_list_height=5
 "autocmd BufWritePost *.py call Flake8()
-
+"let g:flake8_ignore="E401,E302,E301,E225,E201,E231"
 au VimEnter * RainbowParenthesesToggle
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
