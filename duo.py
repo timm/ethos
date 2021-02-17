@@ -34,21 +34,21 @@ Coding standards:
 
 """
 from random import seed as seed
-import  re, math, types, random, inspect, argparse
+import  re, math, random, inspect, argparse
+from types import FunctionType as Fun
 
 class o:
-  def __init__(i, **d): i.__dict__.update(**d)
+  def __init__(i, **d): i.__dict__.update(d)
   def __repr__(i): 
-    "Pretty print, sorted keys, ignore private keys (those starting with `_`)."
+    "Pretty print, sorted keys, ignore private keys (those  with `_`)."
     return "{"+ ', '.join( [f":{k} {v}" for k, v in sorted(i.__dict__.items()) 
-                            if  not o.funp(v) and k[0] != "_"])+"}"
+                            if  type(v) != Fun and k[0] != "_"])+"}"
   def __add__(i, maybe):
     "For all functions, add them as methods to `i`."
+    def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
     for k,v in maybe.items():
-      if o.funp(v) and k[0] != "_": i.__dict__[k] = o.method(i,v)
+      if type(v) == Fun and k[0] != "_": i.__dict__[k] = method(i,v)
     return i
-  def method(i,f): return lambda *l, **kw: f(i, *l, **kw)
-  def funp(x)    : return isinstance(x,types.FunctionType)
 
 THE = o(seed=1, skip="?", cohen=.2, id=0, betters=32,
         less="-",more="+",path="data",file="auto93.csv",
@@ -90,6 +90,7 @@ def Tbl():
     _classify(i)
     return i
   #-----------------------------------------
+  #return o(cols=Cols(), rows=[]) #+ locals()
   return o(cols=Cols(), rows=[]) + locals()
 
 def Cols(): 
@@ -104,7 +105,7 @@ def Cols():
     also  += [now]
     return now
   #----------------------------------------
-  return o(all=[], y=[], x=[]) + locals()
+  return o(all=[], y=[], x=[]) + locals() 
 
 def Span(x, y):
   def has(i,x,y): return i.down <= x <i.up
@@ -191,12 +192,12 @@ def csv(file):
     for a in fp: 
       yield [atom(x) for x in re.sub(THE.ignore, '', a).split(THE.sep)]
 
-# t=Tbl().adds(csv(THE.path + "/" + THE.file))
+t=Tbl().adds(csv(THE.path + "/" + THE.file))
 # #print(t.cols.y)
 # #print(t.cols.y)
-# for row in t.rows[:5]: print(row.ys(t),row.tag,row.n)
-# print("")
-# for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
+for row in t.rows[:5]: print(row.ys(t),row.tag,row.n)
+print("")
+for row in t.rows[-5:]: print(row.ys(t),row.tag,row.n)
 # for col in t.cols.x: 
 #   print(f"\n {col.txt}", col.pos)
 #   print(col.div(t))
