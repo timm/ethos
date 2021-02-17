@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
 """
-DUO = data miners used / used-by optimizers.
+DUO = data miners used / used-by optimizers.  
 (c) Tim Menzies, 2021 MIT License, https://opensource.org/licenses/MIT.
 
 - Stores the csv data in `Row`s held in `Tbl` (tables).
