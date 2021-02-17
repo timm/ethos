@@ -17,7 +17,7 @@ alias vi='vim -u $Tmp/dotvimrc'
 alias tmux='tmux -f $Tmp/dottmux'
 
 docs() { 
-   (cd $Ish; pdoc3 -o $Ish --force --html duo.py)
+   (cd $Ish; pdoc3 --config sort_identifiers=True -o $Ish --force --html duo.py)
    mv duo.html index.html
 }
 
