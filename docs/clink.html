@@ -39,7 +39,7 @@ Succinct CLI tool that uses from function name, docstring, and default args.
 - License: (c) 2021 Tim Menzies &lt;timm@ieee.org&gt;, MIT License  
 
 &#34;&#34;&#34;
-def example(
+def anExample(
      dob:    &#34;date of birth&#34; = 1960,
      elated: &#34;make happy&#34;    = False,
      where:  &#34;birth place&#34;   = [&#34;nsw&#34;, &#34;vic&#34;],
@@ -82,7 +82,7 @@ def details(x,txt,choices=None):
   else:
     return dict(help=h, default=x, metavar=m, type=t)
 
-__name__ == &#34;__main__&#34; and clink(example)</code></pre>
+__name__ == &#34;__main__&#34; and clink(anExample)</code></pre>
 </details>
 </section>
 <section>
@@ -92,8 +92,8 @@ __name__ == &#34;__main__&#34; and clink(example)</code></pre>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="clink.example"><code class="name flex">
-<span>def <span class="ident">example</span></span>(<span>dob: date of birth = 1960, elated: make happy = False, where: birth place = ['nsw', 'vic'], shoes: shoesize = 10)</span>
+<dt id="clink.anExample"><code class="name flex">
+<span>def <span class="ident">anExample</span></span>(<span>dob: date of birth = 1960, elated: make happy = False, where: birth place = ['nsw', 'vic'], shoes: shoesize = 10)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Demo of clink:
@@ -105,7 +105,7 @@ Users can override the defaults in a command line-inferface using</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def example(
+<pre><code class="python">def anExample(
      dob:    &#34;date of birth&#34; = 1960,
      elated: &#34;make happy&#34;    = False,
      where:  &#34;birth place&#34;   = [&#34;nsw&#34;, &#34;vic&#34;],
@@ -173,7 +173,7 @@ Users can override the defaults in a command line-inferface using</p>
 <nav id="sidebar">
 <center>
 <img width=300 src="http://menzies.us/duo/thing12.png">
-<h3>DUO: data miners using/used-by optimizers</h3>
+<h3>DUO: data miners<br>using/used-by optimizers</h3>
 <p>
 <a href="#license">&copy; 2021</a>, Tim Menzies<br>
 <a href="mailto:timm@ieee.org">timm@ieee.org</a><br>
@@ -197,7 +197,7 @@ zip
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="clink.example" href="#clink.example">example</a></code></li>
+<li><code><a title="clink.anExample" href="#clink.anExample">anExample</a></code></li>
 <li><code><a title="clink.clink" href="#clink.clink">clink</a></code></li>
 <li><code><a title="clink.details" href="#clink.details">details</a></code></li>
 </ul>
