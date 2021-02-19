@@ -1,7 +1,7 @@
      1	
      2	#-------
      3	% python3 clink.py -h
-     4	usage: example [-h] [-dob I] [-elated] [-where S] [-shoes I]
+     4	usage: anExample [-h] [-dob I] [-elated] [-where S] [-shoes I]
      5	
      6	Demo of clink:
      7	  Function arguments annotated with defaults and help text.

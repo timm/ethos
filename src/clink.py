@@ -6,7 +6,7 @@ Succinct CLI tool that uses from function name, docstring, and default args.
 - License: (c) 2021 Tim Menzies <timm@ieee.org>, MIT License  
 
 """
-def example(
+def anExample(
      dob:    "date of birth" = 1960,
      elated: "make happy"    = False,
      where:  "birth place"   = ["nsw", "vic"],
@@ -49,4 +49,4 @@ def details(x,txt,choices=None):
   else:
     return dict(help=h, default=x, metavar=m, type=t)
 
-__name__ == "__main__" and clink(example)
+__name__ == "__main__" and clink(anExample)

@@ -29,7 +29,7 @@ class it:
         i.__dict__[k] = method(i,v)
     return i
 
-def itDemo():
+def anExample():
   from datetime import datetime as date
   def Person(name="Abraham",yob=1809):
     def age(i): return date.now().year - i.yob
