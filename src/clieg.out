@@ -1,6 +1,6 @@
      1	
      2	#-------
-     3	% python3 clink.py -h
+     3	% python3 cli.py -h
      4	usage: anExample [-h] [-dob I] [-elated] [-where S] [-shoes I]
      5	
      6	Demo of clink:
@@ -18,13 +18,13 @@
     18	  -shoes I    shoesize; default= 10
     19	
     20	#-------
-    21	% python3 clink.py
+    21	% python3 cli.py
     22	nsw dob + shoes = 1970 elated= False
     23	
     24	#-------
-    25	% python3 clink.py -w vic
+    25	% python3 cli.py -w vic
     26	vic dob + shoes = 1970 elated= False
     27	
     28	#-------
-    29	% python3 clink.py -s 1000
+    29	% python3 cli.py -s 1000
     30	nsw dob + shoes = 2960 elated= False

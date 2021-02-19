@@ -23,7 +23,7 @@ def anExample(
 import inspect
 import argparse as arg
 
-def clink(f):
+def cli(f):
   "Call `f`, first checking if any command line options override the defaults."
   do = arg.ArgumentParser(
           prog            = f.__name__,
@@ -49,4 +49,4 @@ def details(x,txt,choices=None):
   else:
     return dict(help=h, default=x, metavar=m, type=t)
 
-__name__ == "__main__" and clink(anExample)
+__name__ == "__main__" and cli(anExample)
