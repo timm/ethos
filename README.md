@@ -1,5 +1,5 @@
 <img align=right width=300 
-src="/docs/thing12.png">
+src="http://menzies.us/duo/thing12.png">
 
 # DUO = data miners used / used-by optimizers
 
