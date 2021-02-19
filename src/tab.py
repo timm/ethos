@@ -5,7 +5,7 @@ Store rows from csv data , summarized in columns
 
 - License: (c) 2021 Tim Menzies <timm@ieee.org>, MIT License  
 
-Stores the csv data in `Row`s held in `Tbl` (tables).
+Stores the csv data in `Row`s held in `Tab` (tables).
 
 - Missing values in each row are denoted `?`.
 - Column names are stored in row@1.
@@ -20,47 +20,33 @@ Stores the csv data in `Row`s held in `Tbl` (tables).
 - One `Row` is better than another if
 - `Num`s can also discretization their numerics into bins.
   - Spurious bins are fused with their neighbors.
-  - Discretizations are stored as `Span`s.
+  - Discretizations are stored as `Bin`s.
 - `Cols` store the `x/y/all` (independent/dependent/all) columns.
  - `Skip`ed columns do not appear in the `x/y` lists.
 
 """
+def demo():
+  t=Tab().adds(csv("../data/auto93.csv"))
+  print(len(t.rows))
+  c=t.cols.all[4]
+  print(c.txt, c.w, c.var(), c.div(t))
+
+#-----------------------------------------------
+import re, math
 from it import it
 
 DELIMITER = ','
 IGNORE    = r'([\n\t\r ]|#.*)'
 LESS      = '-' 
 MORE      = '+'
-SKIP      = '?',
+SKIP      = '?'
       
-def Row(lst):
-  def ys(i,t): 
-    return [i.cells[c.pos] for c in t.cols.y]
-
-  def better(i,j,t):
-    s1,s2,n = 0,0,len(t.cols.y)
-    for col in t.cols.y:
-      pos,w = col.pos, col.w
-      a,b   = i.cells[pos], j.cells[pos]
-      a,b   = col.norm(a), col.norm(b)
-      s1   -= math.e**(w*(a-b)/n)
-      s2   -= math.e**(w*(b-a)/n)
-    return s1/n < s2/n
-
-  def betters(i,t,some):
-    i.n = i.n or sum(better(i,random.choice(t.rows), t)
-                     for _ in range(some))/some
-    return i.n
-  #----------------------------------------
-  return it(cells=lst, n=None, best=False) + locals()
-
-def Tbl():
+def Tab():
   """Initializes summary columns, stores data rows, sumarizes 
   that data in columns. Optinonally , can also  marks 
   rows as `best` or not (see the `classify` function)"""
   def _row(i, lst): return Row([c.add(x) for c,x in zip(i.cols.all,lst)])
   def _cols(i,lst): return [i.cols.add(n,txt) for n,txt in enumerate(lst)]
-
   #--------------
   def classify(i,some=64,best=0.8):
     i.rows = sorted(i.rows, key=lambda r: r.betters(i,some))
@@ -74,6 +60,28 @@ def Tbl():
     return i
   #-----------------------------------------
   return it(cols=Cols(), rows=[]) + locals()
+
+def Row(lst):
+  "Holds one record. Can report if one row is better than another."
+  def ys(i,t): 
+    return [i.cells[c.pos] for c in t.cols.y]
+  #-----------------
+  def better(i,j,t):
+    s1,s2,n = 0,0,len(t.cols.y)
+    for col in t.cols.y:
+      pos,w = col.pos, col.w
+      a,b   = i.cells[pos], j.cells[pos]
+      a,b   = col.norm(a), col.norm(b)
+      s1   -= math.e**(w*(a-b)/n)
+      s2   -= math.e**(w*(b-a)/n)
+    return s1/n < s2/n
+  #---------------------
+  def betters(i,t,some):
+    i.n = i.n or sum(better(i,random.choice(t.rows), t)
+                     for _ in range(some))/some
+    return i.n
+  #----------------------------------------
+  return it(cells=lst, n=None, best=False) + locals()
 
 def Cols():
   "Stored different kinds of columns in mulitple lists."
@@ -95,12 +103,12 @@ def Skip(pos=0, txt="", w=1):
   def add(i,x):
     if x != SKIP: i.n += 1; return x
   #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, n=0)  + locals()
+  return it(pos=pos, txt=txt, w=w, n=0)  + locals()
 
 def Sym(pos=0, txt="", w=1):
-  "Tracks symbol counts and can report mode and entropy."
+  "`Sym`s track symbol counts and can report mode and entropy."
   def ent(i): return -sum(v/i.n*math.log(v/i.n,2) for v in i.seen.values())
-  def div(i, _): return [Span(x,x) for x in i.seen.keys()]
+  def div(i, _): return [Bin(x,x) for x in i.seen.keys()]
   #-------
   def spurious(i, j):
     "If two syms both conclude the same thing, combine them."
@@ -117,10 +125,12 @@ def Sym(pos=0, txt="", w=1):
       if now > i.most: i.most, i.mode = now, x
     return x
   #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
-
+  return it(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
 
 def Num(pos=0, txt="", w=1):
+  """`Nums`s track numerics and can report median (`mid`) and
+   standard deviation `var`. They can also normalize numerics 0..1
+   and report good ways to convert numeric columns into bins"""
   def mid(i)   : n,a = _all(i); return a[int(n/2)]
   def var(i)   : n,a = _all(i); return (a[int(.9*n)] - a[int(n/10)]) / 2.56
   def norm(i,x): _,a = _all(i); return (x - a[0]) / (a[-1] - a[0])
@@ -128,52 +138,59 @@ def Num(pos=0, txt="", w=1):
     i._all = i._all if i.ok else sorted(i._all)
     i.ok = True
     return len(i._all), i._all
+  #------------
   def add(i, x):
     if x != SKIP:
       i._all += [x]; i.n+= 1; i.ok = False
     return x
+  #------------
   def div(i,t,cohen=.2, xchop=0.5):
-    xy = sorted([(r.cells[pos], r.tag) for r in t.rows
+    xy = sorted([(r.cells[pos], r.best) for r in t.rows
                 if r.cells[pos] != SKIP])
-    width = len(xy)**xchop
-    while width < 4 and width < len(xy) / 2: width *= 1.2
-    spans(xy,width,i.var()*cohen)
-    #----------------------------------------
-  return o(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
+    size = len(xy)**xchop
+    while size < 4 and width < len(xy) / 2: width *= 1.2
+    bins(xy, size, i.var()*cohen)
+  #----------------------------------------
+  return it(pos=pos, txt=txt, w=w, _all=[], ok=True, n=0) + locals()
 
-def Span(x, y):
-    def has(i,x,y): return i.down <= x <i.up
-    #----------------------------------------
-    return o(down=x, up=y, _also=Sym()) + locals()
+def Bin(x, y):
+  """Ranges from `down` to `up`. Can `also` stores
+  the y-values seen in that range."""
+  def has(i,x,y): return i.down <= x <i.up
+  #----------------------------------------
+  return it(down=x, up=y, also=Sym()) + locals()
  
-def spans(xy,width,small):
+def bins(xy,size,small):
+  """Split data into  bins of size, say, sqrt(N);
+  then merge adjacent bins that are spuriously different."""
+  def split():
+    now = Bin(xy[0][0], xy[0][0])
+    tmp = [now]
+    for j,(x,y) in enumerate(xy):
+      if j < len(xy) - size:
+        if now.also.n >= size:
+          if x != xy[j+1][0] and now.up - now.down > small:
+            now  = Bin(now.up, x)
+            tmp += [now]
+      now.up = x
+      now.also.add(y)
+    return tmp
+  #------------
   def merge(b4):
     j, tmp, n = 0, [], len(b4)
     while j < n:
       a = b4[j]
       if j < n - 1:
         b  = b4[j+1]
-        now = a._also.spurious(b._also)
+        now = a.also.spurious(b.also)
         if now:
-          a = Span(a.down, b.up)
-          a._also = now
+          a = Bin(a.down, b.up)
+          a.also = now
           j += 1
       tmp += [a]
       j   += 1
     return merge(tmp) if len(tmp) < len(b4) else b4
-  def split():
-    now = Span(xy[0][0], xy[0][0])
-    tmp = [now]
-    for j,(x,y) in enumerate(xy):
-      if j < len(xy) - width:
-        if now._also.n >= width:
-          if x != xy[j+1][0] and now.up - now.down > small:
-            now  = Span(now.up, x)
-            tmp += [now]
-      now.up = x
-      now._also.add(y)
-    return out
-  #---------------
+  #------------------------------------------------
   out          = merge(split())
   out[ 0].down = -math.inf
   out[-1].up   =  math.inf
@@ -190,18 +207,5 @@ def csv(file):
   with open(file) as fp:
     for a in fp:
       yield [atom(x) for x in re.sub(IGNORE, '', a).split(DELIMITER)]
-
-#----------------------------
-def demo():
-  from datetime import datetime as date
-  def Person(name="Abraham",yob=1809):
-    def age(i): return date.now().year - i.yob
-    def birthday(i): i.weight = int(i.weight*1.05)
-    return it(name=name, yob=yob,weight=100) + locals()
-
-  #---------------------------
-  p = Person(name="John")
-  for _ in range(56): p.birthday()
-  print(p, f"age= {p.age()}")
-  
-#__name__ == "__main__" and demo()
+ 
+__name__ == "__main__" and demo()
