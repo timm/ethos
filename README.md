@@ -6,6 +6,7 @@
 :: [tab](http://menzies.us/tab)     
 [&copy; 2011](#license) Tim Menzies, timm@ieee.org 
 
+<img align=right width=250 src="https://github.com/timm/duo/blob/master/etc/img/thing12.png">
 Sort the data by how much each row dominates over rows.  Split the
 sort into 'bad' and 'better'.  Discretize data, combining any splits
 that do not comment on those splits.  Count how often ranges appear
