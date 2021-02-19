@@ -1,14 +1,10 @@
 # DUO = data miners used / used-by optimizers
 
-[install](#install) ::
-[license](#license)  ::
-doc [it](http://menzies.us/it)  ::
-    [clink](http://menzies.us/clink)  ::
-    [tab](http://menzies.us/tab) 
-
-(c) Tim Menzies    
-2021 MIT License     
-https://opensource.org/licenses/MIT
+[install](#install) 
+:: doc [it](http://menzies.us/it)  
+::     [clink](http://menzies.us/clink) 
+::     [tab](http://menzies.us/tab) 
+:: [(&copy; 2011) Tim Menzies](#license)    
 
 Sort the data by how much each row dominates over rows.  Split the
 sort into 'bad' and 'better'.  Discretize data, combining any splits
@@ -17,7 +13,6 @@ in 'bad' or 'better'.  Sort the ranges by how likely they appear
 in better.  Build rules by combining different ranges; i.e. pick
 pairs of better ranges, combine them, then sort them back into the
 list.
-
 
      :-------:                 explore  = better==bad
      | Ba    | Bad <----.      planning = max(better - bad)
