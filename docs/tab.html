@@ -89,6 +89,7 @@ def demo():
 #-----------------------------------------------
 import re, math
 from it import it
+from csv import csv
 
 DELIMITER = &#39;,&#39;
 IGNORE    = r&#39;([\n\t\r ]|#.*)&#39;
@@ -251,18 +252,7 @@ def bins(xy,size,small):
   out[-1].up   =  math.inf
   return out
 
-def csv(file):
-  &#34;&#34;&#34;Helper function: read csv rows, skip blank lines, coerce strings
-     to numbers, if needed.&#34;&#34;&#34;
-  def atom(x):
-    try: return int(x)
-    except Exception:
-      try: return float(x)
-      except Exception: return x
-  with open(file) as fp:
-    for a in fp:
-      yield [atom(x) for x in re.sub(IGNORE, &#39;&#39;, a).split(DELIMITER)]
- 
+
 __name__ == &#34;__main__&#34; and demo()</code></pre>
 </details>
 </section>
@@ -532,29 +522,6 @@ then merge adjacent bins that are spuriously different.</p></div>
   return out</code></pre>
 </details>
 </dd>
-<dt id="tab.csv"><code class="name flex">
-<span>def <span class="ident">csv</span></span>(<span>file)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Helper function: read csv rows, skip blank lines, coerce strings
-to numbers, if needed.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def csv(file):
-  &#34;&#34;&#34;Helper function: read csv rows, skip blank lines, coerce strings
-     to numbers, if needed.&#34;&#34;&#34;
-  def atom(x):
-    try: return int(x)
-    except Exception:
-      try: return float(x)
-      except Exception: return x
-  with open(file) as fp:
-    for a in fp:
-      yield [atom(x) for x in re.sub(IGNORE, &#39;&#39;, a).split(DELIMITER)]</code></pre>
-</details>
-</dd>
 </dl>
 </section>
 <section>
@@ -596,7 +563,6 @@ zip
 <li><code><a title="tab.Num" href="#tab.Num">Num</a></code></li>
 <li><code><a title="tab.Bin" href="#tab.Bin">Bin</a></code></li>
 <li><code><a title="tab.bins" href="#tab.bins">bins</a></code></li>
-<li><code><a title="tab.csv" href="#tab.csv">csv</a></code></li>
 </ul>
 </li>
 </ul>
