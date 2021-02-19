@@ -1,9 +1,9 @@
 # DUO = data miners used / used-by optimizers
 
-[install](#install) 
-:: doc [it](http://menzies.us/it)
-::     [clink](http://menzies.us/clink)
-::     [tab](http://menzies.us/tab)     
+   [INSTALL](#install) 
+:: [it](http://menzies.us/it)
+:: [clink](http://menzies.us/clink)
+:: [tab](http://menzies.us/tab)     
 [&copy; 2011](#license) Tim Menzies, timm@ieee.org 
 
 Sort the data by how much each row dominates over rows.  Split the
