@@ -1,5 +1,6 @@
 <center>
 <img width=300 src="http://menzies.us/duo/thing12.png">
+<h3>DUO: data miners using/used-by optimizers</h3>
 <p>
 <a href="#license">&copy; 2021</a>, Tim Menzies<br>
 <a href="mailto:timm@ieee.org">timm@ieee.org</a><br> 
