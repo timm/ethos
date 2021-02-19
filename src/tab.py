@@ -34,6 +34,7 @@ def demo():
 #-----------------------------------------------
 import re, math
 from it import it
+from csv import csv
 
 DELIMITER = ','
 IGNORE    = r'([\n\t\r ]|#.*)'
@@ -196,16 +197,5 @@ def bins(xy,size,small):
   out[-1].up   =  math.inf
   return out
 
-def csv(file):
-  """Helper function: read csv rows, skip blank lines, coerce strings
-     to numbers, if needed."""
-  def atom(x):
-    try: return int(x)
-    except Exception:
-      try: return float(x)
-      except Exception: return x
-  with open(file) as fp:
-    for a in fp:
-      yield [atom(x) for x in re.sub(IGNORE, '', a).split(DELIMITER)]
- 
+
 __name__ == "__main__" and demo()
