@@ -1,0 +1,30 @@
+     1	
+     2	#-------
+     3	% python3 clink.py -h
+     4	usage: example [-h] [-dob I] [-elated] [-where S] [-shoes I]
+     5	
+     6	Demo of clink:
+     7	  Function arguments annotated with defaults and help text.
+     8	  Users can override the defaults in a command line-inferface using
+     9	
+    10	        __name__=="__main__" and clink(personDetails)
+    11	  
+    12	
+    13	optional arguments:
+    14	  -h, --help  show this help message and exit
+    15	  -dob I      date of birth; default= 1960
+    16	  -elated     make happy; default= False
+    17	  -where S    birth place; default= nsw range= ['nsw', 'vic']
+    18	  -shoes I    shoesize; default= 10
+    19	
+    20	#-------
+    21	% python3 clink.py
+    22	nsw dob + shoes = 1970 elated= False
+    23	
+    24	#-------
+    25	% python3 clink.py -w vic
+    26	vic dob + shoes = 1970 elated= False
+    27	
+    28	#-------
+    29	% python3 clink.py -s 1000
+    30	nsw dob + shoes = 2960 elated= False

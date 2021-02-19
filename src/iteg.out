@@ -1,0 +1,4 @@
+     1	
+     2	#-------
+     3	% python3 it.py
+     4	{:name John, :weight 1409, :yob 1809} age= 212
