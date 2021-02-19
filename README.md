@@ -3,8 +3,8 @@
 [install](#install) 
 :: doc [it](http://menzies.us/it)
 ::     [clink](http://menzies.us/clink)
-::     [tab](http://menzies.us/tab)
-:: [&copy; 2011 Tim Menzies](#license), timm@ieee.org 
+::     [tab](http://menzies.us/tab)     
+[&copy; 2011 Tim Menzies](#license), timm@ieee.org 
 
 Sort the data by how much each row dominates over rows.  Split the
 sort into 'bad' and 'better'.  Discretize data, combining any splits
