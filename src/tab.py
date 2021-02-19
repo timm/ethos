@@ -197,5 +197,4 @@ def bins(xy,size,small):
   out[-1].up   =  math.inf
   return out
 
-
-__name__ == "__main__" and demo()
+__name__ == "__main__" and anExample()
