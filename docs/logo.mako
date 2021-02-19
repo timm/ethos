@@ -1,6 +1,5 @@
 <center>
-<img width=300
-src="https://github.com/timm/duo/blob/master/etc/img/thing12.png">
+<img width=300 src="https://github.com/timm/duo/blob/master/etc/img/thing12.png">
 <p>
 <a href="#license">&copy; 2021</a>, Tim Menzies<br>
 <a href="mailto:timm@ieee.org">timm@ieee.org</a><br> 

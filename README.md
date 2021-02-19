@@ -1,4 +1,4 @@
-<img align=right width=350 
+<img align=right width=300 
 src="https://github.com/timm/duo/blob/master/etc/img/thing12.png">
 
 # DUO = data miners used / used-by optimizers
