@@ -25,6 +25,12 @@ def Row(t,lst):
        d  += (a-b)**i._tab.p
        n  += 1
     return (d/n)**(1/i._tab.p)
+  def furthest(i,rows):
+    hi = -1
+    for j in rows:
+      tmp = i.dist(j)
+      if tmp > hi: hi,out = tmp, j
+    return out,hi
   return it(_tab=t,cells=lst,x=None,y=None) + locals()
 
 def add(i,x): 
@@ -74,55 +80,55 @@ def Tab(src,using="y",p=2):
     else:
       i.cols.all  = _cols(i,lst)
       i.header=lst
-  def projects(i):
-    c = -1
-    for one in i.rows:
-      for two in i.rows:
-        if id(one) > id(two):
-          tmp = one.dist(two)
-          if tmp > c:
-            left, right, c = one, two, tmp
-    xs, ys = {}, {}
-    for row in rows():
-      a,b = row.dist(left), row.dist(right)
-      x   = math.max(0, math,min(1,(a**2 + c**2 - b**2)/(2*i.c)))
-      y   = (x**2 - a**2)**.5
-      i   = id(row)
-      xs[i], ys[i] = x, y
-    return xs,ys
-  def split(i):
-    xs,ys = projects(i)
-    return _split(i.rows, [], len(i.rows**0.5), *projects(i))
-  def split(rows, out, lo,xs,ys):
-    mid  = int(len(rows)/2)
-    rows.sorted(key=lambda z: xs[id(z)]); xcut = xs[ rows[mid ]]
-    xlo, xmid, xhi = xs[rows[0]],  xs[rows[mid]], xs[rows[-1]]
-    rows.sorted(key=lambda z: ys[id(z)]); ycut = ys[ rows[mid ]]
-    ylo, ymid, yhi = ys[rows[0]],  ys[rows[mid]], ys[rows[-1]]
-    ne, nw, se, sw = o(x=it(lo=[],hi=[][], [], [], []
-    for row in rows:
-      x,y   = xs[id(row)], ys[id(row)]
-      lo,hi = (se,ne) if x<xmid else (sw,nw)
-      one   = lo      if y<ymid else hi
 
+def poles(rows,fast):
+  if fast:
+    anyone  = random.choice(rows)
+    north,_ = anyone.furthest(rows)
+    south,c = north.furthest(rows)
+  else:
+    tmp = -1
+    for n,one in enumerate(rows):
+      two,dist = one.furthest(rows[n:])
+      it dist > tmp:
+        north, south, c = one, two, tmp
+  return north,south,c
 
-    west,east = rows[:mid],rows[mid:]
-    sw,se,nw,ne=[],[]
-    west.sort(key=lambda z:ys[id(z)])
+def projects(rows,fast=False,lvl=0):
+  tmp = []
+  north,south,c = poles(rows,fast)
+  for row in rows:
+    a,b = row.dist(north), row.dist(south)
+    x   = (a**2 + c**2 - b**2)/(2*i.c)
+    x   = math.max(0, math,min(1,x))
+    y   = (x**2 - a**2)**.5
+    if lvl==0: row.x,row.y = x,y
+    tmp += [(x, row.x, row.y, row)]
+  mid  = len(tmp) // 2.
+  rows = [z[-1] for z in sorted(tmp)]
+  north,south = rows[:mid], rows[mid:]
+  xs   = sorted(tmp, lambda z:z[1])
+  ys   = sorted(tmp, lambda z:z[2])
+  return it(rows = rows, north=north, south=south, c=c,
+            x0 = xs[0][0], xmid = xs[mid][0], x1 = xs[-1][0],
+            y0 = xs[0][1], ymid = xs[mid][1], y1 = xs[-1][1],
+            up=None,down=None)
+            north,
+            south)
 
-    out.x.mid          = xs[id(rows[mid])]
-    
-    out.x.lo, out.x.hi = xs[id(rows[0])], xs[id(rows[-1])]
-    rows.sorted(key=lambda z: ys[id(z)])
-    out.y.mid          = ys[id(rows[mid])]
-    out.y.lo, out.y.hi = xs[id(rows[0])], xs[id(rows[-1])]
-    nw,ne,sw,se = [],[],[],[]
+def tree(rows, lo, lvl=0)
+  lo = lo or len(rows)**.5
+  if  len(rows) > lo*2:
+    here,down0,up0 = projects(rows,lvl)
+    here.down      = tree(down0, lo, lvl+1)
+    here.up        = tree(up0,   lo, lvl+1)
+    return here
 
-    if len(i.rows) < lo or lvl < 0: return i
-    poles = Poles(i)
-    lefts, rights = poles.lefts, poles.rights
-    i.rows = sorted(i.rows, key=lambda row: i.poles.project(row))
-  return it(rows=[], using=using, p=p, header=[], cols=Cols())  + locals()
+def tprint(here, lvl=0):
+  if here:
+     print(("|.. "*lvl) + f"{len(here.rows)}")
+     tprint(here.up)
+     tprint(here.down)
 
 def fastmap(src):
   with open(file) as fp:
