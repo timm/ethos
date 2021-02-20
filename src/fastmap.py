@@ -74,32 +74,55 @@ def Tab(src,using="y",p=2):
     else:
       i.cols.all  = _cols(i,lst)
       i.header=lst
-    i.poles=Poles(i)
-    i.rows = sorted(i.rows, key=lambda row: i.poles.project(row))
-    i.poles.cut 
-  return it(rows=[], using=using, p=p, header=[], cols=Cols(), poles=None)  + locals()
-
-def Poles(tab):
-  def _poles(i,rows):
-    c=-1
-    for one in rows:
-      for two in rows:
+  def projects(i):
+    c = -1
+    for one in i.rows:
+      for two in i.rows:
         if id(one) > id(two):
           tmp = one.dist(two)
           if tmp > c:
-            left,right,c = one,two,tmp
-    rows = sorted(rows, key=lambda row: i.project(row))
-    mid = rows[ int(len(rows)/2)] 
-    return left,right,c, i.id[mid]
-  def _project(row, left,right,c):
-     a= row.dist(left)
-     b= row.dist(right)
-     return  math.max(0, math.min(1, (a**2 + c**2 - b**2)/(2*c)))
-  def project(i,row)
-    if not i.left: i.left,i.right,i.c,i.cut = _poles(i)
-    if not i.x[id(row)]:  i.x[id(row)] = _project(row, *i.poles())
-    return i.x[id(row)]
-  return it(c=0,tab=tab,left=None,right=None,x={}) + locals()
+            left, right, c = one, two, tmp
+    xs, ys = {}, {}
+    for row in rows():
+      a,b = row.dist(left), row.dist(right)
+      x   = math.max(0, math,min(1,(a**2 + c**2 - b**2)/(2*i.c)))
+      y   = (x**2 - a**2)**.5
+      i   = id(row)
+      xs[i], ys[i] = x, y
+    return xs,ys
+  def split(i):
+    xs,ys = projects(i)
+    return _split(i.rows, [], len(i.rows**0.5), *projects(i))
+  def split(rows, out, lo,xs,ys):
+    mid  = int(len(rows)/2)
+    rows.sorted(key=lambda z: xs[id(z)]); xcut = xs[ rows[mid ]]
+    xlo, xmid, xhi = xs[rows[0]],  xs[rows[mid]], xs[rows[-1]]
+    rows.sorted(key=lambda z: ys[id(z)]); ycut = ys[ rows[mid ]]
+    ylo, ymid, yhi = ys[rows[0]],  ys[rows[mid]], ys[rows[-1]]
+    ne, nw, se, sw = o(x=it(lo=[],hi=[][], [], [], []
+    for row in rows:
+      x,y   = xs[id(row)], ys[id(row)]
+      lo,hi = (se,ne) if x<xmid else (sw,nw)
+      one   = lo      if y<ymid else hi
+
+
+    west,east = rows[:mid],rows[mid:]
+    sw,se,nw,ne=[],[]
+    west.sort(key=lambda z:ys[id(z)])
+
+    out.x.mid          = xs[id(rows[mid])]
+    
+    out.x.lo, out.x.hi = xs[id(rows[0])], xs[id(rows[-1])]
+    rows.sorted(key=lambda z: ys[id(z)])
+    out.y.mid          = ys[id(rows[mid])]
+    out.y.lo, out.y.hi = xs[id(rows[0])], xs[id(rows[-1])]
+    nw,ne,sw,se = [],[],[],[]
+
+    if len(i.rows) < lo or lvl < 0: return i
+    poles = Poles(i)
+    lefts, rights = poles.lefts, poles.rights
+    i.rows = sorted(i.rows, key=lambda row: i.poles.project(row))
+  return it(rows=[], using=using, p=p, header=[], cols=Cols())  + locals()
 
 def fastmap(src):
   with open(file) as fp:
