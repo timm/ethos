@@ -10,6 +10,21 @@ random projection.
 import re, math, random
 from it import it
 from csv import csv
+from functools import cmp_to_key
+
+def eg1():
+  random.seed(1)
+  t= Tab(fast=False)
+  for row in csv("../data/auto93.csv"): 
+     t.add(row)
+  rows = t.ordered()
+  for row in rows[:5 ]: print(row.uses())
+  print("")
+  for row in rows[-5:]: print(row.uses())
+
+def rowCompare(a, b):
+    return (0 if id(a)==id(b) else (
+            -1 if a.better(b) else 1))
 
 def anExample():
   random.seed(1)
@@ -18,14 +33,15 @@ def anExample():
      t.add(row)
   assert 398== len(t.rows)
   t1 = t.clone(t.rows)
-  print(len(t1.rows))
+  #print(len(t1.rows))
   assert 398== len(t1.rows)
-  print(t.ymid())
+  #print(t.ymid())
   assert int is type(t.rows[1].cells[4])
   a=t.rows[1]
   c=t.rows[-1]
   b,_=a.furthest(t.rows)
-  t.gt(64)
+  for n,row in enumerate(t.ordered()):
+     row.gt = n/len(t.rows)
   for n,rows in enumerate(leaves(t.cluster())):
     avg = sum(row.gt for row in rows)/len(rows)
     for row in rows:
@@ -97,23 +113,22 @@ def Cols():
   return it(all=[],x=[],y=[]) + locals()
 
 def Tab(using="y",p=2, fast=False):
-  def uses(i): return i.cols[i.using]
-  def ymid(i): return [col.mid() for col in i.cols.y]
-  def mid(i): return [col.mid() for col in i.cols.all]
-  def gt(i,n): 
-    for row in i.rows:
-      row.gt = sum(row.better(random.choice(i.rows)) for _ in range(n))/n
+  def adds(i,src)   : return [add(i,row) for row in src]; return i
+  def cluster(i)    : return tree(i.rows, fast)
+  def makeCols(i,a) : return [i.cols.add(pos,txt) for pos,txt in enumerate(a)]
+  def makeRow(i,a)  : return Row(i,[plus(col,x) for col,x in zip(i.cols.all,a)])
+  def mid(i)        : return [col.mid() for col in i.cols.all]
+  def ordered(i)    : return sorted(i.rows, key=cmp_to_key(ordered1))
+  def ordered1(a,b) : return (0 if id(a)==id(b) else (-1 if a.better(b) else 1))
+  def uses(i)       : return i.cols[i.using]
+  def ymid(i)       : return [col.mid() for col in i.cols.y]
 
-  def makeRow(i,a) : return Row(i,[plus(col,x) for col,x in zip(i.cols.all,a)])
-  def makeCols(i,a): [i.cols.add(pos,txt) for pos,txt in enumerate(a)]
   def clone(i,inits=[]):
     j = Tab(using=i.using, p=i.p, fast=i.fast)
     j.add( i.header )
     [j.add(row) for row in inits]
     return j
-  def adds(i,src)  : [add(i,row) for row in src]; return i
-  def cluster(i)   : 
-    return tree(i.rows, fast)
+
   def add(i,a)   :
     if i.cols.all: 
       a = a if type(a) == list else a.cells
@@ -186,4 +201,6 @@ def fastmap(src):
     for a in fp:
       yield [atom(x) for x in re.sub(ignore, '', a).split(sep)]
 
+#__name__ == "__main__" and anExample()
 __name__ == "__main__" and anExample()
+
