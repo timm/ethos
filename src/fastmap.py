@@ -20,18 +20,28 @@ def anExample():
   t1 = t.clone(t.rows)
   print(len(t1.rows))
   assert 398== len(t1.rows)
-  return 1
-
+  print(t.ymid())
   assert int is type(t.rows[1].cells[4])
   a=t.rows[1]
   c=t.rows[-1]
   b,_=a.furthest(t.rows)
+  t.gt(64)
   for n,rows in enumerate(leaves(t.cluster())):
+    avg = sum(row.gt for row in rows)/len(rows)
     for row in rows:
-      print(f"{row.x}\t{row.y}\t{n}")
+       print(f"{row.x}\t{row.y}\t{avg}")
 
 def Row(t,lst):
   def uses(i): return [i.cells[col.pos] for col in  i._tab.uses()]
+  def better(i,j):
+      s1,s2,n = 0,0,len(t.cols.y)
+      for col in t.cols.y:
+        pos,w = col.pos, col.w
+        a,b   = i.cells[pos], j.cells[pos]
+        a,b   = col.norm(a), col.norm(b)
+        s1   -= math.e**(w*(a-b)/n)
+        s2   -= math.e**(w*(b-a)/n)
+      return s1/n < s2/n
   def dist(i,j):
     d,n = 0,0
     for c in i._tab.uses():
@@ -46,7 +56,7 @@ def Row(t,lst):
       tmp = i.dist(j)
       if tmp > hi: hi,out = tmp, j
     return out,hi
-  return it(_tab=t,cells=lst,x=None,y=None) + locals()
+  return it(_tab=t,cells=lst,x=None,y=None,gt=0) + locals()
 
 def plus(i,x): 
   if x != "?": 
@@ -88,6 +98,12 @@ def Cols():
 
 def Tab(using="y",p=2, fast=False):
   def uses(i): return i.cols[i.using]
+  def ymid(i): return [col.mid() for col in i.cols.y]
+  def mid(i): return [col.mid() for col in i.cols.all]
+  def gt(i,n): 
+    for row in i.rows:
+      row.gt = sum(row.better(random.choice(i.rows)) for _ in range(n))/n
+
   def makeRow(i,a) : return Row(i,[plus(col,x) for col,x in zip(i.cols.all,a)])
   def makeCols(i,a): [i.cols.add(pos,txt) for pos,txt in enumerate(a)]
   def clone(i,inits=[]):
@@ -144,7 +160,7 @@ def tree(rows0, fast):
         y0= xs[0][1], ymid= xs[mid][1], y1= xs[-1][1])
 
   def div(rows, lo,  lvl):
-    if len(rows) > lo:
+    if len(rows) > lo*2:
       down0, up0, here = map2twoDims(rows,  lvl)
       here.down        = div(down0, lo, lvl+1)
       here.up          = div(up0,   lo, lvl+1)
