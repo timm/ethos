@@ -24,16 +24,16 @@ def eg1():
 
 def eg2():
   random.seed(1)
-  t= Tab(fast=False)
+  t= Tab(fast=True)
   for row in csv("../data/auto93.csv"): t.add(row)
   rows = t.ordered()
-  for n,row in enumerate(t.ordered()):
-    row.gt = n/len(t.rows)
+  for n,row in enumerate(rows):
+    row.gt = n/len(rows)
   show(t.cluster(),t)
 
-def anExample():
+def eg3():
   random.seed(1)
-  t= Tab(fast=True)
+  t= Tab(fast=False)
   for row in csv("../data/auto93.csv"): 
      t.add(row)
   assert 398== len(t.rows)
@@ -44,7 +44,7 @@ def anExample():
   assert int is type(t.rows[1].cells[4])
   a=t.rows[1]
   c=t.rows[-1]
-  b,_=a.furthest(t.rows)
+  b,_=a.furthest(t.rows,t)
   for n,row in enumerate(t.ordered()):
      row.gt = n/len(t.rows)
   for n,rows in enumerate(leaves(t.cluster())):
@@ -52,32 +52,32 @@ def anExample():
     for row in rows:
        print(f"{row.x}\t{row.y}\t{avg}")
 
-def Row(t,lst):
+def Row(lst):
   def uses(i): return [i.cells[col.pos] for col in  i._tab.uses()]
-  def better(i,j):
-      s1,s2,n = 0,0,len(t.cols.y)
-      for col in t.cols.y:
+  def gt(i,j,tab):
+      s1,s2,n = 0,0,len(tab.cols.y)
+      for col in tab.cols.y:
         pos,w = col.pos, col.w
         a,b   = i.cells[pos], j.cells[pos]
         a,b   = col.norm(a), col.norm(b)
         s1   -= math.e**(w*(a-b)/n)
         s2   -= math.e**(w*(b-a)/n)
       return s1/n < s2/n
-  def dist(i,j):
+  def dist(i,j,tab):
     d,n = 0,0
-    for c in i._tab.uses():
+    for c in tab.uses():
        a,b = i.cells[c.pos], j.cells[c.pos]
        a,b = c.norm(a), c.norm(b)
-       d  += (a-b)**i._tab.p
+       d  += (a-b)**tab.p
        n  += 1
-    return (d/n)**(1/i._tab.p)
-  def furthest(i,rows):
+    return (d/n)**(1/tab.p)
+  def furthest(i,rows,tab):
     hi = -1
     for j in rows:
-      tmp = i.dist(j)
+      tmp = i.dist(j,tab)
       if tmp > hi: hi,out = tmp, j
     return out,hi
-  return it(_tab=t,cells=lst,x=None,y=None,gt=0) + locals()
+  return it(cells=lst,x=None,y=None,gt=0) + locals()
 
 def plus(i,x): 
   if x != "?": 
@@ -119,14 +119,16 @@ def Cols():
 
 def Tab(using="y",p=2, fast=False):
   def adds(i,src)   : return [add(i,row) for row in src]; return i
-  def cluster(i)    : return tree(i.rows, fast)
+  def cluster(i)    : return tree(i.rows, i, fast)
   def makeCols(i,a) : return [i.cols.add(pos,txt) for pos,txt in enumerate(a)]
-  def makeRow(i,a)  : return Row(i,[plus(col,x) for col,x in zip(i.cols.all,a)])
+  def makeRow(i,a)  : return Row([plus(col,x) for col,x in zip(i.cols.all,a)])
   def mid(i)        : return [col.mid() for col in i.cols.all]
-  def ordered(i)    : return sorted(i.rows, key=cmp_to_key(ordered1))
-  def ordered1(a,b) : return (0 if id(a)==id(b) else (1 if a.better(b) else -1))
   def uses(i)       : return i.cols[i.using]
   def ymid(i)       : return [col.mid() for col in i.cols.y]
+
+  def ordered(i)  : return sorted(i.rows, key=cmp_to_key(ordered1(i)))
+  def ordered1(i) : 
+    return lambda a,b: (0 if id(a)==id(b) else (1 if a.gt(b,i) else -1))
 
   def clone(i,inits=[]):
     j = Tab(using=i.using, p=i.p, fast=i.fast)
@@ -144,49 +146,49 @@ def Tab(using="y",p=2, fast=False):
       i.header=a
   return it(header=[], rows=[], cols=Cols(),using=using,p=2,fast=fast) + locals()
 
-def tree(rows0, fast):
-  def find2FarPoints(rows):
-    if fast:
-      anyone   = random.choice(rows)
-      north,_  = anyone.furthest(rows)
-      south, c = north.furthest(rows)
-    else:
-      c=-1
-      for m,one in enumerate(rows):
-        for n,two in enumerate(rows):
-          if n > m:
-            tmp = one.dist(two)
-            if tmp > c:
-              north, south, c = one, two, tmp
-    return north, south, c
-
-  def map2twoDims(rows, lvl):
-    north,south,c = find2FarPoints(rows)
-    tmp = []
-    for row in rows:
-      a,b = row.dist(north), row.dist(south)
-      x = max(0, min(1, (a**2 + c**2 - b**2)/(2*c)))
-      y = (a**2 - x**2)**.5
-      if lvl==0: row.x,row.y = x,y
-      tmp += [(x, row)]
-    mid         = len(tmp) // 2
-    rows        = [z[-1] for z in sorted(tmp,key=lambda z:z[0])]
-    north,south = rows[:mid], rows[mid:]
-    xs          = sorted(tmp, key=lambda z:z[1].x)
-    ys          = sorted(tmp, key=lambda z:z[1].y)
-    return north, south, it(
-        _rows=rows, north=north, south=south, c=c, up=None, down=None,
-        x0= xs[0][0], xmid= xs[mid][0], x1= xs[-1][0],
-        y0= xs[0][1], ymid= xs[mid][1], y1= xs[-1][1])
-
-  def div(rows, lo,  lvl):
+def tree(rows0, root, fast):
+  def worker(rows, lo,  lvl):
     if len(rows) > lo*2:
-      down0, up0, here = map2twoDims(rows,  lvl)
-      here.down        = div(down0, lo, lvl+1)
-      here.up          = div(up0,   lo, lvl+1)
+      down0, up0, here = div(rows,  lvl,root,fast)
+      here.down        = worker(down0, lo, lvl+1)
+      here.up          = worker(up0,   lo, lvl+1)
       return here
-  ###################################
-  return div(rows0, len(rows0)**.5, 0)
+  #rows0 = [random.choice(rows0) for _ in range(256)]
+  return worker(rows0, len(rows0)**.5, 0)
+
+def div(rows, lvl,root,fast):
+  def twoFarPoints(rows):
+      if fast:
+        anyone   = random.choice(rows)
+        north,_  = anyone.furthest(rows,root)
+        south, c = north.furthest(rows,root)
+      else:
+        c=-1
+        for m,one in enumerate(rows):
+          for n,two in enumerate(rows):
+            if n > m:
+              tmp = one.dist(two,root)
+              if tmp > c:
+                north, south, c = one, two, tmp
+      return north, south, c
+  ################################### 
+  north,south,c = twoFarPoints(rows)
+  tmp = []
+  for row in rows:
+    a,b = row.dist(north,root), row.dist(south,root)
+    x = max(0, min(1, (a**2 + c**2 - b**2)/(2*c)))
+    y = (a**2 - x**2)**.5
+    if lvl==0: row.x,row.y = x,y
+    tmp += [(x, row)]
+  mid         = len(tmp) // 2
+  rows        = [z[-1] for z in sorted(tmp,key=lambda z:z[0])]
+  north,south = rows[:mid], rows[mid:]
+  xs          = sorted(tmp, key=lambda z:z[1].x)
+  ys          = sorted(tmp, key=lambda z:z[1].y)
+  return north, south, it(
+      _rows=rows, north=north, south=south, c=c, up=None, down=None,
+      x0= xs[0][0], xmid= xs[mid][0], x1= xs[-1][0],
+      y0= xs[0][1], ymid= xs[mid][1], y1= xs[-1][1])
 
 def stats(t,rows):
   header= [Num(pos=col.pos, txt=col.txt) for col in t.cols.y]
@@ -210,7 +212,7 @@ def show(here,t, lvl=0,all=None, id=0):
        c   = ("abcdefghijklmnopqrstuvwxyz"\
              +"ABCDEFGHIJKLMNOPQRSTUVWXYZ")[id]
        id += 1
-       print(f"{c:2} {n:3}   {avg:3} "+mids) #"|.. "*lvl) 
+       print(f"{c:2} {n:3}   {avg:3} "+mids) #+ " " + "|.. "*lvl) 
      id = show(here.up,  t, lvl+1, all, id) 
      id = show(here.down,t, lvl+1, all, id) 
   return id
@@ -229,5 +231,5 @@ def fastmap(src):
 
 #__name__ == "__main__" and anExample()
 #__name__ == "__main__" and anExample()
-__name__ == "__main__" and eg2()
+__name__ == "__main__" and eg3()
 
