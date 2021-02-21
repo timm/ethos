@@ -192,9 +192,9 @@ def stats(t,rows):
   header= [Num(pos=col.pos, txt=col.txt) for col in t.cols.y]
   for row in rows:
     [col.add(row.cells[col.pos]) for col in header]
-  heads= ', '.join([f"{col.txt:>5}"   
+  heads= '  '.join([f"{col.txt:>5}"   
   for col in header])
-  mids = ', '.join([f"{col.mid():5}" for col in header])
+  mids = '  '.join([f"{col.mid():5}" for col in header])
   return heads,mids
 
 def show(here,t, lvl=0,all=None, id=0):
