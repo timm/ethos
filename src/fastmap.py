@@ -17,19 +17,18 @@ def anExample():
   for row in csv("../data/auto93.csv"): 
      t.add(row)
   assert 398== len(t.rows)
-  #print(t.rows[1].cells)
+  t1 = t.clone(t.rows)
+  print(len(t1.rows))
+  assert 398== len(t1.rows)
+  return 1
+
   assert int is type(t.rows[1].cells[4])
-  #print(t.cols.all[1].norm(360))
   a=t.rows[1]
   c=t.rows[-1]
-  #print(a.dist(c))
   b,_=a.furthest(t.rows)
-  #print(a.uses())
-  #print(b.uses())
   for n,rows in enumerate(leaves(t.cluster())):
     for row in rows:
       print(f"{row.x}\t{row.y}\t{n}")
-      #print(f"set label '{mark}' at {row.x},{row.y}")
 
 def Row(t,lst):
   def uses(i): return [i.cells[col.pos] for col in  i._tab.uses()]
@@ -59,6 +58,7 @@ def Skip(pos=0, txt="", w=1):
   return it(pos=pos, txt=txt, w=w, n=0)  + locals()
   
 def Sym(pos=0, txt="", w=1):
+  def mid(i): return i.mode
   def add(i,x,n=1):
     now = i.seen[x] = i.seen.get(x, 0) + n
     if now > i.most: i.most, i.mode = now, x
@@ -90,15 +90,20 @@ def Tab(using="y",p=2, fast=False):
   def uses(i): return i.cols[i.using]
   def makeRow(i,a) : return Row(i,[plus(col,x) for col,x in zip(i.cols.all,a)])
   def makeCols(i,a): [i.cols.add(pos,txt) for pos,txt in enumerate(a)]
+  def clone(i,inits=[]):
+    j = Tab(using=i.using, p=i.p, fast=i.fast)
+    j.add( i.header )
+    [j.add(row) for row in inits]
+    return j
   def adds(i,src)  : [add(i,row) for row in src]; return i
   def cluster(i)   : 
     return tree(i.rows, fast)
   def add(i,a)   :
     if i.cols.all: 
+      a = a if type(a) == list else a.cells
       assert len(a) == len(i.cols.all), "wrong number of cells"
       i.rows += [i.makeRow(a)]
     else:
-      a = a if type(a) == list else a.cells
       i.makeCols(a)
       i.header=a
   return it(header=[], rows=[], cols=Cols(),using=using,p=2,fast=fast) + locals()
