@@ -12,8 +12,9 @@ from types import FunctionType as Fun
 
 class it:
   "Simple container of names fields, with methods."
-  def __init__(i, **d): i.__dict__.update(d)
-
+  def __init__(i, **d)     : i.__dict__.update(d)
+  def __getitem__(i, k)    : return i.__dict__[k]
+  def __setitem__(i, k, v) : i.__dict__[k] = v
   def __repr__(i):
     "Pretty print, sorted keys, ignore private keys (those  with `_`)."
     return "{"+ ', '.join( 
@@ -35,7 +36,7 @@ class it:
           i._memos = {}
           k = k[:-1]
           f = memo(i,k,f)
-        i.__dict__[k] = method(i,f) 
+        i[k] = method(i,f) 
     return i
 
 def anExample():

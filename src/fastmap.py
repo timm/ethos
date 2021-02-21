@@ -1,4 +1,4 @@
-#i!/usr/bin/env python3
+#!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81:
 """
 Recursive k=2 division of data. Centroids picked via
@@ -7,24 +7,36 @@ random projection.
 - License: (c) 2021 Tim Menzies <timm@ieee.org>, MIT License  
 
 """
-import re
+import re, math, random
 from it import it
 from csv import csv
 
 def anExample():
-  t= Tab()
+  random.seed(1)
+  t= Tab(fast=False)
   for row in csv("../data/auto93.csv"): 
-     print(row); t.add(row)
+     t.add(row)
   assert 398== len(t.rows)
-  print(t.rows[1])
-  #assert float is type(t.rows[1].cells[4])
-  #assert int   is type(t.rows[1].cells[0])
-  print(len(t.rows))
-    
+  #print(t.rows[1].cells)
+  assert int is type(t.rows[1].cells[4])
+  #print(t.cols.all[1].norm(360))
+  a=t.rows[1]
+  c=t.rows[-1]
+  #print(a.dist(c))
+  b,_=a.furthest(t.rows)
+  #print(a.uses())
+  #print(b.uses())
+  for n,rows in enumerate(leaves(t.cluster())):
+    for row in rows:
+      print(f"{row.x}\t{row.y}\t{n}")
+      #print(f"set label '{mark}' at {row.x},{row.y}")
+
 def Row(t,lst):
+  def uses(i): return [i.cells[col.pos] for col in  i._tab.uses()]
   def dist(i,j):
-    for c in i._tab.cols[i._tab.using]:
-       a,b = i.cells[c.pos], i.cells[c.pos]
+    d,n = 0,0
+    for c in i._tab.uses():
+       a,b = i.cells[c.pos], j.cells[c.pos]
        a,b = c.norm(a), c.norm(b)
        d  += (a-b)**i._tab.p
        n  += 1
@@ -37,8 +49,8 @@ def Row(t,lst):
     return out,hi
   return it(_tab=t,cells=lst,x=None,y=None) + locals()
 
-def add(i,x): 
-  if x != SKIP: 
+def plus(i,x): 
+  if x != "?": 
     i.n += 1; i.add(x)
   return x
 
@@ -54,7 +66,7 @@ def Sym(pos=0, txt="", w=1):
   return it(pos=pos, txt=txt, w=w, n=0, seen={}, most=0, mode=None) + locals()
   
 def Num(pos=0, txt="", w=1):
-  def add(i, x): i._all += [x]
+  def add(i, x): i._all += [x]; i.ok=False
   def mid(i)   : n,a = _all(i); return a[int(n/2)]
   def var(i)   : n,a = _all(i); return (a[int(.9*n)] - a[int(n/10)]) / 2.56
   def norm(i,x): _,a = _all(i); return (x - a[0]) / (a[-1] - a[0])
@@ -62,7 +74,7 @@ def Num(pos=0, txt="", w=1):
     i._all = i._all if i.ok else sorted(i._all)
     i.ok = True
     return len(i._all), i._all
-  return it(pos=pos, txt=txt, w=w, n=0, _all=[]) + locals()
+  return it(pos=pos, txt=txt, w=w, n=0, ok=False, _all=[]) + locals()
 
 def Cols(): 
   def add(i,pos,txt):
@@ -71,23 +83,27 @@ def Cols():
     what   = (Skip if "?" in txt else (Num if txt[0].isupper() else Sym))
     now    = what(pos,txt,weight)
     where += [now]
-    return now
+    i.all += [now]
   return it(all=[],x=[],y=[]) + locals()
 
 def Tab(using="y",p=2, fast=False):
-  def _row(i,lst)  : return Row(i, [add(col,x) for col,x in zip(i.cols.all,lst)])
-  def _cols(i,lst) : return [i.cols.add(pos,txt) for pos,txt in enumerate(lst)]
-  def cluster(i)   : return cluster(i.rows, fast)
+  def uses(i): return i.cols[i.using]
+  def makeRow(i,a) : return Row(i,[plus(col,x) for col,x in zip(i.cols.all,a)])
+  def makeCols(i,a): [i.cols.add(pos,txt) for pos,txt in enumerate(a)]
   def adds(i,src)  : [add(i,row) for row in src]; return i
-  def add(i,lst)   :
+  def cluster(i)   : 
+    return tree(i.rows, fast)
+  def add(i,a)   :
     if i.cols.all: 
-      i.rows += [_row(i,lst)]
+      assert len(a) == len(i.cols.all), "wrong number of cells"
+      i.rows += [i.makeRow(a)]
     else:
-      i.cols.all  = _cols(i,lst)
-      i.header=lst
-  return it(header=[], rows=[], cols=Cols()) + locals()
+      a = a if type(a) == list else a.cells
+      i.makeCols(a)
+      i.header=a
+  return it(header=[], rows=[], cols=Cols(),using=using,p=2,fast=fast) + locals()
 
-def cluster(rows0, fast):
+def tree(rows0, fast):
   def find2FarPoints(rows):
     if fast:
       anyone   = random.choice(rows)
@@ -97,42 +113,52 @@ def cluster(rows0, fast):
       c=-1
       for m,one in enumerate(rows):
         for n,two in enumerate(rows):
-          if n > m and (tmp := one.dist(two)) > c:
-            north, south, c = one, two, tmp
+          if n > m:
+            tmp = one.dist(two)
+            if tmp > c:
+              north, south, c = one, two, tmp
     return north, south, c
 
-  def projects(rows, lvl):
+  def map2twoDims(rows, lvl):
     north,south,c = find2FarPoints(rows)
     tmp = []
     for row in rows:
       a,b = row.dist(north), row.dist(south)
-      x = math.max(0, math,min(1, (a**2 + c**2 - b**2)/(2*c)))
-      y = (x**2 - a**2)**.5
+      x = max(0, min(1, (a**2 + c**2 - b**2)/(2*c)))
+      y = (a**2 - x**2)**.5
       if lvl==0: row.x,row.y = x,y
-      tmp += [(x, row.x, row.y, row)]
-    mid         = len(tmp) // 2.
-    rows        = [z[-1] for z in sorted(tmp)]
+      tmp += [(x, row)]
+    mid         = len(tmp) // 2
+    rows        = [z[-1] for z in sorted(tmp,key=lambda z:z[0])]
     north,south = rows[:mid], rows[mid:]
-    xs,ys       = sorted(tmp, lambda z:z[1]), sorted(tmp, lambda z:z[2])
+    xs          = sorted(tmp, key=lambda z:z[1].x)
+    ys          = sorted(tmp, key=lambda z:z[1].y)
     return north, south, it(
         _rows=rows, north=north, south=south, c=c, up=None, down=None,
         x0= xs[0][0], xmid= xs[mid][0], x1= xs[-1][0],
         y0= xs[0][1], ymid= xs[mid][1], y1= xs[-1][1])
 
-  def tree(rows, lo,  lvl):
-    if len(rows) > lo*2:
-      down0, up0, here = projects(rows,  lvl)
-      here.down        = tree(down0, lo, lvl+1)
-      here.up          = tree(up0,   lo, lvl+1)
+  def div(rows, lo,  lvl):
+    if len(rows) > lo:
+      down0, up0, here = map2twoDims(rows,  lvl)
+      here.down        = div(down0, lo, lvl+1)
+      here.up          = div(up0,   lo, lvl+1)
       return here
   ###################################
-  return tree(rows0, len(rows)**.5, 0)
+  return div(rows0, len(rows0)**.5, 0)
 
 def show(here, lvl=0):
   if here:
-     print(("|.. "*lvl) + f"{len(here.rows)}")
+     print(("|.. "*lvl) + f"{len(here._rows)}")
      show(here.up,   lvl+1)
      show(here.down, lvl+1)
+
+def leaves(tree):
+  if tree.up:
+    for x in leaves(tree.up)  : yield x
+    for x in leaves(tree.down): yield x
+  else:
+    yield tree._rows
 
 def fastmap(src):
   with open(file) as fp:
