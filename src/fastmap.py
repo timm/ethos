@@ -33,7 +33,7 @@ def eg2():
 
 def anExample():
   random.seed(1)
-  t= Tab(fast=False)
+  t= Tab(fast=True)
   for row in csv("../data/auto93.csv"): 
      t.add(row)
   assert 398== len(t.rows)
