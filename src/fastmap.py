@@ -11,20 +11,25 @@ import re, math, random
 from it import it
 from csv import csv
 from functools import cmp_to_key
+import matplotlib.pyplot as plt
 
 def eg1():
   random.seed(1)
   t= Tab(fast=False)
-  for row in csv("../data/auto93.csv"): 
-     t.add(row)
+  for row in csv("../data/auto93.csv"): t.add(row)
   rows = t.ordered()
   for row in rows[:5 ]: print(row.uses())
   print("")
   for row in rows[-5:]: print(row.uses())
 
-def rowCompare(a, b):
-    return (0 if id(a)==id(b) else (
-            -1 if a.better(b) else 1))
+def eg2():
+  random.seed(1)
+  t= Tab(fast=False)
+  for row in csv("../data/auto93.csv"): t.add(row)
+  rows = t.ordered()
+  for n,row in enumerate(t.ordered()):
+    row.gt = n/len(t.rows)
+  show(t.cluster(),t)
 
 def anExample():
   random.seed(1)
@@ -119,7 +124,7 @@ def Tab(using="y",p=2, fast=False):
   def makeRow(i,a)  : return Row(i,[plus(col,x) for col,x in zip(i.cols.all,a)])
   def mid(i)        : return [col.mid() for col in i.cols.all]
   def ordered(i)    : return sorted(i.rows, key=cmp_to_key(ordered1))
-  def ordered1(a,b) : return (0 if id(a)==id(b) else (-1 if a.better(b) else 1))
+  def ordered1(a,b) : return (0 if id(a)==id(b) else (1 if a.better(b) else -1))
   def uses(i)       : return i.cols[i.using]
   def ymid(i)       : return [col.mid() for col in i.cols.y]
 
@@ -183,11 +188,32 @@ def tree(rows0, fast):
   ###################################
   return div(rows0, len(rows0)**.5, 0)
 
-def show(here, lvl=0):
+def stats(t,rows):
+  header= [Num(pos=col.pos, txt=col.txt) for col in t.cols.y]
+  for row in rows:
+    [col.add(row.cells[col.pos]) for col in header]
+  heads= ', '.join([f"{col.txt:>5}"   
+  for col in header])
+  mids = ', '.join([f"{col.mid():5}" for col in header])
+  return heads,mids
+
+def show(here,t, lvl=0,all=None, id=0):
   if here:
-     print(("|.. "*lvl) + f"{len(here._rows)}")
-     show(here.up,   lvl+1)
-     show(here.down, lvl+1)
+    heads, mids= stats(t,here._rows)
+  if not all:
+    all = len(here._rows)
+    print("\n    %n %wins "+heads+"\n")
+  if here:
+     if not here.up and not here.down:
+       avg = int(100*sum(row.gt for row in here._rows)/len(here._rows))
+       n   = int(100*len(here._rows)/all)
+       c   = ("abcdefghijklmnopqrstuvwxyz"\
+             +"ABCDEFGHIJKLMNOPQRSTUVWXYZ")[id]
+       id += 1
+       print(f"{c:2} {n:3}   {avg:3} "+mids) #"|.. "*lvl) 
+     id = show(here.up,  t, lvl+1, all, id) 
+     id = show(here.down,t, lvl+1, all, id) 
+  return id
 
 def leaves(tree):
   if tree.up:
@@ -202,5 +228,6 @@ def fastmap(src):
       yield [atom(x) for x in re.sub(ignore, '', a).split(sep)]
 
 #__name__ == "__main__" and anExample()
-__name__ == "__main__" and anExample()
+#__name__ == "__main__" and anExample()
+__name__ == "__main__" and eg2()
 
