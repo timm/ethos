@@ -90,7 +90,6 @@ def dist(r1,r2,about,by="y",p=2):
     n  += 1
   return (d/n)**(1/p)
 
-import sys
 def rmeans(rows0,about,by="y",p=2,want=.8):
   def d(r1,r2): 
     return dist(r1, r2, about, by, p)
@@ -101,18 +100,17 @@ def rmeans(rows0,about,by="y",p=2,want=.8):
       if tmp>most: most,out = tmp,r2
     return out
   def poles(rows):
-    north = far(random.choice(rows), rows)
-    south = far(north,rows)
-    norths, souths = [], []
+    one = far(random.choice(rows), rows)
+    two = far(one,rows)
+    ones, twos = [], []
     for row in rows:
-      (souths if d(row,south) < d(row,north) else norths).append(row)
-    return o(_rows=rows, up=None, down=None, north=north, norths=norths,
-                                             south=south, souths=souths) 
+      (twos if d(row,two) < d(row,one) else ones).append(row)
+    return o(_rows=rows, up=None, down=None, one=one, ones=ones, two=two, twos=twos) 
   def worker(rows, lo, lvl=0):
     if len(rows) > lo and lvl<10:
       here      = poles(rows)
-      here.down = worker(here.souths, lo, lvl+1)
-      here.up   = worker(here.norths, lo, lvl+1)
+      here.down = worker(here.twos, lo, lvl+1)
+      here.up   = worker(here.ones, lo, lvl+1)
       return here
   #-------------------------------------
   return worker(rows0, len(rows0)**0.5)
