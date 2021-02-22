@@ -149,7 +149,7 @@ def Tab(using="y",p=2, fast=False):
 def tree(rows0, root, fast):
   def worker(rows, lo,  lvl):
     if len(rows) > lo*2:
-      down0, up0, here = div(rows,  lvl,root,fast)
+      up0, down0, here = div(rows,  lvl,root,fast)
       here.down        = worker(down0, lo, lvl+1)
       here.up          = worker(up0,   lo, lvl+1)
       return here

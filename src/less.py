@@ -28,12 +28,14 @@ def same(x): return x
 
 def column( pos=0,txt=""): 
   what = (Col if the.no in txt else (Num if txt[0].isupper() else Sym))
+  #---------------------------
   return what(pos=pos, txt=txt) 
 
 def Col(pos=0, txt=""): 
   def add(i,x) : 
     if x != the.no: i.n+=1
     return x
+  #------------------------------------------------------------------------
   return o(pos=pos, txt=txt, n=0, w= (-1 if "-" in txt else 1))  + locals()
 
 def Num(pos=0, txt=""): 
@@ -50,21 +52,21 @@ def Num(pos=0, txt=""):
     i._all = i._all if i.ok else sorted(i._all)
     i.ok = True
     return i._all
-  def mid(i): a=i.all(); return a[int(len(a)/2)]
-  return (Col(pos,txt) | o(_all=[], max=64, ok=False)) + locals()
+  def mid(i):    a=i.all(); return a[int(len(a)/2)]
+  def norm(i,x): a=i.all(); return (x-a[0])/(a[-1] - a[0])
+  def sd(i):     a=i.all(); return (a[int(.9*len(a))] - a[int(.1*len(a))])/2.56
+  #---------------------------------------------------------------
+  return (Col(pos,txt) | o(_all=[], max=1028, ok=False)) + locals()
 
 def Sym(pos=0, txt=""): 
   def add(i,x):
     if x != the.no:
       i.n += 1
-      tmp, i._all[x] = i._all.get(x,0) + 1
+      tmp = i._all[x] = i._all.get(x,0) + 1
       if tmp>i.max: i.max,i.mode = tmp,x
     return x
   def mid(i): return i.mode
   return (Col(pos,txt) | o(_all={}, mode=None, max=0)) + locals()
-
-def sd(i,x): 
-  a=i.all(); return (a[int(.9*len(a))] - a[int(.1*len(a))])/2.56
 
 def About(lst):
   i = o(header=lst, x=[], y=[], all=[])
@@ -72,21 +74,75 @@ def About(lst):
     one = column(pos,txt)
     i.all.append(one)
     if the.no not in txt: 
-      (i.y if txt[0] in "+-" else i.x).append(one)
+      (i.y if txt[-1] in "+-" else i.x).append(one)
   return i
+
+def dist(r1,r2,about,by="y",p=2):
+  def norms(col, x): x=col.norm(x); return x,(1 if x<0 else 0)
+  d,n = 0,1E-32
+  for col in about[by]:
+    a, b  = r1[col.pos], r2[col.pos]
+    if   a=="?" and b=="?": a,b = 0,1
+    elif a=="?":            b,a = norms(col,b)
+    elif b=="?":            a,b = norms(col,a)
+    else:                   a,b = col.norm(a), col.norm(b)
+    d  += (a-b)**p
+    n  += 1
+  return (d/n)**(1/p)
+
+import sys
+def rmeans(rows0,about,by="y",p=2,want=.8):
+  def d(r1,r2): 
+    return dist(r1, r2, about, by, p)
+  def far(r1, rows):
+    most = -1
+    for r2 in rows:
+      tmp = d(r1,r2)
+      if tmp>most: most,out = tmp,r2
+    return out
+  def poles(rows):
+    north = far(random.choice(rows), rows)
+    south = far(north,rows)
+    norths, souths = [], []
+    for row in rows:
+      (souths if d(row,south) < d(row,north) else norths).append(row)
+    return o(_rows=rows, up=None, down=None, north=north, norths=norths,
+                                             south=south, souths=souths) 
+  def worker(rows, lo, lvl=0):
+    if len(rows) > lo and lvl<10:
+      here      = poles(rows)
+      here.down = worker(here.souths, lo, lvl+1)
+      here.up   = worker(here.norths, lo, lvl+1)
+      return here
+  #-------------------------------------
+  return worker(rows0, len(rows0)**0.5)
+
+def leaves(tree,lvl=0):
+  if tree and tree.up:
+    for x in leaves(tree.up,   lvl+1): yield x
+    for x in leaves(tree.down, lvl+1): yield x
+  else:
+    yield lvl,tree._rows
 
 def data(src, about=None):
   about = about or About(next(src))
-  for row in rows(src):
-    yield about, [col.add(col,x) for col,x in zip(about.all,row)]
+  for row in src:
+    row = [col.add(x) for col,x in zip(about.all,row)]
+    yield about,row
 
 def rows(src):
   for line in src:
     yield re.sub(r'([\n\t\r ]|#.*)','',line).split(",")
 
 def csv(file):
-   with open(file) as fp:
-     for lst in fp: yield lst
+  with open(file) as fp:
+    for lst in fp: yield lst
 
-for _,row in data(rows(csv("../data/auto93.csv"))): 
-  print(row)
+random.seed(1)
+lst=[]
+for about,row in data(rows(csv("../data/auto93.csv"))):
+   lst+=[row]
+#print(about.all[0].all())
+for lvl,lst1 in leaves(rmeans(lst,about)):
+  print("|.. "*lvl, len(lst1))
+
