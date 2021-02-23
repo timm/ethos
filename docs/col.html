@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
-<title>tab API documentation</title>
+<title>col API documentation</title>
 <meta name="description" content="(c) 2021, Tim Menzies, MIT license.
 https://choosealicense.com/licenses/mit/" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -20,7 +20,7 @@ https://choosealicense.com/licenses/mit/" />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tab</code></h1>
+<h1 class="title">Module <code>col</code></h1>
 </header>
 <section id="section-intro">
 <p>(c) 2021, Tim Menzies, MIT license.
@@ -37,31 +37,59 @@ https://choosealicense.com/licenses/mit/" />
 https://choosealicense.com/licenses/mit/
 &#34;&#34;&#34;
 
-def data(src, cols=None):
-  &#34;read data, updatiing columns as we go&#34;
-  cols = cols or Cols(next(src))
-  for row in src:
-    row = [col.add(x) for col,x in zip(cols.all,row)]
-    yield cols,row
+from on import on
 
-def Cols(lst):
-  &#34;&#34;&#34;Makes a `Num`,`Sym`, or `Skip`, sores it in `i.all`
-  and either `i.x` or `i.y`.&#34;&#34;&#34;
-  new = o(header=lst, x=[], y=[], all=[])
-  for pos,txt in enumerate(lst):
-    one = column(pos,txt)
-    new.all.append(one)
-    if the.no not in txt: 
-      (new.y if txt[-1] in &#34;+-&#34; else new.x).append(one)
-  return new
+def column( pos=0,txt=&#34;&#34;): 
+  what = (Col if &#34;?&#34; in txt else (Num if txt[0].isupper() else Sym))
+  return what(pos=pos, txt=txt) 
 
-def rows(file):
-  &#34;Read lists from  file strings (separating on commas).&#34;
-  with open(file) as fp:
-    for line in fp: 
-      line = re.sub(r&#39;([\n\t\r ]|#.*)&#39;,&#39;&#39;,line)
-      if line:
-         yield line.split(&#34;.&#34;)</code></pre>
+def Col(pos=0, txt=&#34;&#34;): 
+  &#34;&#34;&#34;Base object for all other columns. `add()`ing items
+  increments the `n` counter.&#34;&#34;&#34;
+  new = on(pos=pos, txt=txt, n=0, w= (-1 if &#34;-&#34; in txt else 1))
+  def add(i,x) : 
+    if x != &#34;?&#34;: 
+      x = i.prep(x); i.n+= 1; i.add1(x)
+    return x
+  def prep(i,x):  return x
+  return new + locals()
+
+def Num(pos=0, txt=&#34;&#34;): 
+  &#34;&#34;&#34;Here, `add` accumulates numbers into `_all`.
+  `all()` returns that list, sorted. Can report
+  `sd()` (standard deviation) and `mid()` (median point).
+   Also knows how to `norm()` normalize numbers.&#34;&#34;&#34; 
+  new = Col(pos,txt) | on(_all=[], ok=False) 
+  def add1(i,x) : 
+    i._all += [x]
+    i.ok=False
+  def all(i):
+    i._all = i._all if i.ok else sorted(i._all)
+    i.ok = True
+    return i._all
+  def mid(i):    a=i.all(); return a[int(len(a)/2)]
+  def norm(i,x): a=i.all(); return (x-a[0])/(a[-1] - a[0])
+  def prep(i,x): return float(x)
+  def sd(i):     a=i.all(); return (a[int(.9*len(a))] - a[int(.1*len(a))])/2.56
+  return new + locals()
+
+def Sym(pos=0, txt=&#34;&#34;): 
+  &#34;Here, `add` tracks symbol counts, including `mode`.&#34;
+  new = (Col(pos,txt) | o(_all={}, mode=None, max=0)) 
+  def add1(i,x):
+    tmp = i._all[x] = i._all.get(x,0) + 1
+    if tmp&gt;i.max: i.max,i.mode = tmp,x
+    return x
+  def mid(i): return i.mode
+  return new + locals()
+
+def Some(pos=0, txt=&#34;&#34;, max=256): 
+  &#34;This `add` up to `max` items (and if full, sometimes replace old items).&#34;
+  new = o(n=0, _all=[], max=max)
+  def add1(i,x) : 
+    if len(i._all) &lt; i.max: i._all += [x]
+    elif r() &lt; i.n / i.max: i._all[ int(r()*len(i._all)) ] = x
+  return new + locals()</code></pre>
 </details>
 </section>
 <section>
@@ -71,62 +99,110 @@ def rows(file):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tab.data"><code class="name flex">
-<span>def <span class="ident">data</span></span>(<span>src, cols=None)</span>
+<dt id="col.column"><code class="name flex">
+<span>def <span class="ident">column</span></span>(<span>pos=0, txt='')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>read data, updatiing columns as we go</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def data(src, cols=None):
-  &#34;read data, updatiing columns as we go&#34;
-  cols = cols or Cols(next(src))
-  for row in src:
-    row = [col.add(x) for col,x in zip(cols.all,row)]
-    yield cols,row</code></pre>
+<pre><code class="python">def column( pos=0,txt=&#34;&#34;): 
+  what = (Col if &#34;?&#34; in txt else (Num if txt[0].isupper() else Sym))
+  return what(pos=pos, txt=txt) </code></pre>
 </details>
 </dd>
-<dt id="tab.Cols"><code class="name flex">
-<span>def <span class="ident">Cols</span></span>(<span>lst)</span>
+<dt id="col.Col"><code class="name flex">
+<span>def <span class="ident">Col</span></span>(<span>pos=0, txt='')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Makes a <code>Num</code>,<code>Sym</code>, or <code>Skip</code>, sores it in <code>i.all</code>
-and either <code>i.x</code> or <code>i.y</code>.</p></div>
+<div class="desc"><p>Base object for all other columns. <code>add()</code>ing items
+increments the <code>n</code> counter.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def Cols(lst):
-  &#34;&#34;&#34;Makes a `Num`,`Sym`, or `Skip`, sores it in `i.all`
-  and either `i.x` or `i.y`.&#34;&#34;&#34;
-  new = o(header=lst, x=[], y=[], all=[])
-  for pos,txt in enumerate(lst):
-    one = column(pos,txt)
-    new.all.append(one)
-    if the.no not in txt: 
-      (new.y if txt[-1] in &#34;+-&#34; else new.x).append(one)
-  return new</code></pre>
+<pre><code class="python">def Col(pos=0, txt=&#34;&#34;): 
+  &#34;&#34;&#34;Base object for all other columns. `add()`ing items
+  increments the `n` counter.&#34;&#34;&#34;
+  new = on(pos=pos, txt=txt, n=0, w= (-1 if &#34;-&#34; in txt else 1))
+  def add(i,x) : 
+    if x != &#34;?&#34;: 
+      x = i.prep(x); i.n+= 1; i.add1(x)
+    return x
+  def prep(i,x):  return x
+  return new + locals()</code></pre>
 </details>
 </dd>
-<dt id="tab.rows"><code class="name flex">
-<span>def <span class="ident">rows</span></span>(<span>file)</span>
+<dt id="col.Num"><code class="name flex">
+<span>def <span class="ident">Num</span></span>(<span>pos=0, txt='')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Read lists from
-file strings (separating on commas).</p></div>
+<div class="desc"><p>Here, <code>add</code> accumulates numbers into <code>_all</code>.
+<code>all()</code> returns that list, sorted. Can report
+<code>sd()</code> (standard deviation) and <code>mid()</code> (median point).
+Also knows how to <code>norm()</code> normalize numbers.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def rows(file):
-  &#34;Read lists from  file strings (separating on commas).&#34;
-  with open(file) as fp:
-    for line in fp: 
-      line = re.sub(r&#39;([\n\t\r ]|#.*)&#39;,&#39;&#39;,line)
-      if line:
-         yield line.split(&#34;.&#34;)</code></pre>
+<pre><code class="python">def Num(pos=0, txt=&#34;&#34;): 
+  &#34;&#34;&#34;Here, `add` accumulates numbers into `_all`.
+  `all()` returns that list, sorted. Can report
+  `sd()` (standard deviation) and `mid()` (median point).
+   Also knows how to `norm()` normalize numbers.&#34;&#34;&#34; 
+  new = Col(pos,txt) | on(_all=[], ok=False) 
+  def add1(i,x) : 
+    i._all += [x]
+    i.ok=False
+  def all(i):
+    i._all = i._all if i.ok else sorted(i._all)
+    i.ok = True
+    return i._all
+  def mid(i):    a=i.all(); return a[int(len(a)/2)]
+  def norm(i,x): a=i.all(); return (x-a[0])/(a[-1] - a[0])
+  def prep(i,x): return float(x)
+  def sd(i):     a=i.all(); return (a[int(.9*len(a))] - a[int(.1*len(a))])/2.56
+  return new + locals()</code></pre>
+</details>
+</dd>
+<dt id="col.Sym"><code class="name flex">
+<span>def <span class="ident">Sym</span></span>(<span>pos=0, txt='')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Here, <code>add</code> tracks symbol counts, including <code>mode</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Sym(pos=0, txt=&#34;&#34;): 
+  &#34;Here, `add` tracks symbol counts, including `mode`.&#34;
+  new = (Col(pos,txt) | o(_all={}, mode=None, max=0)) 
+  def add1(i,x):
+    tmp = i._all[x] = i._all.get(x,0) + 1
+    if tmp&gt;i.max: i.max,i.mode = tmp,x
+    return x
+  def mid(i): return i.mode
+  return new + locals()</code></pre>
+</details>
+</dd>
+<dt id="col.Some"><code class="name flex">
+<span>def <span class="ident">Some</span></span>(<span>pos=0, txt='', max=256)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This <code>add</code> up to <code>max</code> items (and if full, sometimes replace old items).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def Some(pos=0, txt=&#34;&#34;, max=256): 
+  &#34;This `add` up to `max` items (and if full, sometimes replace old items).&#34;
+  new = o(n=0, _all=[], max=max)
+  def add1(i,x) : 
+    if len(i._all) &lt; i.max: i._all += [x]
+    elif r() &lt; i.n / i.max: i._all[ int(r()*len(i._all)) ] = x
+  return new + locals()</code></pre>
 </details>
 </dd>
 </dl>
@@ -161,9 +237,11 @@ zip
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="tab.data" href="#tab.data">data</a></code></li>
-<li><code><a title="tab.Cols" href="#tab.Cols">Cols</a></code></li>
-<li><code><a title="tab.rows" href="#tab.rows">rows</a></code></li>
+<li><code><a title="col.column" href="#col.column">column</a></code></li>
+<li><code><a title="col.Col" href="#col.Col">Col</a></code></li>
+<li><code><a title="col.Num" href="#col.Num">Num</a></code></li>
+<li><code><a title="col.Sym" href="#col.Sym">Sym</a></code></li>
+<li><code><a title="col.Some" href="#col.Some">Some</a></code></li>
 </ul>
 </li>
 </ul>

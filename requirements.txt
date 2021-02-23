@@ -4,6 +4,7 @@
 #  vim
 #  tmux
 
+pyfiglet
 Mako==1.1.4
 Markdown==3.3.3
 MarkupSafe==1.1.1

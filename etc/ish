@@ -13,7 +13,7 @@ alias tmux='tmux -f $Ish/etc/dottmux'
 alias pdoc="pdoc3 --config sort_identifiers=False --template-dir $Ish/docs -o $Ish/docs --force --html "
 
 htmls()  { 
-   (cd $Ish/src; for py in *.py; do pdoc $py; done); 
+   (cd $Ish/duo2; for py in *.py; do pdoc $py; done); 
    git add $Ish/docs/*.html
 }
 
