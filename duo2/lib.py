@@ -20,6 +20,11 @@ def same(x):
   "Return x, unmodified."
   return x
 
+def chunks(lst, n):
+  "Yield successive n-sized chunks from lst."
+  for i in range(0, len(lst), n): 
+    yield lst[i:i + n]
+
 class on:
   """The only class you've ever need? Can convert local functions 
   into methods (which are stored in the container. Pretty
@@ -51,6 +56,13 @@ def cli(funs,doc=""):
     if flag=="-L": ok.menu(funs)
     if flag=="-t": ok.some(sys.argv[n+1], funs)
     if flag=="-T": ok.all(funs)
+
+#------------------------------------------------
+def test_chunks():
+  lst = [x for x in range(95)]
+  print([len(part) for part in chunks(lst, int(len(lst)**0.5))])
+
+test_chunks()
 
 if __name__ == "__main__": cli(locals(),__doc__)
 

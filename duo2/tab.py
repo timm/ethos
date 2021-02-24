@@ -27,7 +27,7 @@ def data(src, cols=None):
 
 def Row(x):
   "Thing to store row data."
-  new = on(cells = (x if type(x) else x.cells))
+  new = on(gt=0, tag=None, cells = (x if type(x) else x.cells))
   def better(i,j,cols):
     s1,s2,n = 0,0,len(cols.y)
     for col in cols.y:
