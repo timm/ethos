@@ -44,6 +44,7 @@ def unsuper(lst,fx,chop=.5, cohen=.35):
   latest = Span(x, x)
   out    = [latest]
   b4     = 0
+  diffent=1 #XXXX
   for now,one in enumerate(lst):
     x = fx(one)
     if now < len(lst) - width:
