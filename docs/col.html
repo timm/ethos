@@ -67,6 +67,7 @@ from ok  import ok
 from random import random as r
 
 def column( pos=0,txt=&#34;&#34;): 
+  &#34;Factory for generating different kinds of column.&#34;
   what = (Col if &#34;?&#34; in txt else (Num if txt[0].isupper() else Sym))
   return what(pos=pos, txt=txt) 
 
@@ -167,12 +168,13 @@ if __name__ == &#34;__main__&#34;: cli(locals(),__doc__)</code></pre>
 <span>def <span class="ident">column</span></span>(<span>pos=0, txt='')</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Factory for generating different kinds of column.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def column( pos=0,txt=&#34;&#34;): 
+  &#34;Factory for generating different kinds of column.&#34;
   what = (Col if &#34;?&#34; in txt else (Num if txt[0].isupper() else Sym))
   return what(pos=pos, txt=txt) </code></pre>
 </details>

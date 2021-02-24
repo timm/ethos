@@ -13,7 +13,7 @@ USAGE ./group.py [OPTIONS]
  -h    run help  
  -C    show copyright  
 """
-from functools import cmp_to_key
+import functools 
 from tab import Tab, Cols, csv
 from lib import cli
 from col import Num
@@ -21,11 +21,11 @@ from ok  import ok
 
 def ordered(rows,cols): 
   "Sort rows based on `Row.better`."
-  def cmp(cols) : 
+  def better() : 
     return lambda a,b: (0 if id(a)==id(b)     else (
                        -1 if a.better(b,cols) else 
                         1 ))
-  return sorted(rows, key=cmp_to_key(cmp(cols)))
+  return sorted(rows, key=functools.cmp_to_key(better))
 
 def Span(down,up): 
   new = on(down = down, up = up, _all=[])

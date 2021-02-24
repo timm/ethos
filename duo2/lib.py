@@ -20,10 +20,19 @@ def same(x):
   "Return x, unmodified."
   return x
 
-def chunks(lst, n):
+def chunks(a, n):
   "Yield successive n-sized chunks from lst."
-  for i in range(0, len(lst), n): 
-    yield lst[i:i + n]
+  i, out= 0,[]
+  gap = len(a)%n
+  print(len(a)//2)
+  print(gap)
+  while i < len(a)//2: 
+    yield a[i:i+n]; i+=n
+  j = i+n+gap
+  yield a[i+n:j]
+  i+=j
+  while i < len(a): 
+    yield a[i:i+n]; i+=n
 
 class on:
   """The only class you've ever need? Can convert local functions 
@@ -59,8 +68,8 @@ def cli(funs,doc=""):
 
 #------------------------------------------------
 def test_chunks():
-  lst = [x for x in range(95)]
-  print([len(part) for part in chunks(lst, int(len(lst)**0.5))])
+  lst = [x for x in range(21)]
+  print([len(a) for a in chunks(lst, int(len(lst)**0.5))])
 
 test_chunks()
 

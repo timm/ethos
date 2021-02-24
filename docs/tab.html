@@ -60,7 +60,7 @@ USAGE ./tab.py [OPTIONS]
  -h    run help  
  -C    show copyright  
 &#34;&#34;&#34;
-import re
+import re, math
 from lib import cli,on
 from ok  import ok
 from col import column,Some
@@ -74,10 +74,10 @@ def data(src, cols=None):
 
 def Row(x):
   &#34;Thing to store row data.&#34;
-  new = on(cells = (x if type(x) else x.cells))
+  new = on(gt=0, tag=None, cells = (x if type(x) else x.cells))
   def better(i,j,cols):
     s1,s2,n = 0,0,len(cols.y)
-    for col in t.cols.y:
+    for col in cols.y:
       pos,w = col.pos, col.w
       a,b   = i.cells[pos], j.cells[pos]
       a,b   = col.norm(a), col.norm(b)
@@ -95,14 +95,16 @@ def Cols(lst):
     new.all.append(one)
     if &#34;?&#34; not in txt: 
       (new.y if txt[-1] in &#34;+-&#34; else new.x).append(one)
-  return new
+  def ys(i,row): return [row.cells[col.pos] for col in i.y]
+  return new.has(dict(ys=ys))
 
-def Tab(src,keep=1024):
+def Tab(src, keep=1024):
   new = on(_rows=Some(keep=keep), cols=None)
   for cols, row in  data(src):
     new.cols = cols
     new._rows.add(Row(row))
-  return new
+  def rows(i): return i._rows._all
+  return new.has(dict(rows=rows))
 
 def csv(file):
   &#34;Read lists from  file strings (separating on commas).&#34;
@@ -158,10 +160,10 @@ if __name__ == &#34;__main__&#34;: cli(locals(),__doc__)</code></pre>
 </summary>
 <pre><code class="python">def Row(x):
   &#34;Thing to store row data.&#34;
-  new = on(cells = (x if type(x) else x.cells))
+  new = on(gt=0, tag=None, cells = (x if type(x) else x.cells))
   def better(i,j,cols):
     s1,s2,n = 0,0,len(cols.y)
-    for col in t.cols.y:
+    for col in cols.y:
       pos,w = col.pos, col.w
       a,b   = i.cells[pos], j.cells[pos]
       a,b   = col.norm(a), col.norm(b)
@@ -190,7 +192,8 @@ it in <code>i.all</code> and either <code>i.x</code> or <code>i.y</code>.</p></d
     new.all.append(one)
     if &#34;?&#34; not in txt: 
       (new.y if txt[-1] in &#34;+-&#34; else new.x).append(one)
-  return new</code></pre>
+  def ys(i,row): return [row.cells[col.pos] for col in i.y]
+  return new.has(dict(ys=ys))</code></pre>
 </details>
 </dd>
 <dt id="tab.Tab"><code class="name flex">
@@ -202,12 +205,13 @@ it in <code>i.all</code> and either <code>i.x</code> or <code>i.y</code>.</p></d
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def Tab(src,keep=1024):
+<pre><code class="python">def Tab(src, keep=1024):
   new = on(_rows=Some(keep=keep), cols=None)
   for cols, row in  data(src):
     new.cols = cols
     new._rows.add(Row(row))
-  return new</code></pre>
+  def rows(i): return i._rows._all
+  return new.has(dict(rows=rows))</code></pre>
 </details>
 </dd>
 <dt id="tab.csv"><code class="name flex">
