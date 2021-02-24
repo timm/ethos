@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
 """
+tab.py : store summaries of rows in columns.
 (c) 2021, Tim Menzies, MIT license.    
 https://choosealicense.com/licenses/mit/
 """
 import lib
 from col import column
-from lib import ok
+from lib import ok,on
 
 def data(src, cols=None):
   "read data, updatiing columns as we go"

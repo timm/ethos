@@ -1,53 +1,54 @@
 #!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
 """
+lib.py : v1.0,  misc Python functions
 (c) 2021, Tim Menzies, MIT license.    
 https://choosealicense.com/licenses/mit/
+
+USAGE ./lib.py [OPTIONS]
+
+ -t S  run demo functions matching S
+ -T    run all demo functions
+ -L    list all demo functions
+ -h    run help
+ -C    show copyright
 """
-import sys,inspect,datetime
-from pyfiglet import Figlet
+from types import FunctionType as fun
+import ok,re,sys,inspect
 
-def same(x): return x
+def same(x): 
+  "Return x, unmodified."
+  return x
 
-class color:
-  all=dict(
-      PURPLE    = '\033[1;35;48m',
-      CYAN      = '\033[1;36;48m',
-      BOLD      = '\033[1;37;48m',
-      BLUE      = '\033[1;34;48m',
-      GREEN     = '\033[1;32;48m',
-      YELLOW    = '\033[1;33;48m',
-      RED       = '\033[1;31;48m',
-      BLACK     = '\033[1;30;48m',
-      UNDERLINE = '\033[4;37;48m',
-      END       = '\033[1;37;0m')
-  def say(**d):
-    c=color.all
-    for k,v in d.items(): 
-      return c["BOLD"]+c[k]+v+c["END"]
+class on:
+  """The only class you've ever need? Can convert local functions 
+  into methods (which are stored in the container. Pretty
+  prints object slots, alphabetically, skipping 'private' 
+  attributes (this starting with `_'). """
+  def __init__(it, **d) : i.__dict__.update(d)
+  def __getitem__(it,k)   : return it.__dict__[k]
+  def __setitem__(it,k,v) : i.__dict__[k] = v
+  def __add__(it,also): 
+    for k in also.__dict__: it[k] = also[k]
+    return it
+  def __repr__(it): 
+    return "{"+ ', '.join(
+           [f":{k} {v}" for k, v in sorted(it.__dict__.items()) 
+                        if type(v)!=fun and k[0] != "_"])+"}"
+  def has(it,d):
+    def method(f): return lambda *lst, **kw: f(it, *lst, **kw)
+    for k,v in d.items():
+      if k[0] != "_":
+        if type(v)==fun: it.__dict__[k] = method(v)
+    return it
 
-def ok(x,y):
-  print(f"-- {y} ",end=""); 
-  try:
-    assert x,y
-    print(color.say(GREEN="PASS"))
-  except Exception:
-    print(color.say(RED="FAIL"))
+def cli(funs,doc=""):
+  "Standard start up function."
+  for n,flag in enumerate(sys.argv):
+    if flag=="-h": print(doc)
+    if flag=="-C": print(doc.split("\n\n")[0])
+    if flag=="-L": ok.menu(funs)
+    if flag=="-t": ok.some(sys.argv[n+1], funs)
+    if flag=="-T": ok.all(funs)
+if __name__ == "__main__": cli(locals(),__doc__)
 
-def tests():
-  def test(fun):
-    print(color.say(YELLOE=f"\n# {fun.__name__} "+("-"*25)))
-    print(fun.__doc__)
-    fun()
-  ############################
-  funs = inspect.stack()[1].frame.f_locals
-  args = sys.argv
-  for n,flag in enumerate(args):
-    if flag=="-t":
-      test( funs["test_" + args[n+1]] )
-    if flag=="-T":
-      fig = Figlet(font='larry3d')
-      print(fig.renderText('tests')[:-38],end="")
-      print(datetime.datetime.now().strftime("%c"))
-      for k,fun in funs.items():
-        if k[:5] == "test_": test(fun)

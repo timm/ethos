@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
-<title>tab API documentation</title>
+<title>ok API documentation</title>
 <meta name="description" content="(c) 2021, Tim Menzies, MIT license.
 https://choosealicense.com/licenses/mit/" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -20,7 +20,7 @@ https://choosealicense.com/licenses/mit/" />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>tab</code></h1>
+<h1 class="title">Module <code>ok</code></h1>
 </header>
 <section id="section-intro">
 <p>(c) 2021, Tim Menzies, MIT license.
@@ -36,47 +36,56 @@ https://choosealicense.com/licenses/mit/" />
 (c) 2021, Tim Menzies, MIT license.    
 https://choosealicense.com/licenses/mit/
 &#34;&#34;&#34;
-import lib
-from col import column
-from lib import ok,on
+from types import FunctionType as fun
+from kolor import say
+import pyfiglet
+import datetime
 
-def data(src, cols=None):
-  &#34;read data, updatiing columns as we go&#34;
-  cols = cols or Cols(next(src))
-  for row in src:
-    row = [col.add(x) for col,x in zip(cols.all,row)]
-    yield cols,row
+def all(funs):
+  &#34;Run all functions starting with `test_`.&#34;
+  print(say(CYAN=pyfiglet.figlet_format(&#34;tests&#34;, font = &#34;larry3d&#34;)), 
+        end=&#34;&#34;)
+  print(datetime.datetime.now().strftime(&#34;%c&#34;))
+  some(&#34;test_&#34;, funs)
 
-def Cols(lst):
-  &#34;&#34;&#34;Makes a `Num`,`Sym`, or `Skip`, sores it in `i.all`
-  and either `i.x` or `i.y`.&#34;&#34;&#34;
-  new = o(header=lst, x=[], y=[], all=[])
-  for pos,txt in enumerate(lst):
-    one = column(pos,txt)
-    new.all.append(one)
-    if the.no not in txt: 
-      (new.y if txt[-1] in &#34;+-&#34; else new.x).append(one)
-  return new
+def one(fun):
+  &#34;Run one `fun`ction, ignore crashes.&#34;
+  print(say(YELLOW=f&#34;\n# {fun.__name__} &#34;+(&#34;-&#34;*25)))
+  print(&#34;--&#34;,fun.__doc__)
+  try: fun()
+  except Exception: pass
 
-def rows(file):
-  &#34;Read lists from  file strings (separating on commas).&#34;
-  with open(file) as fp:
-    for line in fp: 
-      line = re.sub(r&#39;([\n\t\r ]|#.*)&#39;,&#39;&#39;,line)
-      if line:
-         yield line.split(&#34;.&#34;)
+def menu(funs):
+  &#34;List known demo functions&#34;
+  for k,v in funs.items():
+    if type(v) == fun and k[:-5] == &#34;test_&#34;:
+      print(fun.__name__, &#34;:&#34;, fun.__doc__)
 
-def test_that():
-  &#34;da&#34;
-  ok(10&gt;1,&#34;asd?&#34;)
+def ok(x,y):
+  &#34;Pretty print run of `assert`.&#34;
+  print(f&#34;  -- {y} &#34;,end=&#34;&#34;); 
+  try:
+    assert x,y    
+    print(say(GREEN=&#34;PASS&#34;))
+  except Exception:
+    print(say(RED=&#34;FAIL&#34;))
 
-def test_rows():
-  &#34;todit&#34; 
-  ok(1&gt; 1,&#34;big num?&#34;)
+def some(want,funs):
+  &#34;Run all functions matching `want`.&#34;
+  for k,f in funs.items():
+    if type(f) == fun:
+      if k[:5]==&#34;test_&#34; and want in k: one(f)
 
-if __name__ == &#34;__main__&#34;:
-  lib.tests()
-   </code></pre>
+#---------------------------------------
+def test_ok1(): 
+  &#34;ok one ing?&#34;
+  ok(1&gt;2, &#34;less-ing?&#34;)
+
+def test_ok2(): 
+  &#34;ok two ing?&#34;
+  ok(10&gt;2, &#34;more-ing?&#34;)
+
+if __name__ == &#34;__main__&#34;: all(locals())</code></pre>
 </details>
 </section>
 <section>
@@ -86,90 +95,117 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="tab.data"><code class="name flex">
-<span>def <span class="ident">data</span></span>(<span>src, cols=None)</span>
+<dt id="ok.all"><code class="name flex">
+<span>def <span class="ident">all</span></span>(<span>funs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>read data, updatiing columns as we go</p></div>
+<div class="desc"><p>Run all functions starting with <code>test_</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def data(src, cols=None):
-  &#34;read data, updatiing columns as we go&#34;
-  cols = cols or Cols(next(src))
-  for row in src:
-    row = [col.add(x) for col,x in zip(cols.all,row)]
-    yield cols,row</code></pre>
+<pre><code class="python">def all(funs):
+  &#34;Run all functions starting with `test_`.&#34;
+  print(say(CYAN=pyfiglet.figlet_format(&#34;tests&#34;, font = &#34;larry3d&#34;)), 
+        end=&#34;&#34;)
+  print(datetime.datetime.now().strftime(&#34;%c&#34;))
+  some(&#34;test_&#34;, funs)</code></pre>
 </details>
 </dd>
-<dt id="tab.Cols"><code class="name flex">
-<span>def <span class="ident">Cols</span></span>(<span>lst)</span>
+<dt id="ok.one"><code class="name flex">
+<span>def <span class="ident">one</span></span>(<span>fun)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Makes a <code>Num</code>,<code>Sym</code>, or <code>Skip</code>, sores it in <code>i.all</code>
-and either <code>i.x</code> or <code>i.y</code>.</p></div>
+<div class="desc"><p>Run one <code>fun</code>ction, ignore crashes.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def Cols(lst):
-  &#34;&#34;&#34;Makes a `Num`,`Sym`, or `Skip`, sores it in `i.all`
-  and either `i.x` or `i.y`.&#34;&#34;&#34;
-  new = o(header=lst, x=[], y=[], all=[])
-  for pos,txt in enumerate(lst):
-    one = column(pos,txt)
-    new.all.append(one)
-    if the.no not in txt: 
-      (new.y if txt[-1] in &#34;+-&#34; else new.x).append(one)
-  return new</code></pre>
+<pre><code class="python">def one(fun):
+  &#34;Run one `fun`ction, ignore crashes.&#34;
+  print(say(YELLOW=f&#34;\n# {fun.__name__} &#34;+(&#34;-&#34;*25)))
+  print(&#34;--&#34;,fun.__doc__)
+  try: fun()
+  except Exception: pass</code></pre>
 </details>
 </dd>
-<dt id="tab.rows"><code class="name flex">
-<span>def <span class="ident">rows</span></span>(<span>file)</span>
+<dt id="ok.menu"><code class="name flex">
+<span>def <span class="ident">menu</span></span>(<span>funs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Read lists from
-file strings (separating on commas).</p></div>
+<div class="desc"><p>List known demo functions</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def rows(file):
-  &#34;Read lists from  file strings (separating on commas).&#34;
-  with open(file) as fp:
-    for line in fp: 
-      line = re.sub(r&#39;([\n\t\r ]|#.*)&#39;,&#39;&#39;,line)
-      if line:
-         yield line.split(&#34;.&#34;)</code></pre>
+<pre><code class="python">def menu(funs):
+  &#34;List known demo functions&#34;
+  for k,v in funs.items():
+    if type(v) == fun and k[:-5] == &#34;test_&#34;:
+      print(fun.__name__, &#34;:&#34;, fun.__doc__)</code></pre>
 </details>
 </dd>
-<dt id="tab.test_that"><code class="name flex">
-<span>def <span class="ident">test_that</span></span>(<span>)</span>
+<dt id="ok.ok"><code class="name flex">
+<span>def <span class="ident">ok</span></span>(<span>x, y)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>da</p></div>
+<div class="desc"><p>Pretty print run of <code>assert</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def test_that():
-  &#34;da&#34;
-  ok(10&gt;1,&#34;asd?&#34;)</code></pre>
+<pre><code class="python">def ok(x,y):
+  &#34;Pretty print run of `assert`.&#34;
+  print(f&#34;  -- {y} &#34;,end=&#34;&#34;); 
+  try:
+    assert x,y    
+    print(say(GREEN=&#34;PASS&#34;))
+  except Exception:
+    print(say(RED=&#34;FAIL&#34;))</code></pre>
 </details>
 </dd>
-<dt id="tab.test_rows"><code class="name flex">
-<span>def <span class="ident">test_rows</span></span>(<span>)</span>
+<dt id="ok.some"><code class="name flex">
+<span>def <span class="ident">some</span></span>(<span>want, funs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>todit</p></div>
+<div class="desc"><p>Run all functions matching <code>want</code>.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def test_rows():
-  &#34;todit&#34; 
-  ok(1&gt; 1,&#34;big num?&#34;)</code></pre>
+<pre><code class="python">def some(want,funs):
+  &#34;Run all functions matching `want`.&#34;
+  for k,f in funs.items():
+    if type(f) == fun:
+      if k[:5]==&#34;test_&#34; and want in k: one(f)</code></pre>
+</details>
+</dd>
+<dt id="ok.test_ok1"><code class="name flex">
+<span>def <span class="ident">test_ok1</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>ok one ing?</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_ok1(): 
+  &#34;ok one ing?&#34;
+  ok(1&gt;2, &#34;less-ing?&#34;)</code></pre>
+</details>
+</dd>
+<dt id="ok.test_ok2"><code class="name flex">
+<span>def <span class="ident">test_ok2</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>ok two ing?</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_ok2(): 
+  &#34;ok two ing?&#34;
+  ok(10&gt;2, &#34;more-ing?&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -203,12 +239,14 @@ zip
 </div>
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="tab.data" href="#tab.data">data</a></code></li>
-<li><code><a title="tab.Cols" href="#tab.Cols">Cols</a></code></li>
-<li><code><a title="tab.rows" href="#tab.rows">rows</a></code></li>
-<li><code><a title="tab.test_that" href="#tab.test_that">test_that</a></code></li>
-<li><code><a title="tab.test_rows" href="#tab.test_rows">test_rows</a></code></li>
+<ul class="two-column">
+<li><code><a title="ok.all" href="#ok.all">all</a></code></li>
+<li><code><a title="ok.one" href="#ok.one">one</a></code></li>
+<li><code><a title="ok.menu" href="#ok.menu">menu</a></code></li>
+<li><code><a title="ok.ok" href="#ok.ok">ok</a></code></li>
+<li><code><a title="ok.some" href="#ok.some">some</a></code></li>
+<li><code><a title="ok.test_ok1" href="#ok.test_ok1">test_ok1</a></code></li>
+<li><code><a title="ok.test_ok2" href="#ok.test_ok2">test_ok2</a></code></li>
 </ul>
 </li>
 </ul>

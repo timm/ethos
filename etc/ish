@@ -12,6 +12,8 @@ alias vi='vim -u $Ish/etc/dotvimrc'
 alias tmux='tmux -f $Ish/etc/dottmux'
 alias pdoc="pdoc3 --config sort_identifiers=False --template-dir $Ish/docs -o $Ish/docs --force --html "
 
+p() { f=$1; shift; python3 $f.py $*; }
+
 htmls()  { 
    (cd $Ish/duo2; for py in *.py; do pdoc $py; done); 
    git add $Ish/docs/*.html

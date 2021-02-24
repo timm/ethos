@@ -49,19 +49,24 @@ import re
 from types import FunctionType as fun
 
 class on:
+  &#34;&#34;&#34;The only class you&#39;ve ever need? Can convert local functions 
+  into methods (which are stored in the container. Pretty
+  prints object slots, alphabetically, skipping &#39;private&#39; 
+  attributes (this starting with `_&#39;). &#34;&#34;&#34;
   def __init__(i, **d) : i.__dict__.update(d)
   def __getitem__(i,k)   : return i.__dict__[k]
   def __setitem__(i,k,v) : i.__dict__[k] = v
-  def __or__(i,j): 
+  def __add__(i,j): 
     for k in j.__dict__: i[k] = j[k]
     return i
   def __repr__(i): 
     return &#34;{&#34;+ &#39;, &#39;.join([f&#34;:{k} {v}&#34; for k, v in sorted(i.__dict__.items()) 
                                        if type(v)!=fun and k[0] != &#34;_&#34;])+&#34;}&#34;
-  def __add__(i,d):
+  def has(i,d):
     def method(i,f): return lambda *lst, **kw: f(i, *lst, **kw)
     for k,v in d.items():
-      if type(v)==fun: i.__dict__[k] = method(i,v)
+      if k[0] != &#34;_&#34;:
+        if type(v)==fun: i.__dict__[k] = method(i,v)
     return i</code></pre>
 </details>
 </section>
@@ -79,27 +84,55 @@ class on:
 <span>(</span><span>**d)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>The only class you've ever need? Can convert local functions
+into methods (which are stored in the container. Pretty
+prints object slots, alphabetically, skipping 'private'
+attributes (this starting with `_').</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class on:
+  &#34;&#34;&#34;The only class you&#39;ve ever need? Can convert local functions 
+  into methods (which are stored in the container. Pretty
+  prints object slots, alphabetically, skipping &#39;private&#39; 
+  attributes (this starting with `_&#39;). &#34;&#34;&#34;
   def __init__(i, **d) : i.__dict__.update(d)
   def __getitem__(i,k)   : return i.__dict__[k]
   def __setitem__(i,k,v) : i.__dict__[k] = v
-  def __or__(i,j): 
+  def __add__(i,j): 
     for k in j.__dict__: i[k] = j[k]
     return i
   def __repr__(i): 
     return &#34;{&#34;+ &#39;, &#39;.join([f&#34;:{k} {v}&#34; for k, v in sorted(i.__dict__.items()) 
                                        if type(v)!=fun and k[0] != &#34;_&#34;])+&#34;}&#34;
-  def __add__(i,d):
+  def has(i,d):
     def method(i,f): return lambda *lst, **kw: f(i, *lst, **kw)
     for k,v in d.items():
-      if type(v)==fun: i.__dict__[k] = method(i,v)
+      if k[0] != &#34;_&#34;:
+        if type(v)==fun: i.__dict__[k] = method(i,v)
     return i</code></pre>
 </details>
+<h3>Methods</h3>
+<dl>
+<dt id="on.on.has"><code class="name flex">
+<span>def <span class="ident">has</span></span>(<span>i, d)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has(i,d):
+  def method(i,f): return lambda *lst, **kw: f(i, *lst, **kw)
+  for k,v in d.items():
+    if k[0] != &#34;_&#34;:
+      if type(v)==fun: i.__dict__[k] = method(i,v)
+  return i</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -133,6 +166,9 @@ zip
 <ul>
 <li>
 <h4><code><a title="on.on" href="#on.on">on</a></code></h4>
+<ul class="">
+<li><code><a title="on.on.has" href="#on.on.has">has</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

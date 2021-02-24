@@ -46,20 +46,20 @@ def column( pos=0,txt=&#34;&#34;):
 def Col(pos=0, txt=&#34;&#34;): 
   &#34;&#34;&#34;Base object for all other columns. `add()`ing items
   increments the `n` counter.&#34;&#34;&#34;
-  new = on(pos=pos, txt=txt, n=0, w= (-1 if &#34;-&#34; in txt else 1))
+  new = on(pos=pos, txt=txt, n=0, w= (-1 if &#34;-&#34; in txt else 1)) 
   def add(i,x) : 
     if x != &#34;?&#34;: 
       x = i.prep(x); i.n+= 1; i.add1(x)
     return x
-  def prep(i,x):  return x
-  return new + locals()
+  def prep(it,x):  return x
+  return new.has(locals())
 
 def Num(pos=0, txt=&#34;&#34;): 
   &#34;&#34;&#34;Here, `add` accumulates numbers into `_all`.
   `all()` returns that list, sorted. Can report
   `sd()` (standard deviation) and `mid()` (median point).
    Also knows how to `norm()` normalize numbers.&#34;&#34;&#34; 
-  new = Col(pos,txt) | on(_all=[], ok=False) 
+  new = Col(pos,txt) + on(_all=[], ok=False) 
   def add1(i,x) : 
     i._all += [x]
     i.ok=False
@@ -71,17 +71,17 @@ def Num(pos=0, txt=&#34;&#34;):
   def norm(i,x): a=i.all(); return (x-a[0])/(a[-1] - a[0])
   def prep(i,x): return float(x)
   def sd(i):     a=i.all(); return (a[int(.9*len(a))] - a[int(.1*len(a))])/2.56
-  return new + locals()
+  return new.has(locals())
 
 def Sym(pos=0, txt=&#34;&#34;): 
   &#34;Here, `add` tracks symbol counts, including `mode`.&#34;
-  new = (Col(pos,txt) | o(_all={}, mode=None, max=0)) 
+  new = (Col(pos,txt) + o(_all={}, mode=None, max=0)) 
   def add1(i,x):
     tmp = i._all[x] = i._all.get(x,0) + 1
     if tmp&gt;i.max: i.max,i.mode = tmp,x
     return x
   def mid(i): return i.mode
-  return new + locals()
+  return new.has(locals())
 
 def Some(pos=0, txt=&#34;&#34;, max=256): 
   &#34;This `add` up to `max` items (and if full, sometimes replace old items).&#34;
@@ -89,7 +89,7 @@ def Some(pos=0, txt=&#34;&#34;, max=256):
   def add1(i,x) : 
     if len(i._all) &lt; i.max: i._all += [x]
     elif r() &lt; i.n / i.max: i._all[ int(r()*len(i._all)) ] = x
-  return new + locals()</code></pre>
+  return new.has(locals())</code></pre>
 </details>
 </section>
 <section>
@@ -126,13 +126,13 @@ increments the <code>n</code> counter.</p></div>
 <pre><code class="python">def Col(pos=0, txt=&#34;&#34;): 
   &#34;&#34;&#34;Base object for all other columns. `add()`ing items
   increments the `n` counter.&#34;&#34;&#34;
-  new = on(pos=pos, txt=txt, n=0, w= (-1 if &#34;-&#34; in txt else 1))
+  new = on(pos=pos, txt=txt, n=0, w= (-1 if &#34;-&#34; in txt else 1)) 
   def add(i,x) : 
     if x != &#34;?&#34;: 
       x = i.prep(x); i.n+= 1; i.add1(x)
     return x
-  def prep(i,x):  return x
-  return new + locals()</code></pre>
+  def prep(it,x):  return x
+  return new.has(locals())</code></pre>
 </details>
 </dd>
 <dt id="col.Num"><code class="name flex">
@@ -152,7 +152,7 @@ Also knows how to <code>norm()</code> normalize numbers.</p></div>
   `all()` returns that list, sorted. Can report
   `sd()` (standard deviation) and `mid()` (median point).
    Also knows how to `norm()` normalize numbers.&#34;&#34;&#34; 
-  new = Col(pos,txt) | on(_all=[], ok=False) 
+  new = Col(pos,txt) + on(_all=[], ok=False) 
   def add1(i,x) : 
     i._all += [x]
     i.ok=False
@@ -164,7 +164,7 @@ Also knows how to <code>norm()</code> normalize numbers.</p></div>
   def norm(i,x): a=i.all(); return (x-a[0])/(a[-1] - a[0])
   def prep(i,x): return float(x)
   def sd(i):     a=i.all(); return (a[int(.9*len(a))] - a[int(.1*len(a))])/2.56
-  return new + locals()</code></pre>
+  return new.has(locals())</code></pre>
 </details>
 </dd>
 <dt id="col.Sym"><code class="name flex">
@@ -178,13 +178,13 @@ Also knows how to <code>norm()</code> normalize numbers.</p></div>
 </summary>
 <pre><code class="python">def Sym(pos=0, txt=&#34;&#34;): 
   &#34;Here, `add` tracks symbol counts, including `mode`.&#34;
-  new = (Col(pos,txt) | o(_all={}, mode=None, max=0)) 
+  new = (Col(pos,txt) + o(_all={}, mode=None, max=0)) 
   def add1(i,x):
     tmp = i._all[x] = i._all.get(x,0) + 1
     if tmp&gt;i.max: i.max,i.mode = tmp,x
     return x
   def mid(i): return i.mode
-  return new + locals()</code></pre>
+  return new.has(locals())</code></pre>
 </details>
 </dd>
 <dt id="col.Some"><code class="name flex">
@@ -202,7 +202,7 @@ Also knows how to <code>norm()</code> normalize numbers.</p></div>
   def add1(i,x) : 
     if len(i._all) &lt; i.max: i._all += [x]
     elif r() &lt; i.n / i.max: i._all[ int(r()*len(i._all)) ] = x
-  return new + locals()</code></pre>
+  return new.has(locals())</code></pre>
 </details>
 </dd>
 </dl>
