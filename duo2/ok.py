@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
 """
-ok.py : very simple test engine.
+ok.py : very simple test engine.  
 (c) 2021, Tim Menzies, MIT license.    
 https://choosealicense.com/licenses/mit/
 

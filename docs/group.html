@@ -4,9 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
-<title>lib API documentation</title>
-<meta name="description" content="lib.py : v1.0,
-misc Python functions
+<title>group API documentation</title>
+<meta name="description" content="group.py : divide rows in groups of similar ranks
 (c) 2021, Tim Menzies, MIT license.
 https://choosealicense.com/licenses/mit/ …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
@@ -22,17 +21,15 @@ https://choosealicense.com/licenses/mit/ …" />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>lib</code></h1>
+<h1 class="title">Module <code>group</code></h1>
 </header>
 <section id="section-intro">
-<p>lib.py : v1.0,
-misc Python functions
-<br>
+<p>group.py : divide rows in groups of similar ranks<br>
 (c) 2021, Tim Menzies, MIT license.
 <br>
 <a href="https://choosealicense.com/licenses/mit/">https://choosealicense.com/licenses/mit/</a>
 </p>
-<p>USAGE ./lib.py [OPTIONS]
+<p>USAGE ./group.py [OPTIONS]
 </p>
 <p>-t S
 run demo functions matching S<br>
@@ -51,58 +48,18 @@ show copyright</p>
 <pre><code class="python">#!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
 &#34;&#34;&#34;
-lib.py : v1.0,  misc Python functions    
+group.py : divide rows in groups of similar ranks  
 (c) 2021, Tim Menzies, MIT license.      
 https://choosealicense.com/licenses/mit/  
   
-USAGE ./lib.py [OPTIONS]  
+USAGE ./group.py [OPTIONS]  
   
  -t S  run demo functions matching S  
  -T    run all demo functions  
  -L    list all demo functions  
  -h    run help  
  -C    show copyright  
-&#34;&#34;&#34;
-from types import FunctionType as fun
-import ok,re,sys,inspect
-
-def same(x): 
-  &#34;Return x, unmodified.&#34;
-  return x
-
-class on:
-  &#34;&#34;&#34;The only class you&#39;ve ever need? Can convert local functions 
-  into methods (which are stored in the container. Pretty
-  prints object slots, alphabetically, skipping &#39;private&#39; 
-  attributes (this starting with `_&#39;). &#34;&#34;&#34;
-  def __init__(i, **d)   : i.__dict__.update(d)
-  def __getitem__(i,k)   : return i.__dict__[k]
-  def __setitem__(i,k,v) : i.__dict__[k] = v
-  def __add__(i,j): 
-    for k in j.__dict__: i[k] = j[k]
-    return i
-  def __repr__(i): 
-    return &#34;{&#34;+ &#39;, &#39;.join(
-           [f&#34;:{k} {v}&#34; for k, v in sorted(i.__dict__.items()) 
-                        if type(v)!=fun and k[0] != &#34;_&#34;])+&#34;}&#34;
-  def has(i,d):
-    &#34;Add any functions from `d` as methods inside `i`.&#34;
-    def method(f): return lambda *lst, **kw: f(i, *lst, **kw)
-    for k,v in d.items():
-      if k[0] != &#34;_&#34;:
-        if type(v)==fun: i.__dict__[k] = method(v)
-    return i
-
-def cli(funs,doc=&#34;&#34;):
-  &#34;Standard start up function.&#34;
-  for n,flag in enumerate(sys.argv):
-    if flag==&#34;-h&#34;: print(doc)
-    if flag==&#34;-C&#34;: print(doc.split(&#34;\n\n&#34;)[0])
-    if flag==&#34;-L&#34;: ok.menu(funs)
-    if flag==&#34;-t&#34;: ok.some(sys.argv[n+1], funs)
-    if flag==&#34;-T&#34;: ok.all(funs)
-
-if __name__ == &#34;__main__&#34;: cli(locals(),__doc__)</code></pre>
+&#34;&#34;&#34;</code></pre>
 </details>
 </section>
 <section>
@@ -110,105 +67,8 @@ if __name__ == &#34;__main__&#34;: cli(locals(),__doc__)</code></pre>
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="lib.same"><code class="name flex">
-<span>def <span class="ident">same</span></span>(<span>x)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Return x, unmodified.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def same(x): 
-  &#34;Return x, unmodified.&#34;
-  return x</code></pre>
-</details>
-</dd>
-<dt id="lib.cli"><code class="name flex">
-<span>def <span class="ident">cli</span></span>(<span>funs, doc='')</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Standard start up function.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def cli(funs,doc=&#34;&#34;):
-  &#34;Standard start up function.&#34;
-  for n,flag in enumerate(sys.argv):
-    if flag==&#34;-h&#34;: print(doc)
-    if flag==&#34;-C&#34;: print(doc.split(&#34;\n\n&#34;)[0])
-    if flag==&#34;-L&#34;: ok.menu(funs)
-    if flag==&#34;-t&#34;: ok.some(sys.argv[n+1], funs)
-    if flag==&#34;-T&#34;: ok.all(funs)</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="lib.on"><code class="flex name class">
-<span>class <span class="ident">on</span></span>
-<span>(</span><span>**d)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>The only class you've ever need? Can convert local functions
-into methods (which are stored in the container. Pretty
-prints object slots, alphabetically, skipping 'private'
-attributes (this starting with `_').</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class on:
-  &#34;&#34;&#34;The only class you&#39;ve ever need? Can convert local functions 
-  into methods (which are stored in the container. Pretty
-  prints object slots, alphabetically, skipping &#39;private&#39; 
-  attributes (this starting with `_&#39;). &#34;&#34;&#34;
-  def __init__(i, **d)   : i.__dict__.update(d)
-  def __getitem__(i,k)   : return i.__dict__[k]
-  def __setitem__(i,k,v) : i.__dict__[k] = v
-  def __add__(i,j): 
-    for k in j.__dict__: i[k] = j[k]
-    return i
-  def __repr__(i): 
-    return &#34;{&#34;+ &#39;, &#39;.join(
-           [f&#34;:{k} {v}&#34; for k, v in sorted(i.__dict__.items()) 
-                        if type(v)!=fun and k[0] != &#34;_&#34;])+&#34;}&#34;
-  def has(i,d):
-    &#34;Add any functions from `d` as methods inside `i`.&#34;
-    def method(f): return lambda *lst, **kw: f(i, *lst, **kw)
-    for k,v in d.items():
-      if k[0] != &#34;_&#34;:
-        if type(v)==fun: i.__dict__[k] = method(v)
-    return i</code></pre>
-</details>
-<h3>Methods</h3>
-<dl>
-<dt id="lib.on.has"><code class="name flex">
-<span>def <span class="ident">has</span></span>(<span>i, d)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Add any functions from <code>d</code> as methods inside <code>i</code>.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def has(i,d):
-  &#34;Add any functions from `d` as methods inside `i`.&#34;
-  def method(f): return lambda *lst, **kw: f(i, *lst, **kw)
-  for k,v in d.items():
-    if k[0] != &#34;_&#34;:
-      if type(v)==fun: i.__dict__[k] = method(v)
-  return i</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
-</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -236,22 +96,6 @@ zip
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="lib.same" href="#lib.same">same</a></code></li>
-<li><code><a title="lib.cli" href="#lib.cli">cli</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-classes">Classes</a></h3>
-<ul>
-<li>
-<h4><code><a title="lib.on" href="#lib.on">on</a></code></h4>
-<ul class="">
-<li><code><a title="lib.on.has" href="#lib.on.has">has</a></code></li>
-</ul>
-</li>
-</ul>
-</li>
 </ul>
 </nav>
 </main>

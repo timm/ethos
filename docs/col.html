@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
 <title>col API documentation</title>
-<meta name="description" content="(c) 2021, Tim Menzies, MIT license.
-https://choosealicense.com/licenses/mit/" />
+<meta name="description" content="col.py : summarize streams of data
+(c) 2021, Tim Menzies, MIT license.
+https://choosealicense.com/licenses/mit/ …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -23,9 +24,24 @@ https://choosealicense.com/licenses/mit/" />
 <h1 class="title">Module <code>col</code></h1>
 </header>
 <section id="section-intro">
-<p>(c) 2021, Tim Menzies, MIT license.
+<p>col.py : summarize streams of data
 <br>
-<a href="https://choosealicense.com/licenses/mit/">https://choosealicense.com/licenses/mit/</a></p>
+(c) 2021, Tim Menzies, MIT license.
+<br>
+<a href="https://choosealicense.com/licenses/mit/">https://choosealicense.com/licenses/mit/</a>
+</p>
+<p>USAGE ./col.py [OPTIONS]
+</p>
+<p>-t S
+run demo functions matching S<br>
+-T
+run all demo functions<br>
+-L
+list all demo functions<br>
+-h
+run help<br>
+-C
+show copyright</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -33,11 +49,22 @@ https://choosealicense.com/licenses/mit/" />
 <pre><code class="python">#!/usr/bin/env python3
 # vim: ts=2 sw=2 sts=2 et tw=81 fdm=indent:
 &#34;&#34;&#34;
-(c) 2021, Tim Menzies, MIT license.    
-https://choosealicense.com/licenses/mit/
+col.py : summarize streams of data     
+(c) 2021, Tim Menzies, MIT license.      
+https://choosealicense.com/licenses/mit/  
+  
+USAGE ./col.py [OPTIONS]  
+  
+ -t S  run demo functions matching S  
+ -T    run all demo functions  
+ -L    list all demo functions  
+ -h    run help  
+ -C    show copyright  
 &#34;&#34;&#34;
 
-from on import on
+from lib import cli,on
+from ok  import ok
+from random import random as r
 
 def column( pos=0,txt=&#34;&#34;): 
   what = (Col if &#34;?&#34; in txt else (Num if txt[0].isupper() else Sym))
@@ -46,12 +73,13 @@ def column( pos=0,txt=&#34;&#34;):
 def Col(pos=0, txt=&#34;&#34;): 
   &#34;&#34;&#34;Base object for all other columns. `add()`ing items
   increments the `n` counter.&#34;&#34;&#34;
-  new = on(pos=pos, txt=txt, n=0, w= (-1 if &#34;-&#34; in txt else 1)) 
+  new = on(pos=pos, txt=txt, n=0, w=1)
   def add(i,x) : 
     if x != &#34;?&#34;: 
       x = i.prep(x); i.n+= 1; i.add1(x)
     return x
-  def prep(it,x):  return x
+  def add1(i,x):  return x
+  def prep(i,x):  return x
   return new.has(locals())
 
 def Num(pos=0, txt=&#34;&#34;): 
@@ -59,7 +87,8 @@ def Num(pos=0, txt=&#34;&#34;):
   `all()` returns that list, sorted. Can report
   `sd()` (standard deviation) and `mid()` (median point).
    Also knows how to `norm()` normalize numbers.&#34;&#34;&#34; 
-  new = Col(pos,txt) + on(_all=[], ok=False) 
+  new = Col(pos,txt) + on(_all=[], ok=False,
+            w= -1 if &#34;-&#34; in txt else 1)
   def add1(i,x) : 
     i._all += [x]
     i.ok=False
@@ -75,7 +104,7 @@ def Num(pos=0, txt=&#34;&#34;):
 
 def Sym(pos=0, txt=&#34;&#34;): 
   &#34;Here, `add` tracks symbol counts, including `mode`.&#34;
-  new = (Col(pos,txt) + o(_all={}, mode=None, max=0)) 
+  new = Col(pos,txt) + on(_all={}, mode=None, max=0) 
   def add1(i,x):
     tmp = i._all[x] = i._all.get(x,0) + 1
     if tmp&gt;i.max: i.max,i.mode = tmp,x
@@ -83,13 +112,42 @@ def Sym(pos=0, txt=&#34;&#34;):
   def mid(i): return i.mode
   return new.has(locals())
 
-def Some(pos=0, txt=&#34;&#34;, max=256): 
+def Some(pos=0, txt=&#34;&#34;, keep=256): 
   &#34;This `add` up to `max` items (and if full, sometimes replace old items).&#34;
-  new = o(n=0, _all=[], max=max)
+  new = Col(pos,txt) + on(_all=[], keep=keep)
   def add1(i,x) : 
-    if len(i._all) &lt; i.max: i._all += [x]
-    elif r() &lt; i.n / i.max: i._all[ int(r()*len(i._all)) ] = x
-  return new.has(locals())</code></pre>
+    if len(i._all) &lt; i.keep: i._all += [x]
+    elif r() &lt; i.keep / i.n: i._all[ int(r()*len(i._all)) ] = x
+  return new.has(locals())
+
+#----------------------------------------------------------------
+def test_num():
+  &#34;summarising numbers&#34;
+  n=Num()
+  for x in [&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,
+             &#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,
+             &#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;]:
+    n.add(x)
+  print(n.mid(), n.sd())
+
+def test_sym():
+  &#34;summariing numbers&#34;
+  s=Sym()
+  for x in [&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,
+             &#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,
+             &#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;]:
+    s.add(x)
+  ok(&#34;10&#34;==s.mid(),&#34;mid working ?&#34;)
+
+def test_some():
+  &#34;summarize very large sample space&#34;
+  import random
+  random.seed(1)
+  n=Some(max=32)
+  [n.add(x) for x in range(10**6)]
+  print(sorted(n._all))
+
+if __name__ == &#34;__main__&#34;: cli(locals(),__doc__)</code></pre>
 </details>
 </section>
 <section>
@@ -99,6 +157,12 @@ def Some(pos=0, txt=&#34;&#34;, max=256):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="col.r"><code class="name flex">
+<span>def <span class="ident">r</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>random() -&gt; x in the interval [0, 1).</p></div>
+</dd>
 <dt id="col.column"><code class="name flex">
 <span>def <span class="ident">column</span></span>(<span>pos=0, txt='')</span>
 </code></dt>
@@ -126,12 +190,13 @@ increments the <code>n</code> counter.</p></div>
 <pre><code class="python">def Col(pos=0, txt=&#34;&#34;): 
   &#34;&#34;&#34;Base object for all other columns. `add()`ing items
   increments the `n` counter.&#34;&#34;&#34;
-  new = on(pos=pos, txt=txt, n=0, w= (-1 if &#34;-&#34; in txt else 1)) 
+  new = on(pos=pos, txt=txt, n=0, w=1)
   def add(i,x) : 
     if x != &#34;?&#34;: 
       x = i.prep(x); i.n+= 1; i.add1(x)
     return x
-  def prep(it,x):  return x
+  def add1(i,x):  return x
+  def prep(i,x):  return x
   return new.has(locals())</code></pre>
 </details>
 </dd>
@@ -152,7 +217,8 @@ Also knows how to <code>norm()</code> normalize numbers.</p></div>
   `all()` returns that list, sorted. Can report
   `sd()` (standard deviation) and `mid()` (median point).
    Also knows how to `norm()` normalize numbers.&#34;&#34;&#34; 
-  new = Col(pos,txt) + on(_all=[], ok=False) 
+  new = Col(pos,txt) + on(_all=[], ok=False,
+            w= -1 if &#34;-&#34; in txt else 1)
   def add1(i,x) : 
     i._all += [x]
     i.ok=False
@@ -178,7 +244,7 @@ Also knows how to <code>norm()</code> normalize numbers.</p></div>
 </summary>
 <pre><code class="python">def Sym(pos=0, txt=&#34;&#34;): 
   &#34;Here, `add` tracks symbol counts, including `mode`.&#34;
-  new = (Col(pos,txt) + o(_all={}, mode=None, max=0)) 
+  new = Col(pos,txt) + on(_all={}, mode=None, max=0) 
   def add1(i,x):
     tmp = i._all[x] = i._all.get(x,0) + 1
     if tmp&gt;i.max: i.max,i.mode = tmp,x
@@ -188,7 +254,7 @@ Also knows how to <code>norm()</code> normalize numbers.</p></div>
 </details>
 </dd>
 <dt id="col.Some"><code class="name flex">
-<span>def <span class="ident">Some</span></span>(<span>pos=0, txt='', max=256)</span>
+<span>def <span class="ident">Some</span></span>(<span>pos=0, txt='', keep=256)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This <code>add</code> up to <code>max</code> items (and if full, sometimes replace old items).</p></div>
@@ -196,13 +262,69 @@ Also knows how to <code>norm()</code> normalize numbers.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def Some(pos=0, txt=&#34;&#34;, max=256): 
+<pre><code class="python">def Some(pos=0, txt=&#34;&#34;, keep=256): 
   &#34;This `add` up to `max` items (and if full, sometimes replace old items).&#34;
-  new = o(n=0, _all=[], max=max)
+  new = Col(pos,txt) + on(_all=[], keep=keep)
   def add1(i,x) : 
-    if len(i._all) &lt; i.max: i._all += [x]
-    elif r() &lt; i.n / i.max: i._all[ int(r()*len(i._all)) ] = x
+    if len(i._all) &lt; i.keep: i._all += [x]
+    elif r() &lt; i.keep / i.n: i._all[ int(r()*len(i._all)) ] = x
   return new.has(locals())</code></pre>
+</details>
+</dd>
+<dt id="col.test_num"><code class="name flex">
+<span>def <span class="ident">test_num</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>summarising numbers</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_num():
+  &#34;summarising numbers&#34;
+  n=Num()
+  for x in [&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,
+             &#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,
+             &#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;]:
+    n.add(x)
+  print(n.mid(), n.sd())</code></pre>
+</details>
+</dd>
+<dt id="col.test_sym"><code class="name flex">
+<span>def <span class="ident">test_sym</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>summariing numbers</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_sym():
+  &#34;summariing numbers&#34;
+  s=Sym()
+  for x in [&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,
+             &#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,&#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;,
+             &#34;10&#34;,&#34;5&#34;,&#34;?&#34;,&#34;20&#34;]:
+    s.add(x)
+  ok(&#34;10&#34;==s.mid(),&#34;mid working ?&#34;)</code></pre>
+</details>
+</dd>
+<dt id="col.test_some"><code class="name flex">
+<span>def <span class="ident">test_some</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>summarize very large sample space</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_some():
+  &#34;summarize very large sample space&#34;
+  import random
+  random.seed(1)
+  n=Some(max=32)
+  [n.add(x) for x in range(10**6)]
+  print(sorted(n._all))</code></pre>
 </details>
 </dd>
 </dl>
@@ -236,12 +358,16 @@ zip
 </div>
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="col.r" href="#col.r">r</a></code></li>
 <li><code><a title="col.column" href="#col.column">column</a></code></li>
 <li><code><a title="col.Col" href="#col.Col">Col</a></code></li>
 <li><code><a title="col.Num" href="#col.Num">Num</a></code></li>
 <li><code><a title="col.Sym" href="#col.Sym">Sym</a></code></li>
 <li><code><a title="col.Some" href="#col.Some">Some</a></code></li>
+<li><code><a title="col.test_num" href="#col.test_num">test_num</a></code></li>
+<li><code><a title="col.test_sym" href="#col.test_sym">test_sym</a></code></li>
+<li><code><a title="col.test_some" href="#col.test_some">test_some</a></code></li>
 </ul>
 </li>
 </ul>
