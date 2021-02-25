@@ -14,25 +14,21 @@ USAGE ./lib.py [OPTIONS]
  -C    show copyright  
 """
 from types import FunctionType as fun
-import ok,re,sys,inspect
+import ok,re,sys,inspect,functools
 
 def same(x): 
   "Return x, unmodified."
   return x
 
 def chunks(a, n):
-  "Yield successive n-sized chunks from lst."
-  i, out= 0,[]
-  gap = len(a)%n
-  print(len(a)//2)
-  print(gap)
-  while i < len(a)//2: 
-    yield a[i:i+n]; i+=n
-  j = i+n+gap
-  yield a[i+n:j]
-  i+=j
-  while i < len(a): 
-    yield a[i:i+n]; i+=n
+  """Yield successive n-sized chunks from lst. If there's 
+  any leftover slack, add that to the middle chunk."""
+  n    = int(n)
+  mid  = len(a)//2-n
+  jump = n+n+len(a)%n
+  for i in range(0, mid, n): yield a[i:i+n]
+  yield a[i+n:i+jump] 
+  for i in range(i+jump, len(a), n): yield a[i:i+n]
 
 class on:
   """The only class you've ever need? Can convert local functions 
@@ -68,10 +64,12 @@ def cli(funs,doc=""):
 
 #------------------------------------------------
 def test_chunks():
-  lst = [x for x in range(21)]
-  print([len(a) for a in chunks(lst, int(len(lst)**0.5))])
-
-test_chunks()
+  "Divide a list into chunks"
+  lst = [x for x in range(87)]
+  lst = [len(a) for a in chunks(lst, int(len(lst)**0.5))]
+  print(lst[9], lst)
+  #ok.ok( lst[ 0] == 9, "want seven" )
+  #ok.ok( lst[-1] == 9, "want nine" )
 
 if __name__ == "__main__": cli(locals(),__doc__)
 

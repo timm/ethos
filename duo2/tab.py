@@ -13,8 +13,8 @@ USAGE ./tab.py [OPTIONS]
  -h    run help  
  -C    show copyright  
 """
-import re, math
-from lib import cli,on
+import re, math, functools
+from lib import chunks, cli, on
 from ok  import ok
 from col import column,Some
 
@@ -48,16 +48,24 @@ def Cols(lst):
     new.all.append(one)
     if "?" not in txt: 
       (new.y if txt[-1] in "+-" else new.x).append(one)
-  def ys(i,row): return [row.cells[col.pos] for col in i.y]
+  def ys(i,row): 
+    return [row.cells[col.pos] for col in i.y]
   return new.has(dict(ys=ys))
 
-def Tab(src, keep=1024):
+def Tab(src=[], keep=1024, div=lambda z:2*len(z)**.5):
   new = on(_rows=Some(keep=keep), cols=None)
   for cols, row in  data(src):
     new.cols = cols
     new._rows.add(Row(row))
-  def rows(i): return i._rows._all
-  return new.has(dict(rows=rows))
+  def clone(i): 
+    return Cols([i.cols.header])
+  def clusters(i): 
+    f= lambda a,b:(0 if id(a)==id(b) else (-1 if a.better(b,cols) else 1))
+    return list(chunks(sorted(i.rows(), key=functools.cmp_to_key(f)),
+                        div(i.rows())))
+  def rows(i): 
+    return i._rows._all
+  return new.has(locals())
 
 def csv(file):
   "Read lists from  file strings (separating on commas)."
@@ -72,7 +80,16 @@ def test_tab():
   "make a table"
   t=Tab(csv("../data/auto93.csv"))
   one = t.cols.all[1]
-  ok(395 == one.n, "summarized right?")
-  ok(395 == len(t._rows._all),"kept enough?")
+  t1 = Tab(iter([t.cols.header]))
+  rows=[]
+  for cols, row in data([t.cols.header]+[row for row in t.rows]):
+    rows += [Row(row)]
+  print(len(rows))   
+  # print([len(a) for a in t.clusters()])
+  # ok(395 == one.n, "summarized right?")
+  # print([len(a) for a in t.clusters()])
+  # ok(395 == len(t._rows._all),"kept enough?")
+  #
+test_tab()
 
 if __name__ == "__main__": cli(locals(),__doc__)

@@ -27,38 +27,6 @@ def ordered(rows,cols):
                         1 ))
   return sorted(rows, key=functools.cmp_to_key(better))
 
-def Span(down,up): 
-  new = on(down = down, up = up, _all=[])
-  def add(i,x): i._all += [x]
-  return new.has(locals())
-
-def unsuper(lst,fx,chop=.5, cohen=.35):
-  lst, nums = [], Num()
-  for one in enumerate(lst):
-    if fx(one) != "?": 
-      lst += [nums.add( fx(one) )]
-  sd     = nums.sd()
-  width  = len(lst)**chop
-  while width < 4 and width < len(lst): width *= 1.2
-  x      = fx(lst[0])
-  latest = Span(x, x)
-  out    = [latest]
-  b4     = 0
-  diffent=1 #XXXX
-  for now,one in enumerate(lst):
-    x = fx(one)
-    if now < len(lst) - width:
-      if len(latest._all) > width:
-       if latest.up - latest.down > sd*cohen:
-         if x != fx(lst[now+1]):
-           latest  = Span(latest.up, fx(one))
-           out    += [latest]
-    latest.up    = x
-    latest._all += [one]
-  out[ 0].down = -math.inf
-  out[-1].up   = math.inf
-  return out
-
 #----------------------------------
 def test_sort():
   "make a table"

@@ -30,8 +30,8 @@ def one(fun):
 def menu(funs):
   "List known demo functions"
   for k,v in funs.items():
-    if type(v) == fun and k[:-5] == "test_":
-      print(fun.__name__, ":", fun.__doc__)
+    if type(v) == fun and k[:5] == "test_":
+      print(v.__name__, ":", v.__doc__)
 
 def ok(x,y):
   "Pretty print run of `assert`."
