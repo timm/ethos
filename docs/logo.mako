@@ -1,5 +1,5 @@
 <center>
-<img width=300 src="http://menzies.us/duo/thing12.png">
+<img width=300 src="http://menzies.us/duo/keys.jpg">
 <h3>DUO: data miners<br>using/used-by optimizers</h3>
 <p>
 <a href="#license">&copy; 2021</a>, Tim Menzies<br>
