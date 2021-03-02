@@ -24,6 +24,9 @@ Class model:
       - Num(all, w=1).         # If minimizing then w=-1.
       - Sym(all, most, mode)   # Most is the most frequently seen thing
       - Some(all, keep=256).   # Only keep some samples.
+  - Cols(all=Col+, x=Col+, y=Col+).       # x,y &subseteq; all
+# - Row(cells=[], tag=0).                 # tag is the row cluster i.
+# - Tab(cols=Cols, rows=Row+, header=[]). # header is line1 of data.
 
 """
 from types import FunctionType as fun
@@ -60,15 +63,9 @@ def espy(
       return f"[{i.down} .. {i.up})"
     def has(i,x):
       return x==i.down if i.down==i.up else i.down <= x < i.up
- 
   # ------------------------------------------
-  # ## Column Classes
-  # Used to summarize individual columns.
-  #
-    # ### Col
-  # Base object for all other columns. 
-  # `add()`ing items increments the `n` counter.
   class Col(lib.o):
+    "base classes"
     def __init__(i, pos=0, txt="", all=[]):  
       i.pos, i.txt, i.n, i.w, i._bins = pos,txt,0,1,None
       i * all
@@ -83,13 +80,7 @@ def espy(
     def bins(i, tab) : 
        i._bins = i._bins or i._bins1(tab)
        return i._bins
- 
   # ---------------------------------------------------
-  # ### Num
-  # - `add` accumulates numbers into `_all`.
-  #  - `all()` returns that list, sorted. Can report
-  #  - `sd()` (standard deviation) and `mid()` (median point).
-  #  - Also knows how to `norm()` normalize numbers.
   class Num(Col):
     def __init__(i, w=0, txt="", **kw):
       i._all, i.ok = [], False, 
@@ -107,11 +98,7 @@ def espy(
     def norm(i,x): a=i.all(); return (x-a[0])/(a[-1] - a[0])
     def sd(i):     a=i.all(); return (a[int(.9*len(a))] - a[int(.1*len(a))])/2.56
     def _bins1(i,tab): return div(tab,i)
- 
   # ---------------------------------------------------
-  # ### Sym
-  # - `add` accumulates numbers into `_all`.
-  # Here, `add` tracks symbol counts, including `mode`."
   class Sym(Col):
     def __init__(i, **kw): 
       i.all, i.mode, i.max = {}, None, 0
@@ -133,11 +120,9 @@ def espy(
           if n > k.max:
              k.mode, k.max = x,n
         return k
-     
-  # ---------------------------------------------------
-  # ### Some
-  # This `add` up to `max` items (and if full, sometimes replace old items).
+  # ---------------------------------------------------------------------
   class Some(Col):
+    "`add` up to `max` items (and if full, sometimes replace old items)."
     def __init__(i, keep=KEEP, **kw): 
       i.all=[]; i.keep=keep
       super().__init__(**kw)
@@ -149,13 +134,8 @@ def espy(
   
   # -------------------------------------------------
   # ## Table class
-  # Holds rows, summarizes in columns. 
   #
-  # - Cols(all=Col+, x=Col+, y=Col+).  _x,y &subseteq; all_
-  # - Row(cells=[], tag=0).  _tag is the row cluster i._
-  # - Tab(cols=Cols, rows=Row+, header=[]). _header is line1 of data._
-  # --------------------------
-  # Thing to store row data.
+  #  # Thing to store row data.
   class Row(lib.o):
     def __init__(i,cells=[]): 
       i.tag, i.cells = 0, (cells if type(cells)==list else cells.cells)
@@ -171,11 +151,10 @@ def espy(
       return s1/n < s2/n
     def ys(i,tab):
       return [i.cells[col.pos] for col in tab.cols.y]
-  
   # -------------------------------------------
-  # Makes a `Num`,`Sym`, or `Skip`, store them 
-  # in `i.all` and either `i.x` or `i.y`.
   class Cols(lib.o):
+    """ Makes a `Num`,`Sym`, or `Skip`, store them 
+    in `i.all` and either `i.x` or `i.y`."""
     def __init__(i,lst): 
       i.header, i.x, i.y, i.all = lst, [], [], []
       for pos,txt in enumerate(lst):
@@ -186,9 +165,9 @@ def espy(
     def kind(i,pos, txt):
       x = Col if NO in txt else (Num if txt[0].isupper() else Sym)
       return x(pos=pos, txt=txt) 
-
   #------------------------------------------------------------
   class Tab(lib.o):
+    " Holds rows, summarizes in columns."
     def __init__(i, all=[]):
        i.rows, i.cols = Some() , None
        i * all
