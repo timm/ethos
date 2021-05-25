@@ -1,0 +1,17 @@
+# http://patorjk.com/software/taag/#p=display&h=3&v=3&f=Shadow&t=lunatic
+clear
+tput bold; tput setaf 6; cat <<'EOF'
+                                    .::!!!!!!!:.
+  .!!!!!:.                        .:!!!!!!!!!!!!
+  ~~~~!!!!!!.                 .:!!!!!!!!!UWWW$$$
+      :$$NWX!!:           .:!!!!!!XUWW$$$$$$$$$P
+      $$$$$##WX!:      .<!!!!UW$$$$"  $$$$$$$$#
+      $$$$$  $$$UX   :!!UW$$$$$$$$$   4$$$$$*
+      ^$$$B  $$$$\     $$$$$$$$$$$$   d$$R"
+        "*$bd$$$$      '*$$$$$$$$$$$o+#"
+             """"          """""""
+EOF
+tput sgr0
+
+Ell=$(cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
+Ell="$Ell" bash --init-file $Ell/etc/ellrc -i
