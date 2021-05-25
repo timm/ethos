@@ -33,6 +33,17 @@ class Tab(obj):
     a= i.around(r,the)
     return a[ int(len(a) * the.far) ][1]
 
+  def y(i):      return [col.mid() for col in i.cols.y]
+  def mid(i):    return [col.mid() for col in i.cols.all]
+  def spread(i): return [col.spread() for col in i.cols.all]
+
+  def __lt__(i,j): return Row(i,i.mid()) < Row(j,j.mid())
+    
+  def bins(i,j,the):
+    return {(kl, (col1.txt, col1.at, span)): f
+              for col1, col2 in zip(i.cols.x, j.cols.x)
+                 for kl, span, f in col1.discretize(col2, the)}
+
 class Cols(obj):
   def __init__(i,a):
     i.x,i.y,i.all = [],[],[]

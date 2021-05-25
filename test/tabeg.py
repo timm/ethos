@@ -2,6 +2,7 @@
 from tab import Tab
 from about import defaults
 from clusters import Clusters
+from lib import rs
 import random
 
 def go(f="data/weather.csv",silent=True):
@@ -25,7 +26,13 @@ def diveg(f="data/weather.csv",silent=True):
   random.seed(1)
   the=defaults.clone()
   t=Tab(file=f)
-  Clusters(t,the,silent=False)
+  c=Clusters(t,the,silent=False)
+  print([col.txt for col in t.cols.y])
+  all =  sorted(c.all)
+  for t1 in c.all: print(rs(t1.y()))
+  for span in all[0].bins(all[-1],the):
+     print(span)
+
 
 go()
 #go("data/auto93.csv")

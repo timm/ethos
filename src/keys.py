@@ -1,12 +1,12 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
-from lib  import obj,cli
+from lib  import obj
 import sys
 
-defaults = cli(
+class Keys(obj)
    p=2, 
    cohen=.3, 
    enough=.5, 
-   far=.9, 
+   far=.8, 
    data="data/weather.csv"
-)
+ )
 

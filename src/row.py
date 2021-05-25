@@ -1,5 +1,6 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
 from lib import obj
+import math
 
 class Row(obj):
   def __init__(i,tab,cells): i.cells,i.tab = cells,tab

@@ -1,0 +1,7 @@
+# CONTRIBUTING
+
+There is a magic variable `the` passed around to functions that need
+special preferences. This variable is initialized in `src/about.py` where
+it can be (optionally) updated from the command line. Best practice
+is to grep the defaults, do a deepcopy, reset the random number seed
+`the.seed` the pass the copied `the` to all subroutines.
