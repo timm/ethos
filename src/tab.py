@@ -23,16 +23,15 @@ class Tab(obj):
       i.cols = Cols(a)
 
   def clone(i,rows=[]):
-    return Tab(rows= [[c.txt for c in t.cols.all]] + rows)
+    return Tab(rows= [[c.txt for c in i.cols.all]] + rows)
 
   def around(i,r1,the):
-    return sorted([(r1.dist(r2,i.cols.x,the),r2) 
-                   for r2 in i.rows if id(r1) != id(r2)],
+    return sorted([(r1.dist(r2,i.cols.x,the),r2) for r2 in i.rows],
                   key=lambda z:z[0])
 
   def far(i,r,the):
     a= i.around(r,the)
-    return a[ int(len(a) * the.far) ]
+    return a[ int(len(a) * the.far) ][1]
 
 class Cols(obj):
   def __init__(i,a):

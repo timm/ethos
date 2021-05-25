@@ -2,5 +2,5 @@
 from lib  import obj,cli
 import sys
 
-defaults = cli(x=23, p=2, leafs=0.5, data="data/weather.csv")
+defaults = cli(x=23, p=2, enough=.5, far=.8, data="data/weather.csv")
 

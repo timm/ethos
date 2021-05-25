@@ -38,10 +38,12 @@ def csv(src=None):
     for out in lines(src):
       yield out
 
-# If appropriate, coerce `string` into an integer or a float.
+# If appropriate, coerce `string` into some type.
 def coerce(string):
+  if string == "True": return True
+  if string == "False": return False
   try: return int(string)
   except Exception:
     try: return float(string)
     except Exception: return string
- 
+
