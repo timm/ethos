@@ -1,12 +1,13 @@
+
 # vim: filetype=python ts=2 sw=2 sts=2 et :
 from tab import Tab
-import about
+from about import defaults
 from clusters import Clusters
 from lib import rs
 import random
 
 def go(f="data/weather.csv",silent=True):
-  the=about.defaults()
+  the=defaults.clone()
   t=Tab(file=f)
   for n,here in enumerate(t.rows):
     tmp=t.around(here,the)
@@ -23,17 +24,18 @@ def go(f="data/weather.csv",silent=True):
     assert tmp[0][0] <= tmp[1][0] < tmp[-1][0]
 
 def diveg(f="data/weather.csv",silent=True):
-  the=about.defaults()
+  random.seed(1)
+  the=defaults.clone()
   t=Tab(file=f)
-  c=Clusters(t,the,silent=True)
+  c=Clusters(t,the,silent=False)
   print([col.txt for col in t.cols.y])
   all =  sorted(c.all)
   for t1 in c.all: print(rs(t1.y()))
-  for span in all[0].bins(all[-1],the): print(span)
-  print(the)
+  for span in all[0].bins(all[-1],the):
+     print(span)
 
 
-#go()
+go()
 #go("data/auto93.csv")
 
 diveg("data/auto93.csv")

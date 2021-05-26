@@ -3,7 +3,7 @@ from lib import obj
 import math
 
 class Row(obj):
-  def __init__(i,tab,cells): i.cells,i.tab = cells,tab
+  def __init__(i,tab,cells): i.cells,i._tab = cells,tab
 
   def dist(i,j,cols,the):
     d,n = 0, 1E-31
@@ -14,8 +14,8 @@ class Row(obj):
     return (d/n)**(1/the.p)
 
   def __lt__(i, j):
-    s1, s2, n = 0, 0, len(i.tab.cols.y)
-    for col in i.tab.cols.y:
+    s1, s2, n = 0, 0, len(i._tab.cols.y)
+    for col in i._tab.cols.y:
       a   = col.norm(i.cells[col.at])
       b   = col.norm(j.cells[col.at])
       s1 -= math.e**(col.w * (a - b) / n)

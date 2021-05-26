@@ -6,19 +6,20 @@ import copy
 
 class obj:
   def __init__(i, **d): i.__dict__.update(d)
-  def __repr__(i) : return "{" + ', '.join(
+  def __repr__(i) : return i.__class__.__name__+"{" + ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) if k[0] != "_"]) + "}"
   def clone(i): return obj(**copy.deepcopy(i.__dict__))
 
 def cli(**d):
   "If command line has :key val, and 'key' is in d, then d[key]=val"
   i=-1
-  while i<len(sys.argv)-2:
+  while i<len(sys.argv)-1:
     i, key, now = i+1, sys.argv[i][1:], coerce(sys.argv[i+1])
+    print(i,key,now)
     if key in d:
       i += 1
       if type(now) == type(d[key]): d[key] = now
-  return obj(**d)
+  return d
 
 # From files or standard input or a string, 
 # return an iterator for the lines.
