@@ -3,34 +3,29 @@ import random
 from lib import rs
 
 class Clusters:
-  def __init__(i,t,the,cols=None,silent=True):
+  def __init__(i,t,the,cols=None,loud=False):
     i.all=[]
-    i.div(t.rows,0, t,the,silent, 
+    i.div(t.rows,0, t,the,loud, 
           cols or t.cols.x, 
-          len(t.rows)**the.enough // 1)
+          len(t.rows)**the.tiny // 1)
   
-  def div(i,rows,lvl,t,the,silent,cols,enough):
-    if not silent:
+  def div(i,rows,lvl,  t,the,loud,cols,tiny):
+    if loud:
       print(f"{'|.. ' * lvl}{len(rows)}")
-    if len(rows) < 2*enough:
-      i.all += [t]
+    if len(rows) < 2*tiny:
+      i.all += [t.clone(rows)]
     else:
       any = random.choice(rows)
-      left = t.far(any,the,rows=rows)
-      right = t.far(left,the,rows=rows)
-      c  = left.dist(right,cols,the)
+      left  = t.far(any,  the, cols=cols, rows=rows)
+      right = t.far(left, the, cols=cols, rows=rows)
+      c  = left.dist(right,the, cols=cols)
       for row in rows:
-        a= row.dist(left,  cols, the)
-        b= row.dist(right, cols, the)
-        x= (a**2 + c**2 - b**2)/(2**c)
+        a = row.dist(left,  the, cols=cols)
+        b = row.dist(right, the, cols=cols)
+        x = (a**2 + c**2 - b**2)/(2**c)
         row.divx = max(0, min(1, x))
-      rows=sorted(rows, key=lambda row: row.divx)
-      #print(rs([row.divx for row in rows][::10],3))
-      mid = len(rows) // 2  
-      tleft=t.clone()
-      tright=t.clone()
-      [tleft.add(row) for row in rows[:mid]]
-      [tright.add(row) for row in rows[mid:]]
-      i.div(tleft.rows, lvl+1,tleft, the,silent,cols,enough)
-      i.div(tright.rows,lvl+1,tright,the,silent,cols,enough)
+      rows = sorted(rows, key=lambda row: row.divx)
+      mid  = len(rows) // 2  
+      i.div(rows[:mid],lvl+1, t,the,loud,cols,tiny)
+      i.div(rows[mid:],lvl+1, t,the,loud,cols,tiny)
   

@@ -24,46 +24,24 @@ class Tab(obj):
       i.cols = Cols(a)
 
   def clone(i,rows=[]):
-    return Tab(rows= [[c.txt for c in i.cols.all]] + rows)
+    return Tab(rows=[[c.txt for c in i.cols.all]] + rows)
 
   def around(i,r1,the,cols=None,rows=None):
     rows = rows or i.rows
-    cols = cols or i.cols.x
-    return sorted([(r1.dist(r2,cols,the),r2) for r2 in rows],
-                  key=lambda z:z[0])
-
-  def poles(i,the,cols=None,rows=None):
-    rows = rows or i.rows
-    cols = cols or i.cols.x
-    tmp = []
-    for j in range(the.fars):
-        r1=random.choice(rows)
-        r2=random.choice(rows)
-        if id(r1) != id(r2):
-           tmp += [(r1.dist(r2,cols,the),r1,r2)]
-    tmp = sorted(tmp,key=lambda z:z[0])
-    return tmp[ int(len(tmp)*the.far) ]
-
-
+    cols = cols or i.cols.y
+    return sorted([(r1.dist(r2,the,cols=cols),r2) 
+                   for r2 in rows], key=lambda z:z[0])
+  
   def far(i,r1,the,cols=None,rows=None):
-    rows = rows or i.rows
-    cols = cols or i.cols.x
-    return i.around(r1,the,cols=cols,rows=rows)[-1][1]
-    # tmp=[]
-    # if len(rows) <= the.fars:
-    #    tmp = [(r1.dist(r2, cols or i.cols.x,the),r2) for r2 in rows]
-    # else:
-    #   for _ in range(the.fars):
-    #     r2 = random.choice(rows)
-    #     tmp += [(r1.dist(r2,cols or i.cols.x,the),r2)]
-    # tmp = sorted(tmp, key=lambda z:z[0])
-    # return tmp[ int(len(tmp) * the.far) ][1]
-
+    tmp = i.around(r1,the,cols=cols,rows=rows)
+    return tmp[ int(the.far * len(tmp)) ][1]
+    
   def y(i):      return [col.mid() for col in i.cols.y]
   def mid(i):    return [col.mid() for col in i.cols.all]
   def spread(i): return [col.spread() for col in i.cols.all]
 
-  def __lt__(i,j): return Row(i,i.mid()) < Row(j,j.mid())
+  def __lt__(i,j): 
+    return Row(i,i.mid()) < Row(j,j.mid())
     
   def bins(i,j,the):
     return {(kl, (col1.txt, col1.at, span)): f

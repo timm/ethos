@@ -5,9 +5,12 @@ import math
 class Row(obj):
   def __init__(i,tab,cells): i.cells,i._tab = cells,tab
 
-  def dist(i,j,cols,the):
+  def y(i):
+    return [i.cells[c.at] for c in i._tab.cols.y]
+
+  def dist(i,j,the,cols=None):
     d,n = 0, 1E-31
-    for col in cols:
+    for col in cols or i._tab.y:
       tmp = col.dist( i.cells[col.at], j.cells[col.at] )
       d  += tmp**the.p
       n  += 1

@@ -5,14 +5,16 @@ import copy
 import random
 
 def defaults( d= cli(
-     seed=1,
-     p=2, 
-     cohen=.3, 
-     enough=.5, 
-     far=.9, 
-     fars=128, 
-     grab=4,
-     data="data/weather.csv")):
+     cohen     = .3
+     ,data     = "data/weather.csv"
+     ,far      = .9 
+     ,k        = 1
+     ,m        = 2
+     ,mostrest = 3
+     ,p        = 2 
+     ,seed     = 1
+     ,tiny     = .5
+  )):
   d = obj(**d)
   random.seed(d.seed)
   return d

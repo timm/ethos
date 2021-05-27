@@ -22,12 +22,15 @@ def go(f="data/weather.csv",silent=True):
       print(n,further.cells)
     assert tmp[0][0] <= tmp[1][0] < tmp[-1][0]
 
-def diveg(f="data/weather.csv",silent=True):
+def diveg(f="data/weather.csv",loud=False):
   the=about.defaults()
   t=Tab(file=f)
-  c=Clusters(t,the,silent=True)
+  all = sorted(t.rows)
+  for x in all: print(x.y())
+  return 1
+  c=Clusters(t,the,cols=t.cols.y, loud=loud)
   print([col.txt for col in t.cols.y])
-  all =  sorted(c.all)
+  all = sorted(c.all)
   for t1 in c.all: print(rs(t1.y()))
   for span in all[0].bins(all[-1],the): print(span)
   print(the)

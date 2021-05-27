@@ -34,7 +34,7 @@ class Num(Col):
     xy = [(better, True)  for better in i._all] + [
           (bad,    False) for bad    in j._all]
     sd = (i.sd*i.n + j.sd*j.n)/(i.n+j.n)
-    tmp = div(xy, sd * the.cohen, len(xy)**the.enough)
+    tmp = div(xy, sd * the.cohen, len(xy)**the.tiny)
     for bin in merge(tmp):
       for klass, n in bin.also.seen.items():
         if not (bin.down == -math.inf and bin.up == math.inf):
