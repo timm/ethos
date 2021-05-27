@@ -8,12 +8,13 @@ import random
 def diveg(f="data/weather.csv",loud=False):
   the=about.defaults()
   t=Tab(file=f)
-  c=Clusters(t,the,cols=t.cols.y, loud=True)
-  print([col.txt for col in t.cols.y])
+  c=Clusters(t,the,cols=t.cols.x, loud=True)
+  print([col.txt for col in t.cols.x])
   all = sorted(c.all)
-  for t1 in c.all: print(rs(t1.y()))
+  for x in all:
+    print(rs(x.y()))
   for span in sorted(all[0].bins(all[-1],the)): 
     print(span)
-  print(the)
+  print(random.random(),the)
 
 diveg("data/auto93.csv")

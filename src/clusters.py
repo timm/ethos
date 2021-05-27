@@ -22,8 +22,8 @@ class Clusters:
       for row in rows:
         a = row.dist(left,  the, cols=cols)
         b = row.dist(right, the, cols=cols)
-        x = (a**2 + c**2 - b**2)/(2**c)
-        row.divx = max(0, min(1, x))
+        x = (a**2 + c**2 - b**2)/(2*c)
+        row.divx = x
       rows = sorted(rows, key=lambda row: row.divx)
       mid  = len(rows) // 2  
       i.div(rows[:mid],lvl+1, t,the,loud,cols,tiny)
