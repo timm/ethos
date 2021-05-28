@@ -10,5 +10,6 @@ def diveg(f="data/weather.csv"):
 
 #go()
 #go("data/auto93.csv")
+#diveg("data/auto93.csv")
+diveg("data/pom_dataset.csv")
 
-diveg("data/auto93.csv")

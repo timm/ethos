@@ -1,4 +1,15 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
+# (c) 2021, Tim Menzies (timm@ieee.org) unlicense.org
+"""Supervised discretization of a list of x-y pairs."
+Returns `bins` that divides the `x` values in order to
+minimize the variability of the `y` values.
+
+Democratization is a two-stage process. Firstly, using the `x` vaues,
+`div`ide the data 
+into small chunks of length `width` (that are at cover a range of `epsilon` or more).
+Secondly, using the `y` values, keep trying to merge adjacent bins (stopping when no
+new merges found)."""
+
 from lib import obj
 from sym import Sym
 import math

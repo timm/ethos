@@ -1,8 +1,10 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
+# (c) 2021, Tim Menzies (timm@ieee.org) unlicense.org
+"""Management of default config options. Each option "xx" can be, optionally,
+overwritten at start-up time by a flag `-xx value`."""
+
 from lib  import obj,cli
-import sys
-import copy
-import random
+import sys,copy,random
 
 def defaults( d= cli(
      cohen     = .3
@@ -15,6 +17,9 @@ def defaults( d= cli(
      ,seed     = 1
      ,tiny     = .5
   )):
-  d = obj(**d)
+  """Calling `default` will return a fresh copy of the defaults
+  (optionally updated via command-line flags), and will reset
+  the random number seed to the `seed` value shown above."""
+  d = copy.deepcopy(obj(**d))
   random.seed(d.seed)
   return d

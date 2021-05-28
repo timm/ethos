@@ -47,4 +47,4 @@ def coerce(string):
     try: return float(string)
     except Exception: return string
 
-def rs(l,r=0): return [round(x,r) for x in l]
+def rs(l,r=0): return [f"{x:.{r}f}"  for x in l]

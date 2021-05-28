@@ -1,8 +1,29 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
 from lib  import obj,rs
-import sys
+import random,sys
 
-def keys(t,the):
+def keys(t,the,r=2):
+  step = int(2*len(t.rows)**the.tiny )
+  shows([col.txt for col in t.cols.y])
+  shows(t.y()        + ["baseline", len(t.rows)])
+  for n in range(step, len(t.rows), step):
+    print(n)
+    train = t.clone(t.rows[:n])
+    test  = t.clone(t.rows[n:])
+    rules = learn(train,the)
+    judge(test,the,rules)
+ 
+def judge(t,the,rules):
+  now=t
+  for n,(s,col) in enumerate(rules):
+    less = now.clone()
+    for x in selected(now.rows,*col): less.add(x)
+    if now.mid() < less.mid(): break
+    if len(less.rows) < len(t.rows)**.5: break
+    shows(less.y() + [ f"round{n+1}", len(less.rows),col])
+    now=less
+  
+def learn(t, the):
   rows  = sorted(t.rows)
   n     = int(len(rows)**the.tiny)
   bests = rows[:n]
@@ -11,17 +32,13 @@ def keys(t,the):
     gap = int(len(rests) / (n*the.mostrest))
     rests = rests[::gap]
   best, rest= t.clone(bests), t.clone(rests)
-  maybe = sorted(br(best,rest,the), 
+  return sorted(br(best,rest,the), 
                  reverse=True,
                  key=lambda z:z[0])
-  t1 = t.clone()
-  print("best",rs(rows[0].y(),1))
-  print("mid",rs(t.y(),1))
-  print("rest",rs(rows[-1].y(),1))
-  for _,col in maybe:
-    for x in selects(bests,*col): t1.add(x)
-    for x in selects(rests,*col): t1.add(x)
-    print(rs(t1.y(),1))
+
+def shows(lst,r=2):
+    lst = [(f"{x:.{r}f}" if isinstance(x,(int,float)) else str(x)) for x in lst]
+    print(', '.join(lst))
 
 def br(best,rest,the):
   bins = best.bins(rest,the)
@@ -29,10 +46,11 @@ def br(best,rest,the):
     if kl==True:
       b = b/len(best.rows)
       r = bins.get((False,col),0) / len(rest.rows)
-      if b>r:
-        yield b**2/(b+r),col
+      s= b**2/(b+r)
+      if b>r :
+          yield s,col
 
-def selects(rows, txt,col,span):
+def selected(rows, txt,col,span):
   def has(x,lo,hi):
     return x=="?" or (x==lo if lo==hi else lo <= x < hi)
   for row in rows:

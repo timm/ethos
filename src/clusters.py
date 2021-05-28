@@ -1,31 +1,40 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
+# (c) 2021, Tim Menzies (timm@ieee.org) unlicense.org
+"""Recursively divide the data in two, using 
+the cosine rule (divide the data at median
+distance of each row's position, projected into
+a line between two distant points)."""
+
 import random
 from lib import rs
 
-class Clusters:
-  def __init__(i,t,the,cols=None,loud=False):
-    i.all=[]
-    i.div(t.rows,0, t,the,loud, 
-          cols or t.cols.x, 
-          len(t.rows)**the.tiny // 1)
-  
-  def div(i,rows,lvl,  t,the,loud,cols,tiny):
-    if loud:
-      print(f"{'|.. ' * lvl}{len(rows)}")
-    if len(rows) < 2*tiny:
-      i.all += [t.clone(rows)]
-    else:
-      any = random.choice(rows)
-      left  = t.far(any,  the, cols=cols, rows=rows)
-      right = t.far(left, the, cols=cols, rows=rows)
-      c  = left.dist(right,the, cols=cols)
-      for row in rows:
-        a = row.dist(left,  the, cols=cols)
-        b = row.dist(right, the, cols=cols)
-        x = (a**2 + c**2 - b**2)/(2*c)
-        row.divx = x
-      rows = sorted(rows, key=lambda row: row.divx)
-      mid  = len(rows) // 2  
-      i.div(rows[:mid],lvl+1, t,the,loud,cols,tiny)
-      i.div(rows[mid:],lvl+1, t,the,loud,cols,tiny)
-  
+def div(t,the,cols=None,loud=False):
+  clusters = []
+  cols = cols or t.cols.x
+  tiny = len(t.rows)**the.tiny // 1
+  def recurse(rows, lvl=0):
+     dist    = lambda r1,r2 : r1.dist(r2,the, cols=cols)
+     faraway = lambda r1    : t.far(r1, the, cols=cols, rows=rows)
+     if loud: 
+       print(f"{'|.. ' * lvl}{len(rows)}")
+     if len(rows)<2*tiny: 
+       clusters.append(t.clone(rows))
+     else               : 
+       any   = random.choice(rows)
+       left  = faraway(any)
+       right = faraway(left)
+       c     = dist(left,right)
+       for row in rows:
+         a = dist(row,left)
+         b = dist(row,right)
+         x = (a**2 + c**2 - b**2)/(2*c+1E-32)
+         row.fastmapx = x
+       rows = sorted(rows, key=lambda row: row.fastmapx)
+       mid  = len(rows)//2
+       recurse(rows[:mid], lvl+1)
+       recurse(rows[mid:],  lvl+1)
+
+  #-- main ----------
+  recurse(t.rows)
+  return clusters
+ 
