@@ -28,9 +28,9 @@ def learn(t, the):
   n     = int(len(rows)**the.tiny)
   bests = rows[:n]
   rests = rows[n:]
-  if len(rests) >= n*4:
-    gap = int(len(rests) / (n*the.mostrest))
-    rests = rests[::gap]
+  #if len(rests) >= n*4:
+  #  gap = int(len(rests) / (n*the.mostrest))
+  #  rests = rests[::gap]
   best, rest= t.clone(bests), t.clone(rests)
   return sorted(br(best,rest,the), 
                  reverse=True,
