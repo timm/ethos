@@ -15,7 +15,6 @@ def cli(**d):
   i=-1
   while i<len(sys.argv)-1:
     i, key, now = i+1, sys.argv[i][1:], coerce(sys.argv[i+1])
-    print(i,key,now)
     if key in d:
       i += 1
       if type(now) == type(d[key]): d[key] = now
