@@ -15,7 +15,8 @@ def defaults( d= cli(
      ,mostrest = 3
      ,p        = 2 
      ,seed     = 1
-     ,tiny     = .5
+     ,train    = .66
+     ,tiny     = .6
   )):
   """Calling `default` will return a fresh copy of the defaults
   (optionally updated via command-line flags), and will reset

@@ -3,14 +3,18 @@ from keys import keys
 from tab  import Tab
 import about
 
-def diveg(f="data/weather.csv"):
+def diveg():
   the=about.defaults()
-  t=Tab(file=f)
-  k=keys(t,the)
+  t=Tab(file=the.data)
+  print(the.data)
+  for _ in  range(10):
+    print("")
+    keys(t,the)
 
 #go()
 #go("data/auto93.csv")
-diveg("data/auto93.csv")
+#diveg("data/auto93.csv")
 #diveg("data/pom_dataset.csv")
 #diveg("data/xomo_dataset.csv")
 
+diveg()
