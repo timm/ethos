@@ -1,10 +1,13 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
+# (c) 2021, tim menzies (timm@ieee.org) unlicense.org
+"""Standard library functions."""
 
 import re
 import sys
 import copy
 
 class obj:
+  "Simple base class with pretty print"
   def __init__(i, **d): i.__dict__.update(d)
   def __repr__(i) : return i.__class__.__name__+"{" + ', '.join(
       [f":{k} {v}" for k, v in sorted(i.__dict__.items()) if k[0] != "_"]) + "}"
@@ -20,9 +23,9 @@ def cli(**d):
       if type(now) == type(d[key]): d[key] = now
   return d
 
-# From files or standard input or a string, 
-# return an iterator for the lines.
 def csv(src=None):
+  """Iterator. returns lines from files or standard input or a string, 
+  return an iterator for the lines."""
   def lines(src):
     for line in src:
       line = re.sub(r'([\n\t\r ]|#.*)', '', line)
@@ -38,8 +41,9 @@ def csv(src=None):
     for out in lines(src):
       yield out
 
-# If appropriate, coerce `string` into some type.
 def coerce(string):
+  """When  appropriate, coerce `string` into some type. 
+  Supports floats, ints, booleans and strings."""
   if string == "True": return True
   if string == "False": return False
   try: return int(string)
@@ -47,4 +51,7 @@ def coerce(string):
     try: return float(string)
     except Exception: return string
 
-def rs(l,r=0): return [f"{x:.{r}f}"  for x in l]
+def rs(l,r=0): 
+  "Round a list to `r` decimal places."
+  return [(f"{x:.{r}f}" if isinstace(x,(inf,float)) else str(x))
+          for x in l]

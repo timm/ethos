@@ -1,7 +1,15 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
 # (c) 2021, Tim Menzies (timm@ieee.org) unlicense.org
-"""Interpretation rules for names on row1 of a CSV file."""
+"""Interpretation rules for CSV headers.
+e.g.
 
+        name, Age,Gender?,Salary+
+
+shows 4 columns of data of  which the first is non-numeric 
+and the other three contain numbers. The  third column contains
+data  we will ignore and  the  fourth column  shows something
+we want to maximize (so we will give that column a `weight`  of 1). 
+"""
 
 def weight(s):  return -1 if "-" in s else 1 
 def isKlass(s): return "!" in s 

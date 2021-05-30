@@ -1,6 +1,7 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
-# (c) 2021, Tim Menzies (timm@ieee.org) unlicense.org
-"""Management of default config options. Each option "xx" can be, optionally,
+# (c) 2021, tim menzies (timm@ieee.org) unlicense.org
+"""Management of default config options. 
+Each option "xx" can be, optionally,
 overwritten at start-up time by a flag `-xx value`."""
 
 from lib  import obj,cli

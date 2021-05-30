@@ -12,6 +12,13 @@ alias tmux="tmux -f $Ell/etc/tmux-conf "
 alias vi="vim -u $Ell/etc/vimrc "
 alias vims="vim +PluginInstall +qall"         
 
+doc() {
+   cd $Ell/src
+   pdoc3 --template-dir $Ell/docs/  \
+        --html --force            \
+        -o $Ell/docs               \
+        -c latex_math=True  *.py
+}
 ok() {
    cd $Ell/test
    for i in *.py; do 

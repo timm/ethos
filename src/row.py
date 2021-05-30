@@ -1,4 +1,7 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
+# (c) 2021, tim menzies (timm@ieee.org) unlicense.org
+"""Management of one row."""
+
 from lib import obj
 import math
 

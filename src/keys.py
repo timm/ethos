@@ -1,4 +1,7 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
+# (c) 2021, tim menzies (timm@ieee.org) unlicense.org
+"""Simple greedy  search for contrast sets."""
+
 from lib  import obj,rs
 import random,sys
 from row import Row

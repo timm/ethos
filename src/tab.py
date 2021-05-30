@@ -1,4 +1,6 @@
 # vim: filetype=python ts=2 sw=2 sts=2 et :
+# (c) 2021, tim menzies (timm@ieee.org) unlicense.org
+"""Manager row, summarized  in columns."""
 
 from lib  import obj,csv
 from sym  import Sym
