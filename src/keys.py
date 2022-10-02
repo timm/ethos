@@ -12,8 +12,10 @@ def keys(t,the,r=2):
   shows([col.txt for col in t.cols.y])
   shows(t.y()        + ["baseline", len(rows)])
   n =int(the.train*len(rows))
-  train = t.clone(rows[:n])
-  test  = t.clone(rows[n:])
+  train = t.clone(rows)
+  test  = t.clone(rows)
+  #train = t.clone(rows[:n])
+  #test  = t.clone(rows[n:])
   rules = learn(train,the)
   judge(test,the,rules)
  
